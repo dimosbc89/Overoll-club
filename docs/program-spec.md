@@ -34,7 +34,7 @@ All numbers live in `packages/core/src/config.ts` and can be changed by HQ later
 | --- | --- |
 | Base | **10 points per €1** of the receipt total, rounded down |
 | Tier multiplier | Classic ×1.00 · Gold ×1.25 · Club ×1.50 |
-| Welcome reward | Unlocked after the first purchase, once per member: a free butter croissant (proposal, waiting for approval). Does not count towards tiers |
+| Welcome reward | Unlocked after the first purchase, once per member: a free butter croissant. Does not count towards tiers |
 | Birthday | A free croissant valid during the birthday week (from v1.1, see roadmap) |
 | Referral | +100 points to both, after the friend's first purchase (v1.1) |
 | Streak | 3 visits in 7 days → +50 points (v1.1) |
@@ -53,7 +53,7 @@ Example: €6.40 receipt, Gold member → floor(640 × 10 × 125 / 10 000) = 80 
   - €3.50 croissant → 500 points (≈ €50, about 7–8 visits)
 - Gold pays 20% fewer points, Club 30% fewer (rounded to the nearest 10).
 - Some rewards can be limited to a tier ("Gold and above").
-- Proposed catalog of 7 rewards (espresso → croissant box) in `docs/menu-and-rewards.md`; prices from Wolt until Overoll confirms in-store prices. HQ has the final say.
+- Catalog of 7 rewards (espresso → croissant box) in `docs/menu-and-rewards.md`, approved 9 Nov. Shelf prices are the Wolt prices; HQ can change them later.
 
 ## 5. Tiers
 
@@ -115,11 +115,11 @@ Example: €6.40 receipt, Gold member → floor(640 × 10 × 125 / 10 000) = 80 
 ## 11. Still open
 
 - [ ] Final program name, points name, tier names
-- [x] Reward catalog proposal (`docs/menu-and-rewards.md`); waiting for approval and in-store prices
-- [x] Welcome reward proposal: free butter croissant; waiting for approval
+- [x] Reward catalog (`docs/menu-and-rewards.md`), approved; Wolt prices used
+- [x] Welcome reward: free butter croissant, approved
 - [ ] Delivery orders: on or off after the pilot
 - [x] Pilot store: Chalandri
-- [x] Store list: 10 stores with address, hours, coordinates, phone (`data/stores.json`); Overoll confirms hours, the Glyfada phone, and whether Nicosia or other stores exist
+- [x] Store list: launch with the 10 stores in `data/stores.json`; more stores can be added from the back office
 - [x] Logo files, colours, fonts from the website project (`docs/brand.md`)
-- [ ] Club tier value back is about 15–16%: HQ to confirm or lower
+- [x] Club tier stays as is (×1.50 earn, 30% cheaper rewards), decided 9 Nov
 - Newsletter list: deferred to marketing, not needed for launch

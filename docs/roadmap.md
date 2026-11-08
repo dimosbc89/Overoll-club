@@ -20,8 +20,7 @@ Legend: **D** = Dimos · **C** = Claude · ☐ open · ☑ done
 - ☑ C: pilot store chosen: **Chalandri** (Κατσουλιέρη 10)
 - ☑ C: authorization letter drafted (Greek + English)
 - ☐ D: Overoll fills in and signs the authorization letter
-- ☐ D: Overoll confirms: in-store prices, opening hours, Glyfada phone, any stores we missed (Nicosia?)
-- ☐ D: approve the reward catalog and the welcome reward (free butter croissant)
+- ☑ D: reward catalog, welcome croissant and Club tier approved; launch with Wolt prices and the 10 stores found
 - ☐ C: design drafts: join flow, member card, rewards, staff console, HQ dashboard
 
 ## Week 2 · 16–22 Nov · Join flow + card + Wallet

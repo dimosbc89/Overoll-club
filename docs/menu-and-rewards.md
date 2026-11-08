@@ -1,6 +1,6 @@
 # Menu, prices and the reward catalog (proposal)
 
-Status: **proposal, 9 Nov 2026.** Dimos approves, then Overoll HQ confirms the in-store prices.
+Status: **approved by Dimos, 9 Nov 2026.** We launch with the Wolt prices; HQ can change any price later in the back office.
 
 ## Where the prices come from
 
@@ -17,7 +17,7 @@ Typical visit: croissant €3.00–4.00 + coffee €2.20–2.70 ≈ **€5.50–
 | Combos | Daily Habit (croissant + coffee) €6.10 · Daily Break (sandwich + coffee) €7.80 |
 | Boxes | Mini rolls box €10.00 · Croissant box (4) €14.00 · Mini rolls 24 pcs €27.00 |
 
-## Reward catalog
+## Reward catalog (approved)
 
 Rule from the spec: points cost = shelf price × 140, rounded to the nearest 50. Gold pays 20% less, Club 30% less. Members earn 10 points per €1 (Gold ×1.25, Club ×1.50).
 
@@ -33,13 +33,13 @@ Rule from the spec: points cost = shelf price × 140, rounded to the nearest 50.
 
 At €6 a visit, a Classic member gets a free espresso after about 5 visits and a free coffee or butter croissant after about 7.
 
-Value back on spend: Classic about 7%, Gold about 11%, Club about 15–16%. The Club figure is generous for a bakery margin; HQ may want Club at ×1.25 earn or a 20% discount instead. It is one setting in `packages/core/src/config.ts`.
+Value back on spend: Classic about 7%, Gold about 11%, Club about 15–16%. Club stays as is (decided 9 Nov); it is one setting in `packages/core/src/config.ts` if it ever needs to change.
 
 "Choose any" rewards are priced at the most expensive item they cover, so the store never gives away more than the reward is worth. The seed script checks this.
 
-## Welcome reward (proposal)
+## Welcome reward (approved)
 
-A **free butter croissant** after the first purchase, once per member. It is the signature product, costs the store less than a specialty coffee, and gives a reason to come back for a second visit. It does not count towards tiers. (The spec draft said espresso; this replaces it if Dimos agrees.)
+A **free butter croissant** after the first purchase, once per member. It is the signature product, costs the store less than a specialty coffee, and gives a reason to come back for a second visit. It does not count towards tiers.
 
 ## Not rewards
 
