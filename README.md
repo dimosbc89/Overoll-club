@@ -12,7 +12,18 @@ Built by [GROW Agency](https://growagency.online).
 
 ## Status
 
-Week 1 foundation: program rules engine (`packages/core`, 32 tests) and database schema with access rules (`supabase`, 48 checks). Apps and back office are next.
+Week 1 foundation: program rules engine (`packages/core`, 32 tests), database schema with access rules (`supabase`, 50 checks), brand, stores, menu and reward catalog (`docs`, `data`). Apps and back office are next.
+
+## Environments
+
+| | |
+| --- | --- |
+| Supabase project | `overoll-club`, ref `lwhxqnmntihmavqngeca`, GROW Agency org, Frankfurt (eu-central-1) |
+| API URL | https://lwhxqnmntihmavqngeca.supabase.co |
+| Migrations | `supabase/migrations`; file names match the versions applied to the project |
+| Seed | `supabase/seed.sql`, applied 9 Nov 2026 (1 brand, 10 stores, 7 rewards) |
+
+Variable names are in `.env.example`; values never go in git.
 
 ## Quick start
 

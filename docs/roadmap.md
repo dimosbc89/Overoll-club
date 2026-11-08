@@ -11,7 +11,8 @@ Legend: **D** = Dimos · **C** = Claude · ☐ open · ☑ done
 - ☑ C: program spec v0.1 (`docs/program-spec.md`)
 - ☑ C: database schema with access rules (`supabase/migrations`)
 - ☑ C: points engine with tests (`packages/core`)
-- ☐ D: create a Supabase project (EU, Frankfurt) and invite Claude's workflow (share keys via `.env`, never in git)
+- ☑ C: Supabase project `overoll-club` (GROW Agency org, Frankfurt, free plan): schema + seed applied, security advisor clean
+- ☐ D: upgrade the GROW Agency Supabase org to Pro (about $25/month) before the pilot on 7 Dec: free projects pause after a week without traffic and have no daily backups
 - ☐ D: Apple Developer (GROW account): create Pass Type ID `pass.online.growagency.overoll`
 - ☐ D: Google Pay & Wallet Console: apply for an issuer account (approval can take days)
 - ☑ C: brand (logos, colours, fonts) from the website project → `docs/brand.md`, `assets/brand/`

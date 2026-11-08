@@ -147,7 +147,13 @@ select tst.eq((select count(*) from public.brands), 2, 'anyone can read brand pr
 select tst.eq((select count(*) from public.rewards), 1, 'anyone can read active rewards');
 select tst.refused($$select count(*) from public.ledger_entries$$, 'anonymous cannot read the ledger');
 select tst.refused($$select count(*) from public.members$$, 'anonymous cannot read members');
+select tst.eq((select count(*) from public.stores where not active), 0, 'anonymous sees open stores only (policy helpers still run for anon)');
 reset role;
+
+-- ------------------------------------------------------- API surface
+select tst.eq((select count(*) from pg_proc p join pg_namespace n on n.oid = p.pronamespace
+               where n.nspname = 'public' and p.prosecdef), 0,
+              'no SECURITY DEFINER function is exposed in the public (API) schema');
 
 -- ----------------------------------------------------- ledger integrity
 select tst.refused($$update public.ledger_entries set points = 9999$$, 'ledger rows cannot be edited', 'P0001');
