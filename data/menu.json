@@ -1,0 +1,770 @@
+{
+  "brand": "overoll",
+  "fetched_on": "2026-11-09",
+  "source": "Wolt menus of all 10 stores (consumer assortment). price_cents is the most common shelf price before any Wolt promotion.",
+  "caveats": [
+    "Delivery-app prices can be higher than in the shop. Overoll confirms in-store prices before launch.",
+    "stores_listing = how many of the 10 stores list the item on Wolt; the shop range may be wider.",
+    "Frappe is 2.10 in Glyfada and 2.30 elsewhere; Lunch Combo for 2 is 10.00 in Aigaleo and 15.60 elsewhere."
+  ],
+  "categories": [
+    {
+      "id": "coffee",
+      "name_el": "Καφέδες",
+      "name_en": "Coffee"
+    },
+    {
+      "id": "drinks",
+      "name_el": "Ροφήματα",
+      "name_en": "Drinks"
+    },
+    {
+      "id": "croissants-sweet",
+      "name_el": "Κρουασάν γλυκά",
+      "name_en": "Sweet croissants"
+    },
+    {
+      "id": "croissants-savoury",
+      "name_el": "Κρουασάν αλμυρά",
+      "name_en": "Savoury croissants"
+    },
+    {
+      "id": "sandwiches",
+      "name_el": "Σάντουιτς",
+      "name_en": "Sandwiches"
+    },
+    {
+      "id": "bowls",
+      "name_el": "Bowls",
+      "name_en": "Bowls"
+    },
+    {
+      "id": "sweets",
+      "name_el": "Γλυκά",
+      "name_en": "Sweets"
+    },
+    {
+      "id": "boxes",
+      "name_el": "Κουτιά",
+      "name_en": "Boxes"
+    },
+    {
+      "id": "combos",
+      "name_el": "Combos",
+      "name_en": "Combos"
+    },
+    {
+      "id": "spreads",
+      "name_el": "Αλείμματα",
+      "name_en": "Spreads"
+    }
+  ],
+  "items": [
+    {
+      "id": "nescafe",
+      "category": "coffee",
+      "name_el": "Nescafe",
+      "name_en": "Nescafe",
+      "description_el": null,
+      "price_cents": 210,
+      "stores_listing": 9
+    },
+    {
+      "id": "ellinikos-kafes-diplos",
+      "category": "coffee",
+      "name_el": "Ελληνικός Καφές Διπλός",
+      "name_en": "Greek coffee, double",
+      "description_el": null,
+      "price_cents": 220,
+      "stores_listing": 8
+    },
+    {
+      "id": "espresso",
+      "category": "coffee",
+      "name_el": "Espresso",
+      "name_en": "Espresso",
+      "description_el": null,
+      "price_cents": 220,
+      "stores_listing": 9
+    },
+    {
+      "id": "frappe",
+      "category": "coffee",
+      "name_el": "Frappe",
+      "name_en": "Frappe",
+      "description_el": null,
+      "price_cents": 230,
+      "stores_listing": 9
+    },
+    {
+      "id": "kafes-filtrou",
+      "category": "coffee",
+      "name_el": "Καφές Φίλτρου",
+      "name_en": "Filter coffee",
+      "description_el": null,
+      "price_cents": 240,
+      "stores_listing": 8
+    },
+    {
+      "id": "americano",
+      "category": "coffee",
+      "name_el": "Americano",
+      "name_en": "Americano",
+      "description_el": null,
+      "price_cents": 250,
+      "stores_listing": 9
+    },
+    {
+      "id": "cappuccino",
+      "category": "coffee",
+      "name_el": "Cappuccino",
+      "name_en": "Cappuccino",
+      "description_el": null,
+      "price_cents": 250,
+      "stores_listing": 9
+    },
+    {
+      "id": "espresso-macchiato",
+      "category": "coffee",
+      "name_el": "Espresso Macchiato",
+      "name_en": "Espresso Macchiato",
+      "description_el": null,
+      "price_cents": 250,
+      "stores_listing": 9
+    },
+    {
+      "id": "freddo-espresso",
+      "category": "coffee",
+      "name_el": "Freddo Espresso",
+      "name_en": "Freddo Espresso",
+      "description_el": null,
+      "price_cents": 250,
+      "stores_listing": 9
+    },
+    {
+      "id": "cappuccino-latte",
+      "category": "coffee",
+      "name_el": "Cappuccino Latte",
+      "name_en": "Cappuccino Latte",
+      "description_el": null,
+      "price_cents": 270,
+      "stores_listing": 9
+    },
+    {
+      "id": "flat-white",
+      "category": "coffee",
+      "name_el": "Flat White",
+      "name_en": "Flat White",
+      "description_el": null,
+      "price_cents": 270,
+      "stores_listing": 9
+    },
+    {
+      "id": "freddo-cappuccino",
+      "category": "coffee",
+      "name_el": "Freddo Cappuccino",
+      "name_en": "Freddo Cappuccino",
+      "description_el": null,
+      "price_cents": 270,
+      "stores_listing": 9
+    },
+    {
+      "id": "iced-latte",
+      "category": "coffee",
+      "name_el": "Iced Latte",
+      "name_en": "Iced Latte",
+      "description_el": null,
+      "price_cents": 270,
+      "stores_listing": 9
+    },
+    {
+      "id": "water-500ml",
+      "category": "drinks",
+      "name_el": "Εμφιαλωμένο Νερό 0.5 l",
+      "name_en": "Bottled water 0.5 l",
+      "description_el": null,
+      "price_cents": 50,
+      "stores_listing": 10
+    },
+    {
+      "id": "sokolata-krya",
+      "category": "drinks",
+      "name_el": "Σοκολάτα Κρύα",
+      "name_en": "Iced chocolate",
+      "description_el": null,
+      "price_cents": 290,
+      "stores_listing": 9
+    },
+    {
+      "id": "sokolata-zesti",
+      "category": "drinks",
+      "name_el": "Σοκολάτα Ζεστή",
+      "name_en": "Hot chocolate",
+      "description_el": null,
+      "price_cents": 290,
+      "stores_listing": 9
+    },
+    {
+      "id": "fysikos-chymos-portokali",
+      "category": "drinks",
+      "name_el": "Φυσικός Χυμός Πορτοκάλι",
+      "name_en": "Fresh orange juice",
+      "description_el": "Φυσικός χυμός πορτοκάλι, lime και grapefruit",
+      "price_cents": 350,
+      "stores_listing": 7
+    },
+    {
+      "id": "ginger-lemonade",
+      "category": "drinks",
+      "name_el": "Λεμονάδα με Τζίντζερ χωρίς ζάχαρη",
+      "name_en": "Ginger lemonade, no sugar",
+      "description_el": null,
+      "price_cents": 380,
+      "stores_listing": 10
+    },
+    {
+      "id": "ginger-strawberry-lemonade",
+      "category": "drinks",
+      "name_el": "Λεμονάδα με Τζίντζερ & Φράουλα χωρίς ζάχαρη",
+      "name_en": "Ginger & strawberry lemonade, no sugar",
+      "description_el": null,
+      "price_cents": 380,
+      "stores_listing": 10
+    },
+    {
+      "id": "matcha-latte-cold",
+      "category": "drinks",
+      "name_el": "Matcha Latte Cold",
+      "name_en": "Matcha Latte Cold",
+      "description_el": null,
+      "price_cents": 420,
+      "stores_listing": 9
+    },
+    {
+      "id": "matcha-latte-hot",
+      "category": "drinks",
+      "name_el": "Matcha Latte Hot",
+      "name_en": "Matcha Latte Hot",
+      "description_el": null,
+      "price_cents": 420,
+      "stores_listing": 9
+    },
+    {
+      "id": "smoothie-banana",
+      "category": "drinks",
+      "name_el": "Smoothie Banana",
+      "name_en": "Smoothie Banana",
+      "description_el": null,
+      "price_cents": 450,
+      "stores_listing": 10
+    },
+    {
+      "id": "smoothie-kiwi-apple",
+      "category": "drinks",
+      "name_el": "Smoothie Kiwi-Apple",
+      "name_en": "Smoothie Kiwi-Apple",
+      "description_el": null,
+      "price_cents": 450,
+      "stores_listing": 9
+    },
+    {
+      "id": "smoothie-orange-mango",
+      "category": "drinks",
+      "name_el": "Smoothie Orange-Mango",
+      "name_en": "Smoothie Orange-Mango",
+      "description_el": null,
+      "price_cents": 450,
+      "stores_listing": 9
+    },
+    {
+      "id": "smoothie-strawberry",
+      "category": "drinks",
+      "name_el": "Smoothie Strawberry",
+      "name_en": "Smoothie Strawberry",
+      "description_el": null,
+      "price_cents": 450,
+      "stores_listing": 10
+    },
+    {
+      "id": "croissant-voutyrou",
+      "category": "croissants-sweet",
+      "name_el": "Croissant Βουτύρου",
+      "name_en": "Butter croissant",
+      "description_el": "Η αυθεντική συνταγή Overoll με γαλλικό βούτυρο 82%",
+      "price_cents": 300,
+      "stores_listing": 9
+    },
+    {
+      "id": "croissant-sokolatas",
+      "category": "croissants-sweet",
+      "name_el": "Croissant Σοκολάτας",
+      "name_en": "Chocolate croissant",
+      "description_el": "Με σοκολατένια ζύμη κρουασάν και μαύρη σοκολάτα 70%",
+      "price_cents": 340,
+      "stores_listing": 8
+    },
+    {
+      "id": "pain-aux-raisins",
+      "category": "croissants-sweet",
+      "name_el": "Pain aux Raisins",
+      "name_en": "Pain aux Raisins",
+      "description_el": "Βουτυρένιο croissant με κρέμα βανίλιας, αρωματισμένες σταφίδες σε ρούμι και φυστίκι Αιγίνης",
+      "price_cents": 350,
+      "stores_listing": 8
+    },
+    {
+      "id": "cinnamon-croissant",
+      "category": "croissants-sweet",
+      "name_el": "Cinnamon Croissant",
+      "name_en": "Cinnamon Croissant",
+      "description_el": "Αφράτη ζύμη κρουασάν, με κανέλα και γλάσο ζάχαρης",
+      "price_cents": 370,
+      "stores_listing": 9
+    },
+    {
+      "id": "croissant-praline",
+      "category": "croissants-sweet",
+      "name_el": "Croissant Praline",
+      "name_en": "Croissant Praline",
+      "description_el": "Κρουασάν με γέμιση από πραλίνα φουντουκιού",
+      "price_cents": 370,
+      "stores_listing": 9
+    },
+    {
+      "id": "croissant-amygdalou",
+      "category": "croissants-sweet",
+      "name_el": "Croissant Αμυγδάλου",
+      "name_en": "Almond croissant",
+      "description_el": "Διπλοψημένη ζύμη κρουασάν με κρέμα αμυγδάλου και σιρόπι βανίλιας",
+      "price_cents": 380,
+      "stores_listing": 7
+    },
+    {
+      "id": "croissant-cheesecake",
+      "category": "croissants-sweet",
+      "name_el": "Croissant Cheesecake",
+      "name_en": "Croissant Cheesecake",
+      "description_el": "Με βελούδινη κρέμα cheesecake και μαρμελάδα κόκκινων φρούτων",
+      "price_cents": 390,
+      "stores_listing": 8
+    },
+    {
+      "id": "croissant-pistachio",
+      "category": "croissants-sweet",
+      "name_el": "Croissant Pistachio",
+      "name_en": "Croissant Pistachio",
+      "description_el": "Με βελούδινη κρέμα και σπιτική πραλίνα φυστικιού",
+      "price_cents": 390,
+      "stores_listing": 7
+    },
+    {
+      "id": "croissant-hazelnut",
+      "category": "croissants-sweet",
+      "name_el": "Croissant Hazelnut",
+      "name_en": "Croissant Hazelnut",
+      "description_el": "Διπλοψημένη ζύμη κρουασάν με κρέμα φουντουκιού και σοκολάτα",
+      "price_cents": 400,
+      "stores_listing": 6
+    },
+    {
+      "id": "cruffin-vanilla-salted-caramel",
+      "category": "croissants-sweet",
+      "name_el": "Cruffin Vanilla Salted Caramel",
+      "name_en": "Cruffin Vanilla Salted Caramel",
+      "description_el": "Αφράτο cruffin με κρέμα λευκής σοκολάτας, βανίλια Μαδαγασκάρης και αλατισμένη καραμέλα",
+      "price_cents": 440,
+      "stores_listing": 9
+    },
+    {
+      "id": "apple-pecan-cinnamon-roll",
+      "category": "croissants-sweet",
+      "name_el": "Apple Pecan Cinnamon Roll",
+      "name_en": "Apple Pecan Cinnamon Roll",
+      "description_el": "Ζουμερό brioche κανέλας με maple syrup, καραμελωμένο μήλο και pecan",
+      "price_cents": 470,
+      "stores_listing": 7
+    },
+    {
+      "id": "birthday-cake-croissant",
+      "category": "croissants-sweet",
+      "name_el": "Birthday Cake Croissant",
+      "name_en": "Birthday Cake Croissant",
+      "description_el": "Κρουασάν εμπνευσμένο από το κλασικό American birthday cake, με cream cheese frosting και κόκκινα φρούτα",
+      "price_cents": 480,
+      "stores_listing": 6
+    },
+    {
+      "id": "croissant-ham-cheese",
+      "category": "croissants-savoury",
+      "name_el": "Croissant Ham-Cheese",
+      "name_en": "Croissant Ham-Cheese",
+      "description_el": "Με ζαμπόν και γραβιέρα Νάξου",
+      "price_cents": 370,
+      "stores_listing": 9,
+      "price_cents_thessaloniki": 360
+    },
+    {
+      "id": "tyropita",
+      "category": "croissants-savoury",
+      "name_el": "Τυρόπιτα",
+      "name_en": "Cheese pie roll",
+      "description_el": "Με γέμιση 4 τυριά, πράσο, δυόσμο και άνηθο",
+      "price_cents": 370,
+      "stores_listing": 8,
+      "price_cents_thessaloniki": 380
+    },
+    {
+      "id": "sausage-roll",
+      "category": "croissants-savoury",
+      "name_el": "Sausage Roll",
+      "name_en": "Sausage Roll",
+      "description_el": "Βουτυρένιο roll με λουκάνικο Φρανκφούρτης, καπνιστό μπέικον και πλούσια σάλτσα ντομάτας",
+      "price_cents": 390,
+      "stores_listing": 8
+    },
+    {
+      "id": "croque-madame",
+      "category": "croissants-savoury",
+      "name_el": "Croque Madame",
+      "name_en": "Croque Madame",
+      "description_el": "Με σπιτική μπεσαμέλ, γαλοπούλα, λιωμένο τυρί και αυγό",
+      "price_cents": 420,
+      "stores_listing": 7,
+      "price_cents_thessaloniki": 400
+    },
+    {
+      "id": "croissant-scramble-egg",
+      "category": "croissants-savoury",
+      "name_el": "Croissant Scramble Egg",
+      "name_en": "Croissant Scramble Egg",
+      "description_el": "Με κρουασάν βουτύρου γεμισμένο με scramble eggs, μπέικον και σχοινόπρασο",
+      "price_cents": 440,
+      "stores_listing": 7,
+      "price_cents_thessaloniki": 420
+    },
+    {
+      "id": "mini-brioche-caprese-di-parma",
+      "category": "sandwiches",
+      "name_el": "Mini Brioche Caprese Di Parma",
+      "name_en": "Mini Brioche Caprese Di Parma",
+      "description_el": "120 g. Πατατόψωμο με μοτσαρέλα, ντομάτα, προσούτο Πάρμας, pesto βασιλικού και φρέσκια ρόκα",
+      "price_cents": 350,
+      "stores_listing": 8
+    },
+    {
+      "id": "mini-brioche-ham-cheese",
+      "category": "sandwiches",
+      "name_el": "Mini Brioche Ham & Cheese",
+      "name_en": "Mini Brioche Ham & Cheese",
+      "description_el": "120 g. Πατατόψωμο με καπνιστό ζαμπόν, γραβιέρα, φρέσκια ντομάτα και iceberg",
+      "price_cents": 350,
+      "stores_listing": 7
+    },
+    {
+      "id": "classic-delight",
+      "category": "sandwiches",
+      "name_el": "Classic Delight",
+      "name_en": "Classic Delight",
+      "description_el": "250gr Προζυμένια ciabatta καπνιστή γαλοπούλα, γραβιέρα, mayo μουστάρδας, ντομάτα, iceberg",
+      "price_cents": 480,
+      "stores_listing": 8
+    },
+    {
+      "id": "tuna-cucumber",
+      "category": "sandwiches",
+      "name_el": "Tuna & Cucumber",
+      "name_en": "Tuna & Cucumber",
+      "description_el": "250gr Πολύσπορο ψωμί ολικής, τονοσαλάτα, αγγούρι, πίκλα λάχανο και φρέσκια ρόκα",
+      "price_cents": 520,
+      "stores_listing": 6
+    },
+    {
+      "id": "avocado-egg-salad-sandwich",
+      "category": "sandwiches",
+      "name_el": "Avocado Egg Salad Sandwich",
+      "name_en": "Avocado Egg Salad Sandwich",
+      "description_el": "250 g. Πολύσπορο ψωμί ολικής με avocado guacamole, egg salad, σχοινόπρασο και ρόκα",
+      "price_cents": 550,
+      "stores_listing": 8
+    },
+    {
+      "id": "chicken-parmesan",
+      "category": "sandwiches",
+      "name_el": "Chicken Parmesan",
+      "name_en": "Chicken Parmesan",
+      "description_el": "250 g. Προζυμένια ciabatta με ψητό κοτόπουλο, flakes παρμεζάνας, iceberg και caesar sauce",
+      "price_cents": 580,
+      "stores_listing": 8
+    },
+    {
+      "id": "focaccia-caprese-di-parma",
+      "category": "sandwiches",
+      "name_el": "Focaccia Caprese di Parma",
+      "name_en": "Focaccia Caprese di Parma",
+      "description_el": "250 g. Αφράτη focaccia με μοτσαρέλα, ντομάτα, προσούτο Πάρμας, pesto βασιλικού και φρέσκια ρόκα",
+      "price_cents": 580,
+      "stores_listing": 8
+    },
+    {
+      "id": "yogurt-granola-honey",
+      "category": "bowls",
+      "name_el": "Yogurt Granola Honey",
+      "name_en": "Yogurt Granola Honey",
+      "description_el": "250 g. Γιαούρτι πλήρες, φρέσκα slices μπανάνας, σπιτική granola με chips σοκολάτας και θυμαρίσιο μέλι",
+      "price_cents": 480,
+      "stores_listing": 9
+    },
+    {
+      "id": "overnight-oats-peanut-butter-cacao",
+      "category": "bowls",
+      "name_el": "Overnight Oats Peanut Butter Cacao",
+      "name_en": "Overnight Oats Peanut Butter Cacao",
+      "description_el": "250 g. Σοκολατένιο κρεμώδης overnight oats με chia, φυστικοβούτυρο και granola φουντουκιού",
+      "price_cents": 570,
+      "stores_listing": 8
+    },
+    {
+      "id": "overnight-oats-yogurt-red-fruits",
+      "category": "bowls",
+      "name_el": "Overnight Oats Yogurt Red Fruits",
+      "name_en": "Overnight Oats Yogurt Red Fruits",
+      "description_el": "250 g. Κρεμώδη overnight oats με chia, κόκκινα φρούτα, flakes coconut και chips σοκολάτας",
+      "price_cents": 570,
+      "stores_listing": 8
+    },
+    {
+      "id": "chocolate-cookie",
+      "category": "sweets",
+      "name_el": "Chocolate Cookie",
+      "name_en": "Chocolate Cookie",
+      "description_el": null,
+      "price_cents": 280,
+      "stores_listing": 8
+    },
+    {
+      "id": "cinnamon-cookie",
+      "category": "sweets",
+      "name_el": "Cinnamon Cookie",
+      "name_en": "Cinnamon Cookie",
+      "description_el": "Με σταφίδες",
+      "price_cents": 280,
+      "stores_listing": 7
+    },
+    {
+      "id": "vanilla-cookie",
+      "category": "sweets",
+      "name_el": "Vanilla Cookie",
+      "name_en": "Vanilla Cookie",
+      "description_el": null,
+      "price_cents": 280,
+      "stores_listing": 9
+    },
+    {
+      "id": "soft-cookie-red-velvet-white-chocolate",
+      "category": "sweets",
+      "name_el": "Soft Cookie Red Velvet White Chocolate",
+      "name_en": "Soft Cookie Red Velvet White Chocolate",
+      "description_el": null,
+      "price_cents": 320,
+      "stores_listing": 1
+    },
+    {
+      "id": "banana-bread",
+      "category": "sweets",
+      "name_el": "Banana Bread",
+      "name_en": "Banana Bread",
+      "description_el": null,
+      "price_cents": 350,
+      "stores_listing": 9
+    },
+    {
+      "id": "carrot-cake",
+      "category": "sweets",
+      "name_el": "Carrot Cake",
+      "name_en": "Carrot Cake",
+      "description_el": null,
+      "price_cents": 350,
+      "stores_listing": 9
+    },
+    {
+      "id": "lemon-cake",
+      "category": "sweets",
+      "name_el": "Lemon Cake",
+      "name_en": "Lemon Cake",
+      "description_el": null,
+      "price_cents": 350,
+      "stores_listing": 9
+    },
+    {
+      "id": "brownies-pecan",
+      "category": "sweets",
+      "name_el": "Brownies Pecan",
+      "name_en": "Brownies Pecan",
+      "description_el": "Brownie με πλούσια γεύση σοκολάτας και πεκάν",
+      "price_cents": 400,
+      "stores_listing": 8
+    },
+    {
+      "id": "basque-cheesecake",
+      "category": "sweets",
+      "name_el": "Basque Cheesecake",
+      "name_en": "Basque Cheesecake",
+      "description_el": "Βάσκικο καμένο cheesecake με πλούσια κρέμα τυριού και άρωμα βανίλιας",
+      "price_cents": 480,
+      "stores_listing": 7
+    },
+    {
+      "id": "tart-flan-vanilla",
+      "category": "sweets",
+      "name_el": "Tart Flan Vanilla",
+      "name_en": "Tart Flan Vanilla",
+      "description_el": "Γαλλική γαλατόπιτα με ψημένη κρέμα βανίλια Μαγαδασκάρης σε τραγανή βάση τάρτας",
+      "price_cents": 480,
+      "stores_listing": 9
+    },
+    {
+      "id": "lemon-pie",
+      "category": "sweets",
+      "name_el": "Lemon Pie",
+      "name_en": "Lemon Pie",
+      "description_el": "Τάρτα λεμόνι με blueberries και άρωμα lime",
+      "price_cents": 500,
+      "stores_listing": 10
+    },
+    {
+      "id": "mini-rolls-box-savoury",
+      "category": "boxes",
+      "name_el": "The Mini Rolls Box Savory",
+      "name_en": "The Mini Rolls Box Savory",
+      "description_el": "Επίλεξε την ποσότητα που επιθυμείς. Με cheese pie, ham & cheese, sausage pie και pizza pepperoni",
+      "price_cents": 1000,
+      "stores_listing": 7
+    },
+    {
+      "id": "mini-rolls-box-sweet",
+      "category": "boxes",
+      "name_el": "The Mini Rolls Box Sweet",
+      "name_en": "The Mini Rolls Box Sweet",
+      "description_el": "Επίλεξε την ποσότητα που επιθυμείς. Με croissant αμυγδάλου, praline, φυστίκι και καραμέλα",
+      "price_cents": 1000,
+      "stores_listing": 5
+    },
+    {
+      "id": "overoll-croissant-box",
+      "category": "boxes",
+      "name_el": "Overoll Croissant Box",
+      "name_en": "Overoll Croissant Box",
+      "description_el": "Περιλαμβάνει 4 croissant",
+      "price_cents": 1400,
+      "stores_listing": 7
+    },
+    {
+      "id": "mini-rolls-mix-16",
+      "category": "boxes",
+      "name_el": "The Double Mini Rolls Mix Box",
+      "name_en": "The Double Mini Rolls Mix Box",
+      "description_el": "Επίλεξε την ποσότητα που επιθυμείς. Με praline, αμυγδάλου, φυστίκι, καραμέλα, cheese pie, spinach pie, sausage pie και ham and cheese",
+      "price_cents": 1800,
+      "stores_listing": 7
+    },
+    {
+      "id": "mini-rolls-savoury-16",
+      "category": "boxes",
+      "name_el": "The Double Mini Rolls Savoury 16 Τεμαχιών",
+      "name_en": "Double Mini Rolls Savoury, 16 pcs",
+      "description_el": "16 τεμάχια mini croissant. Με 4 cheese pie, 4 pizza pepperoni, 4 sausage pie, 4 ham cheese",
+      "price_cents": 1800,
+      "stores_listing": 7
+    },
+    {
+      "id": "mini-rolls-sweet-16",
+      "category": "boxes",
+      "name_el": "The Double Mini Rolls Sweet 16 Τεμαχιών",
+      "name_en": "Double Mini Rolls Sweet, 16 pcs",
+      "description_el": "16 τεμάχια mini croissant. Με 4 αμυγδάλου, 4 praline, 4 φυστίκι, 4 καραμέλα",
+      "price_cents": 1800,
+      "stores_listing": 7
+    },
+    {
+      "id": "mini-rolls-sweet-24",
+      "category": "boxes",
+      "name_el": "The Double Mini Rolls Box 24 Τεμαχίων",
+      "name_en": "Double Mini Rolls Box, 24 pcs",
+      "description_el": "24 τεμάχια mini rolls 6 praline, 6 αμυγδάλου, 6 φυστίκι, 6 καραμέλα",
+      "price_cents": 2700,
+      "stores_listing": 6
+    },
+    {
+      "id": "mini-rolls-savoury-24",
+      "category": "boxes",
+      "name_el": "The Double Mini Rolls Savory Box 24 Τεμαχίων",
+      "name_en": "Double Mini Rolls Savoury Box, 24 pcs",
+      "description_el": "24 τεμάχια mini savory rolls. Με 6 cheese pie, 6 spinach pie, 6 sausage pie και 6 ham and cheese",
+      "price_cents": 2700,
+      "stores_listing": 6
+    },
+    {
+      "id": "perfect-combo",
+      "category": "combos",
+      "name_el": "The Perfect Combo 2: 1 Καφές της Επιλογής σου + 1 Κρουασάν Βουτύρου",
+      "name_en": "Perfect Combo: any coffee + butter croissant",
+      "description_el": null,
+      "price_cents": 440,
+      "stores_listing": 1
+    },
+    {
+      "id": "daily-habit",
+      "category": "combos",
+      "name_el": "Daily Habit",
+      "name_en": "Daily Habit",
+      "description_el": "Επίλεξε 1 croissant και 1 καφέ",
+      "price_cents": 610,
+      "stores_listing": 8
+    },
+    {
+      "id": "daily-break",
+      "category": "combos",
+      "name_el": "Daily Break",
+      "name_en": "Daily Break",
+      "description_el": "Επίλεξε 1 sandwich και 1 καφέ",
+      "price_cents": 780,
+      "stores_listing": 4
+    },
+    {
+      "id": "scramble-egg-orange-juice",
+      "category": "combos",
+      "name_el": "1 Croissant Scrambled Eggs + 1 Φυσικό Χυμό Πορτοκάλι -15%",
+      "name_en": "Scrambled egg croissant + fresh orange juice",
+      "description_el": "Το brunch που θα λατρέψεις. Βουτυρένιο κρουασάν με scrambled eggs, μπέικον και σχοινόπρασο, μαζί με φρεσκοστυμμένο χυμό πορτοκάλι",
+      "price_cents": 790,
+      "stores_listing": 2
+    },
+    {
+      "id": "combo-for-2",
+      "category": "combos",
+      "name_el": "Combo for 2",
+      "name_en": "Combo for 2",
+      "description_el": "Περιλαμβάνει 2 κρουασάν της επιλογής σου και 2 καφέδες της επιλογής σου",
+      "price_cents": 1000,
+      "stores_listing": 7
+    },
+    {
+      "id": "lunch-combo-for-2",
+      "category": "combos",
+      "name_el": "Lunch Combo for 2",
+      "name_en": "Lunch Combo for 2",
+      "description_el": "Επίλεξε 2 sandwich και 2 καφέδες",
+      "price_cents": 1560,
+      "stores_listing": 4
+    },
+    {
+      "id": "pralina-amygdalou",
+      "category": "spreads",
+      "name_el": "Πραλίνα Αμυγδάλου",
+      "name_en": "Almond praline spread",
+      "description_el": null,
+      "price_cents": 770,
+      "stores_listing": 2
+    }
+  ]
+}

@@ -8,11 +8,12 @@ All numbers live in `packages/core/src/config.ts` and can be changed by HQ later
 | Topic | Decision |
 | --- | --- |
 | Name | **Overoll Club** (working name; final name before launch, it is a setting) |
-| Stores | 11–20 stores, Greece and Cyprus. One program, same rules everywhere, decided by HQ |
+| Stores | 10 confirmed so far (9 Athens, 1 Thessaloniki, `data/stores.json`); Overoll says 11–20, Nicosia to confirm. One program, same rules everywhere, decided by HQ |
 | Average spend | €5–8 per visit |
 | POS | Unknown. Version 1 does **not** integrate with the POS: staff type the receipt total on the staff console |
 | Delivery orders | Not decided. Built behind a switch, **off at launch**; decide after the pilot |
-| Existing customers | Overoll's email newsletter list gets an invitation at launch |
+| Existing customers | Overoll's newsletter list is a marketing task for later, not part of the launch |
+| Pilot store | **Chalandri** (Κατσουλιέρη 10): a neighbourhood store with regulars and calmer mornings than Praxitelous, so staff learn the flow without a queue |
 | App store accounts | Published under GROW's Apple Developer and Google Play accounts (see risk in §10) |
 | Deadline | All stores live by the week of **4 January 2027** |
 | Reward cost | Carried by the store where the reward is redeemed; monthly report per store |
@@ -33,7 +34,7 @@ All numbers live in `packages/core/src/config.ts` and can be changed by HQ later
 | --- | --- |
 | Base | **10 points per €1** of the receipt total, rounded down |
 | Tier multiplier | Classic ×1.00 · Gold ×1.25 · Club ×1.50 |
-| Welcome reward | Unlocked after the first purchase: a free espresso (or similar, HQ picks) |
+| Welcome reward | Unlocked after the first purchase, once per member: a free butter croissant (proposal, waiting for approval). Does not count towards tiers |
 | Birthday | A free croissant valid during the birthday week (from v1.1, see roadmap) |
 | Referral | +100 points to both, after the friend's first purchase (v1.1) |
 | Streak | 3 visits in 7 days → +50 points (v1.1) |
@@ -52,7 +53,7 @@ Example: €6.40 receipt, Gold member → floor(640 × 10 × 125 / 10 000) = 80 
   - €3.50 croissant → 500 points (≈ €50, about 7–8 visits)
 - Gold pays 20% fewer points, Club 30% fewer (rounded to the nearest 10).
 - Some rewards can be limited to a tier ("Gold and above").
-- HQ sets the final catalog and prices from Overoll's menu.
+- Proposed catalog of 7 rewards (espresso → croissant box) in `docs/menu-and-rewards.md`; prices from Wolt until Overoll confirms in-store prices. HQ has the final say.
 
 ## 5. Tiers
 
@@ -114,10 +115,11 @@ Example: €6.40 receipt, Gold member → floor(640 × 10 × 125 / 10 000) = 80 
 ## 11. Still open
 
 - [ ] Final program name, points name, tier names
-- [ ] Reward catalog with shelf prices (from Overoll's menu)
-- [ ] Welcome reward item
+- [x] Reward catalog proposal (`docs/menu-and-rewards.md`); waiting for approval and in-store prices
+- [x] Welcome reward proposal: free butter croissant; waiting for approval
 - [ ] Delivery orders: on or off after the pilot
-- [ ] Which store runs the pilot
-- [ ] Store list: addresses, hours, coordinates, phone (Greece + Cyprus)
-- [ ] Overoll logo files, colours, fonts (from the website project)
-- [ ] Newsletter list export and the consent text it was collected under
+- [x] Pilot store: Chalandri
+- [x] Store list: 10 stores with address, hours, coordinates, phone (`data/stores.json`); Overoll confirms hours, the Glyfada phone, and whether Nicosia or other stores exist
+- [x] Logo files, colours, fonts from the website project (`docs/brand.md`)
+- [ ] Club tier value back is about 15–16%: HQ to confirm or lower
+- Newsletter list: deferred to marketing, not needed for launch

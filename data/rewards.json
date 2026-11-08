@@ -1,0 +1,87 @@
+{
+  "brand": "overoll",
+  "status": "proposal, waiting for Dimos and Overoll HQ approval",
+  "notes": [
+    "Point costs are not written here: scripts/generate-seed.ts computes them with packages/core rewardBaseCost().",
+    "shelf_price_cents comes from data/menu.json (Wolt prices) and must be checked against in-store prices.",
+    "A 'choose any' reward is priced at the most expensive item it covers."
+  ],
+  "welcome_reward": {
+    "reward": "butter-croissant",
+    "unlocks": "after the first purchase",
+    "limit": "once per member",
+    "counts_toward_tier": false
+  },
+  "rewards": [
+    {
+      "id": "espresso",
+      "category": "coffee",
+      "name_el": "Espresso ή διπλός ελληνικός",
+      "name_en": "Espresso or double Greek coffee",
+      "description_el": "Ένας espresso ή ένας διπλός ελληνικός καφές.",
+      "description_en": "One espresso or one double Greek coffee.",
+      "covers": ["espresso", "ellinikos-kafes-diplos"],
+      "shelf_price_cents": 220
+    },
+    {
+      "id": "any-coffee",
+      "category": "coffee",
+      "name_el": "Καφές της επιλογής σου",
+      "name_en": "Any coffee",
+      "description_el": "Οποιοσδήποτε καφές από τον κατάλογο, ζεστός ή κρύος (εκτός matcha).",
+      "description_en": "Any coffee on the menu, hot or iced (matcha not included).",
+      "covers": ["cappuccino", "flat-white", "freddo-espresso", "freddo-cappuccino", "espresso-macchiato", "cappuccino-latte", "iced-latte", "americano", "kafes-filtrou", "frappe", "nescafe"],
+      "shelf_price_cents": 270
+    },
+    {
+      "id": "butter-croissant",
+      "category": "croissants",
+      "name_el": "Croissant βουτύρου",
+      "name_en": "Butter croissant",
+      "description_el": "Το κλασικό Overoll croissant με γαλλικό βούτυρο 82%.",
+      "description_en": "The classic Overoll croissant with 82% French butter.",
+      "covers": ["croissant-voutyrou"],
+      "shelf_price_cents": 300
+    },
+    {
+      "id": "any-croissant",
+      "category": "croissants",
+      "name_el": "Κρουασάν της επιλογής σου",
+      "name_en": "Croissant of your choice",
+      "description_el": "Γλυκό ή αλμυρό κρουασάν έως €4,00: praline, φιστίκι, αμυγδάλου, φουντουκιού, cheesecake, σοκολάτας, ζαμπόν-τυρί, τυρόπιτα, sausage roll κ.ά.",
+      "description_en": "Any sweet or savoury croissant up to €4.00: praline, pistachio, almond, hazelnut, cheesecake, chocolate, ham & cheese, cheese pie, sausage roll and more.",
+      "covers": ["croissant-praline", "croissant-pistachio", "croissant-amygdalou", "croissant-hazelnut", "croissant-cheesecake", "croissant-sokolatas", "cinnamon-croissant", "pain-aux-raisins", "croissant-ham-cheese", "tyropita", "sausage-roll"],
+      "shelf_price_cents": 400
+    },
+    {
+      "id": "sandwich",
+      "category": "food",
+      "name_el": "Σάντουιτς της επιλογής σου",
+      "name_en": "Sandwich of your choice",
+      "description_el": "Οποιοδήποτε σάντουιτς από τα Sandwiches by Overoll.",
+      "description_en": "Any sandwich from Sandwiches by Overoll.",
+      "covers": ["chicken-parmesan", "focaccia-caprese-di-parma", "avocado-egg-salad-sandwich", "tuna-cucumber", "classic-delight", "mini-brioche-ham-cheese", "mini-brioche-caprese-di-parma"],
+      "shelf_price_cents": 580
+    },
+    {
+      "id": "daily-habit",
+      "category": "combos",
+      "name_el": "Croissant + καφές",
+      "name_en": "Croissant + coffee",
+      "description_el": "Το Daily Habit: ένα κρουασάν και ένας καφές της επιλογής σου.",
+      "description_en": "The Daily Habit: one croissant and one coffee of your choice.",
+      "covers": ["daily-habit"],
+      "shelf_price_cents": 610
+    },
+    {
+      "id": "croissant-box",
+      "category": "boxes",
+      "name_el": "Overoll Croissant Box",
+      "name_en": "Overoll Croissant Box",
+      "description_el": "Κουτί με 4 κρουασάν, για να κεράσεις την παρέα.",
+      "description_en": "A box of 4 croissants to share.",
+      "covers": ["overoll-croissant-box"],
+      "shelf_price_cents": 1400
+    }
+  ]
+}

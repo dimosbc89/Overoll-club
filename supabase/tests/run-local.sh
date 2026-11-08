@@ -28,3 +28,20 @@ for f in "$root"/supabase/migrations/*.sql; do
   $psql_cmd -f "$f"
 done
 $psql_cmd -o /dev/null -f "$here/rls.sql" 2>&1 | sed -E "s/^psql:[^ ]+ NOTICE:  //"
+
+# Seed check: a fresh database gets the migrations and the seed twice
+# (it must be safe to re-run), then the counts must match data/*.json.
+echo "seed: supabase/seed.sql"
+$psql_cmd -c "create database seed_check" >/dev/null
+seed_cmd="env PGOPTIONS=-cclient_min_messages=warning psql -X -q -h $sock -p $port -U postgres -d seed_check -v ON_ERROR_STOP=1"
+$seed_cmd -f "$here/supabase-stub.sql"
+for f in "$root"/supabase/migrations/*.sql; do $seed_cmd -f "$f"; done
+$seed_cmd -f "$root/supabase/seed.sql"
+$seed_cmd -f "$root/supabase/seed.sql"
+want_stores=$(node -e "console.log(require('$root/data/stores.json').stores.length)")
+want_rewards=$(node -e "console.log(require('$root/data/rewards.json').rewards.length)")
+got=$($seed_cmd -At -c "select (select count(*) from public.brands) || ' ' || (select count(*) from public.stores) || ' ' || (select count(*) from public.rewards)")
+if [ "$got" != "1 $want_stores $want_rewards" ]; then
+  echo "SEED CHECK FAILED: brands/stores/rewards = $got, expected 1 $want_stores $want_rewards"; exit 1
+fi
+echo "SEED OK: 1 brand, $want_stores stores, $want_rewards rewards"

@@ -18,7 +18,10 @@ https://claude.ai/artifact/WaTPFf7zJmC1hqVqioeEDC
 | `supabase/functions` | (next) server functions: join, award, redeem, undo, passes. They import `packages/core` |
 | `apps/mobile` | (next) Expo app: iOS, Android **and** the customer web app (Expo web) |
 | `apps/admin` | (next) Next.js back office: HQ admin, store manager, staff console |
-| `docs` | Spec and roadmap |
+| `data` | Source data: stores, menu (Wolt prices), reward catalog. Feeds `supabase/seed.sql` |
+| `scripts` | `generate-seed.ts`: builds `supabase/seed.sql` from `data/` with reward costs from `packages/core` |
+| `assets/brand` | Overoll logos (SVG); colours and fonts in `docs/brand.md` |
+| `docs` | Spec, roadmap, brand, menu and rewards |
 
 ## Rules of the codebase
 
@@ -36,9 +39,10 @@ https://claude.ai/artifact/WaTPFf7zJmC1hqVqioeEDC
 
 ```bash
 npm install            # from repo root
-npm test               # all workspace unit tests (packages/core: vitest)
+npm test               # all workspace unit tests (packages/core: vitest) + seed up to date
 npm run typecheck
-npm run test:db        # database schema + access-rule tests on a local throwaway Postgres
+npm run test:db        # database schema + access-rule tests on a local throwaway Postgres, plus the seed
+npm run seed:generate  # rebuild supabase/seed.sql after changing data/*.json
 ```
 
 ## Workflow

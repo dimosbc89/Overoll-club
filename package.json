@@ -8,11 +8,16 @@
     "packages/*"
   ],
   "scripts": {
-    "test": "npm run test --workspaces --if-present",
-    "typecheck": "npm run typecheck --workspaces --if-present",
-    "test:db": "bash supabase/tests/run-local.sh"
+    "test": "npm run test --workspaces --if-present && npm run seed:check",
+    "typecheck": "npm run typecheck --workspaces --if-present && tsc -p scripts",
+    "test:db": "bash supabase/tests/run-local.sh",
+    "seed:generate": "tsx scripts/generate-seed.ts",
+    "seed:check": "tsx scripts/generate-seed.ts --check"
   },
   "engines": {
     "node": ">=22"
+  },
+  "devDependencies": {
+    "tsx": "^4.23.15"
   }
 }

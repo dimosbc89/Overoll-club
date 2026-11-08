@@ -14,8 +14,14 @@ Legend: **D** = Dimos · **C** = Claude · ☐ open · ☑ done
 - ☐ D: create a Supabase project (EU, Frankfurt) and invite Claude's workflow (share keys via `.env`, never in git)
 - ☐ D: Apple Developer (GROW account): create Pass Type ID `pass.online.growagency.overoll`
 - ☐ D: Google Pay & Wallet Console: apply for an issuer account (approval can take days)
-- ☐ D: from Overoll: logo files, colours, fonts, store list (addresses, hours, phones), menu with prices, newsletter export
-- ☐ D: written authorization from Overoll to publish the apps under GROW's accounts
+- ☑ C: brand (logos, colours, fonts) from the website project → `docs/brand.md`, `assets/brand/`
+- ☑ C: store list (10 stores) from the website + Wolt → `data/stores.json`
+- ☑ C: menu with prices from Wolt + reward catalog proposal → `docs/menu-and-rewards.md`, `supabase/seed.sql`
+- ☑ C: pilot store chosen: **Chalandri** (Κατσουλιέρη 10)
+- ☑ C: authorization letter drafted (Greek + English)
+- ☐ D: Overoll fills in and signs the authorization letter
+- ☐ D: Overoll confirms: in-store prices, opening hours, Glyfada phone, any stores we missed (Nicosia?)
+- ☐ D: approve the reward catalog and the welcome reward (free butter croissant)
 - ☐ C: design drafts: join flow, member card, rewards, staff console, HQ dashboard
 
 ## Week 2 · 16–22 Nov · Join flow + card + Wallet
@@ -39,11 +45,11 @@ Legend: **D** = Dimos · **C** = Claude · ☐ open · ☑ done
 - ☐ C: store manager view: own store numbers and transactions, monthly redemption report
 - ☐ C: send a message to members (push + Wallet), manual for now
 - ☐ C: print files: counter QR stand per store, cup/bag sticker
-- ☐ D: end-to-end test with 5 friends; pick the pilot store; print the pilot materials
+- ☐ D: end-to-end test with 5 friends; print the pilot materials for Chalandri
 
 ## Week 5 · 7–13 Dec · Pilot (1 store)
 
-- ☐ D: train pilot staff (15 minutes), go live in the pilot store
+- ☐ D: train Chalandri staff (15 minutes), go live in the pilot store
 - ☐ C: daily check of errors and numbers; fixes within 24 h
 - ☐ C: welcome reward + launch double points switched on
 
@@ -51,7 +57,6 @@ Legend: **D** = Dimos · **C** = Claude · ☐ open · ☑ done
 
 - ☐ C: fixes from pilot
 - ☐ C: build and submit iOS and Android apps (**by 14 Dec**, reviews slow down 20–26 Dec)
-- ☐ C: invitation email to the newsletter list (ready, not sent)
 - ☐ D: staff training card + video for all stores; print QR stands for every store
 
 ## 21 Dec – 3 Jan · Holiday freeze
@@ -61,7 +66,7 @@ Legend: **D** = Dimos · **C** = Claude · ☐ open · ☑ done
 
 ## Week of 4 Jan · Network launch
 
-- ☐ D + C: switch on all stores, send the newsletter invitation, Instagram launch posts, Meta ads around each store
+- ☐ D + C: switch on all stores, Instagram launch posts, Meta ads around each store
 - ☐ C: daily monitoring for 2 weeks
 
 ## After launch (January–February)
@@ -69,4 +74,5 @@ Legend: **D** = Dimos · **C** = Claude · ☐ open · ☑ done
 - Native apps live (if not already)
 - Birthday, referral, streak, quiet-hour bonuses; win-back automation
 - Delivery codes decision; POS discovery for integration
+- Newsletter invitation to Overoll's existing list (marketing, later)
 - Phase 2 list in the plan doc

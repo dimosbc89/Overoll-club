@@ -21,4 +21,5 @@ nvm use            # Node 22
 npm install
 npm test           # rules engine tests
 npm run test:db    # database tests (needs a local PostgreSQL 15+ install)
+npm run seed:generate  # rebuild supabase/seed.sql from data/*.json
 ```
