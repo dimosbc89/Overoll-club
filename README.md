@@ -24,6 +24,8 @@ Week 1 foundation: program rules engine (`packages/core`, 32 tests), database sc
 | Seed | `supabase/seed.sql`, applied 9 Nov 2026 (1 brand, 10 stores, 7 rewards) |
 | Apple | GROW AGENCY L.P., team `JUVGRB24Q6`; Pass Type ID `pass.online.growagency.overoll` |
 | Google Pay & Wallet Console | GROW Agency, merchant `BCR2DN6DWL3NFGYM` (ads@growdigital.gr) |
+| Google Wallet API | issuer `3388000000023239253`, demo mode; loyalty class `3388000000023239253.overoll_club` |
+| Brand images (public) | Supabase Storage bucket `brand`, e.g. `…/storage/v1/object/public/brand/overoll/wallet-program-logo.png` |
 
 Variable names are in `.env.example`; values never go in git.
 

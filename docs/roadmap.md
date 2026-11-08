@@ -16,8 +16,11 @@ Legend: **D** = Dimos · **C** = Claude · ☐ open · ☑ done
 - ☑ C: Apple Developer (GROW AGENCY L.P., team `JUVGRB24Q6`): Pass Type ID `pass.online.growagency.overoll` registered
 - ☐ C + D: Pass Type ID certificate (week 2, with the Wallet card)
 - ☑ D: Google Pay & Wallet Console business profile for GROW Agency (merchant `BCR2DN6DWL3NFGYM`, account ads@growdigital.gr)
-- ☐ D: accept the Google Wallet API terms in the console ("Build your first pass"), then C builds the demo loyalty pass and requests publishing access
-- ☐ D: complete the Google business profile (legal name, address) and add a second admin, as the console asks
+- ☑ D: Google Wallet API terms accepted: issuer `3388000000023239253` (demo mode)
+- ☑ C: demo loyalty class `overoll_club` (logo, Overoll pink) created: step 1 of 3 for publishing access
+- ☐ C: request publishing access as soon as the business profile is approved (step 3 of 3)
+- ☐ C + D: Google Cloud service account with the Wallet API, registered in the console (week 2, for creating passes from our server)
+- ☐ D: complete the Google business profile (legal name, address) so Google can approve it (step 2 of 3), and add a second admin
 - ☑ C: brand (logos, colours, fonts) from the website project → `docs/brand.md`, `assets/brand/`
 - ☑ C: store list (10 stores) from the website + Wolt → `data/stores.json`
 - ☑ C: menu with prices from Wolt + reward catalog proposal → `docs/menu-and-rewards.md`, `supabase/seed.sql`

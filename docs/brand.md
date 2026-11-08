@@ -9,6 +9,7 @@ Taken from the Overoll website we built (`dimosbc89/overoll-croissanterie`: `pub
 | `assets/brand/overoll-logo.svg` | Full logo: splash screen, Wallet pass logo, store listing |
 | `assets/brand/overoll-wordmark.svg` | Wordmark only: app header, emails, staff console |
 | `assets/brand/overoll-favicon.svg` | Mark: app icon source, favicon, push notification icon |
+| `assets/brand/wallet-program-logo.png` | 660×660 PNG, pink logo on cocoa: Google Wallet programme logo (circle-cropped). Hosted in the Supabase `brand` bucket |
 
 The files carry an embedded content-credentials (C2PA) block. Keep it in the source files; the build can strip it from the copies it ships to save size. App icons need a square PNG export with padding (1024×1024 for iOS, adaptive icon for Android), made from the mark.
 
