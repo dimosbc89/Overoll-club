@@ -13,8 +13,11 @@ Legend: **D** = Dimos · **C** = Claude · ☐ open · ☑ done
 - ☑ C: points engine with tests (`packages/core`)
 - ☑ C: Supabase project `overoll-club` (GROW Agency org, Frankfurt, free plan): schema + seed applied, security advisor clean
 - ☐ D: upgrade the GROW Agency Supabase org to Pro (about $25/month) before the pilot on 7 Dec: free projects pause after a week without traffic and have no daily backups
-- ☐ D: Apple Developer (GROW account): create Pass Type ID `pass.online.growagency.overoll`
-- ☐ D: Google Pay & Wallet Console: apply for an issuer account (approval can take days)
+- ☑ C: Apple Developer (GROW AGENCY L.P., team `JUVGRB24Q6`): Pass Type ID `pass.online.growagency.overoll` registered
+- ☐ C + D: Pass Type ID certificate (week 2, with the Wallet card)
+- ☑ D: Google Pay & Wallet Console business profile for GROW Agency (merchant `BCR2DN6DWL3NFGYM`, account ads@growdigital.gr)
+- ☐ D: accept the Google Wallet API terms in the console ("Build your first pass"), then C builds the demo loyalty pass and requests publishing access
+- ☐ D: complete the Google business profile (legal name, address) and add a second admin, as the console asks
 - ☑ C: brand (logos, colours, fonts) from the website project → `docs/brand.md`, `assets/brand/`
 - ☑ C: store list (10 stores) from the website + Wolt → `data/stores.json`
 - ☑ C: menu with prices from Wolt + reward catalog proposal → `docs/menu-and-rewards.md`, `supabase/seed.sql`

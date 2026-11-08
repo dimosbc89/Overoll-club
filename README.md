@@ -22,6 +22,8 @@ Week 1 foundation: program rules engine (`packages/core`, 32 tests), database sc
 | API URL | https://lwhxqnmntihmavqngeca.supabase.co |
 | Migrations | `supabase/migrations`; file names match the versions applied to the project |
 | Seed | `supabase/seed.sql`, applied 9 Nov 2026 (1 brand, 10 stores, 7 rewards) |
+| Apple | GROW AGENCY L.P., team `JUVGRB24Q6`; Pass Type ID `pass.online.growagency.overoll` |
+| Google Pay & Wallet Console | GROW Agency, merchant `BCR2DN6DWL3NFGYM` (ads@growdigital.gr) |
 
 Variable names are in `.env.example`; values never go in git.
 
