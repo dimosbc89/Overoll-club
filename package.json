@@ -1,0 +1,18 @@
+{
+  "name": "overoll-club",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Overoll Club loyalty platform: apps, wallet passes, web app and back office",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "test": "npm run test --workspaces --if-present",
+    "typecheck": "npm run typecheck --workspaces --if-present",
+    "test:db": "bash supabase/tests/run-local.sh"
+  },
+  "engines": {
+    "node": ">=22"
+  }
+}
