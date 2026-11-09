@@ -774,5 +774,11 @@ The owner asked for something "more social". **Overoll Club stays the default** 
 - PIN: once per shift; the console locks after 5 idle minutes.
 - Receipt over €80: the cashier enters €80; points up to the limit.
 - Minimum age: 15.
-- Still open (for Overoll): support email and legal entity name, double points in the pilot, rejoining after deleting an account, consent for service pushes, points on an already-paid order, renaming the Club tier.
+- Support email: `club-support@growagency.online` for testing.
+- Rejoining after deleting an account: yes, as a new member.
+- Club tier: keeps the name for now.
+- Service notifications need no marketing consent; offers need the consent.
+- Points after paying: only at the till; the store manager can add missed points with a reason.
+- Double points: launch weeks only (4–17 Jan 2027), not in the pilot.
+- Still open (for Overoll): legal entity name.
 
