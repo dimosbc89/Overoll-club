@@ -43,8 +43,11 @@ Legend: **D** = Dimos · **C** = Claude · ☐ open · ☑ done
 - ☑ C: copy deck v0.1 el/en (`docs/copy-deck.md`, `data/copy/errors.*.json`)
 - ☑ D: copy deck questions answered: welcome gift 30 days, PIN once per shift, €80 cap, age 15+ (rules in `packages/core` config)
 - ☐ D: review the copy deck text itself; Overoll answers the rest (legal name)
-- ☐ C: welcome gift in the database and `awardPoints` (unlock on first purchase, redeem with a code, expire after 30 days)
-- ☐ C: late points for a forgotten card (same day, same store, receipt number used once)
+- ☑ C: welcome gift in the database and `awardPoints` (unlock on first purchase, redeem with a code, expire after 30 days)
+- ☑ C: late points for a forgotten card (same day, same store, receipt number used once)
+- ☑ C: API v0.2 server side (`docs/api-contract.md`): staff PIN check (`staff/verify-pin`) with lockout after 5 wrong PINs in every PIN check, points expiry job (`jobs/expire-points`); 4 migrations, not yet applied to Supabase
+- ☐ C + D: apply the 4 v0.2 migrations and the seed (sets the welcome reward) to Supabase; schedule `jobs/expire-redemptions` (every minute) and `jobs/expire-points` (daily)
+- ☐ D: approve the new error texts (`pin_locked`, `receipt_already_used`, `gift_*`) in the copy deck §f2
 - ☐ D: the Overoll design system mentions stores at the airport and in Nicosia: confirm with Overoll and add them to `data/stores.json`
 - ☑ C: screen designs v0.1 (member app, till console, landing page, Wallet passes) on the design canvas; Figma copy for the designer
 
@@ -60,7 +63,7 @@ Legend: **D** = Dimos · **C** = Claude · ☐ open · ☑ done
 
 - ☐ C: staff console: device login, employee PIN, scan, award by amount, undo
 - ☐ C: rewards catalog, redemption codes, scan to redeem
-- ☐ C: tiers, expiry job, fraud limits
+- ☐ C: tiers (annual review), fraud alerts (expiry job and PIN lockout done in week 1)
 - ☐ D: test the full loop: join → scan → points → reward → redeem
 
 ## Week 4 · 30 Nov – 6 Dec · Back office + test
@@ -75,7 +78,7 @@ Legend: **D** = Dimos · **C** = Claude · ☐ open · ☑ done
 
 - ☐ D: train Chalandri staff (15 minutes), go live in the pilot store
 - ☐ C: daily check of errors and numbers; fixes within 24 h
-- ☐ C: welcome reward switched on (no double points: decided 9 Nov)
+- ☐ C: welcome reward switched on (no double points: decided 9 Nov). The switch is `brands.config.welcome.rewardId`, which the seed sets
 
 ## Week 6 · 14–20 Dec · Fixes + apps to the stores
 

@@ -11,11 +11,13 @@ import {
   awardPoints,
   cancelRedemption,
   createRedemption,
+  expirePoints,
   expireRedemptions,
   joinMember,
   resolveMemberToken,
   undoEarn,
   useRedemption,
+  verifyEmployeePin,
 } from '@overoll/server';
 
 export interface HandlerDeps {
@@ -37,6 +39,9 @@ interface Route {
 }
 
 const asUser = (userId: string | null): string => userId ?? '';
+/** Jobs take only an optional positive whole `batchSize`; anything else uses the default. */
+const batchOption = (b: Body): { batchSize?: number } =>
+  typeof b.batchSize === 'number' && Number.isInteger(b.batchSize) && b.batchSize > 0 ? { batchSize: b.batchSize } : {};
 
 // Inputs are validated inside each operation; the casts only satisfy TypeScript.
 /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -57,10 +62,17 @@ export const routes: Readonly<Record<string, Route>> = {
     auth: 'user',
     run: (sql, uid, b) => useRedemption(sql, { ...(b as any), callerUserId: asUser(uid) }),
   },
+  'staff/verify-pin': {
+    auth: 'user',
+    run: (sql, uid, b) => verifyEmployeePin(sql, { ...(b as any), callerUserId: asUser(uid) }),
+  },
   'jobs/expire-redemptions': {
     auth: 'service',
-    run: (sql, _uid, b) =>
-      expireRedemptions(sql, typeof b.batchSize === 'number' ? { batchSize: b.batchSize } : {}),
+    run: (sql, _uid, b) => expireRedemptions(sql, batchOption(b)),
+  },
+  'jobs/expire-points': {
+    auth: 'service',
+    run: (sql, _uid, b) => expirePoints(sql, batchOption(b)),
   },
 };
 /* eslint-enable @typescript-eslint/no-explicit-any */

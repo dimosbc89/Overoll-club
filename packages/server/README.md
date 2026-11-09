@@ -1,6 +1,6 @@
 # @overoll/server
 
-The operations that move points: join, scan, award, undo, redeem, cancel, use and expire codes. They will be wrapped as Supabase Edge Functions; this package holds the logic and its tests.
+The operations that move points: join, scan, award, undo, redeem, cancel, use and expire codes, check a cashier's PIN, expire points. `packages/api` serves them over HTTP (Supabase Edge Function `api`); this package holds the logic and its tests.
 
 - The operations run with the **service role** (row-level security bypassed), so each one checks the caller's rights itself against `public.staff_roles` and `public.members.user_id`.
 - Every number and calculation comes from `@overoll/core`, using the brand's config (`brands.config` over `defaultConfig`, via core `resolveConfig`).
@@ -27,12 +27,14 @@ Each one is `fn(sql, input)` and returns `{ ok: true, ... }` or `{ ok: false, co
 | --- | --- | --- | --- | --- |
 | `joinMember` | the signed-in user | `userId, brandSlug, firstName`, optional `lastName, email, phone, birthday, locale, joinedStoreCode, consents {email, sms, push}, referralCode`, `idempotencyKey` | `memberId, memberCode, firstName, tier, locale, created` (false = already a member) | `brand_not_found, store_not_found, referral_not_found, email_taken, phone_taken, member_deleted` |
 | `resolveMemberToken` | device or manager of the store, HQ, platform | `callerUserId, storeId, token` | `memberId, memberCode, firstName, tier, balance` | `forbidden, invalid_token, expired_token, old_pass, member_not_found` |
-| `awardPoints` | device or manager of the store | `callerUserId, storeId, employeeId, pin, member {memberId} or {token}, amountCents, idempotencyKey` | `entryId, memberId, points, balance, tier, tierChanged` | `forbidden, store_inactive, employee_not_found, bad_pin, amount_not_integer, amount_not_positive, amount_over_limit, amount_too_small, too_soon_after_last_earn, daily_earn_limit_reached`, and the token errors |
-| `undoEarn` | device of the store (within 10 min, with PIN), store manager, HQ, platform | `callerUserId, entryId, employee? {employeeId, pin}, idempotencyKey` | `entryId, reversedEntryId, memberId, points, balance` | `forbidden, not_found, not_undoable, already_undone, undo_window_passed, employee_required, employee_not_found, bad_pin` |
-| `createRedemption` | the member | `callerUserId, memberId, rewardId, idempotencyKey` | `redemptionId, code, rewardId, pointsSpent, expiresAt, balance` | `forbidden, member_not_found, reward_not_found, reward_unavailable, tier_too_low, insufficient_points` |
-| `cancelRedemption` | the member | `callerUserId, redemptionId, idempotencyKey` | `redemptionId, pointsRefunded, balance` | `forbidden, not_found, already_used, cancelled, expired` |
-| `useRedemption` | device or manager of the store | `callerUserId, storeId, employeeId, pin, code, idempotencyKey` | `redemptionId, memberId, memberFirstName, rewardId, rewardNameEl, rewardNameEn, pointsSpent, usedAt` | `forbidden, store_inactive, employee_not_found, bad_pin, not_found, expired, already_used, cancelled` |
-| `expireRedemptions` | job (all brands) | `now?, batchSize?` | `expired, redemptionIds` | none |
+| `awardPoints` | device or manager of the store | `callerUserId, storeId, employeeId, pin, member {memberId} or {token}, amountCents`, optional `receiptNumber` (late points), `idempotencyKey` | `entryId, memberId, points, balance, tier, tierChanged, welcomeGiftUnlocked` | `forbidden, store_inactive, employee_not_found, bad_pin, pin_locked, amount_not_integer, amount_not_positive, amount_over_limit, amount_too_small, receipt_already_used, too_soon_after_last_earn, daily_earn_limit_reached`, and the token errors |
+| `undoEarn` | device of the store (within 10 min, with PIN), store manager, HQ, platform | `callerUserId, entryId, employee? {employeeId, pin}, idempotencyKey` | `entryId, reversedEntryId, memberId, points, balance` | `forbidden, not_found, not_undoable, already_undone, undo_window_passed, employee_required, employee_not_found, bad_pin, pin_locked` |
+| `createRedemption` | the member | `callerUserId, memberId`, `rewardId` **or** `giftId`, `idempotencyKey` | `redemptionId, code, rewardId, pointsSpent` (0 for a gift)`, expiresAt, balance` | `forbidden, member_not_found, reward_not_found, reward_unavailable, tier_too_low, insufficient_points, gift_not_found, gift_used, gift_expired` |
+| `cancelRedemption` | the member | `callerUserId, redemptionId, idempotencyKey` | `redemptionId, pointsRefunded` (0 for a gift: the gift comes back)`, balance` | `forbidden, not_found, already_used, cancelled, expired` |
+| `useRedemption` | device or manager of the store | `callerUserId, storeId, employeeId, pin, code, idempotencyKey` | `redemptionId, memberId, memberFirstName, rewardId, rewardNameEl, rewardNameEn, pointsSpent, usedAt` | `forbidden, store_inactive, employee_not_found, bad_pin, pin_locked, not_found, expired, already_used, cancelled` |
+| `verifyEmployeePin` | device or manager of the store | `callerUserId, storeId, employeeId, pin` (no idempotency key: moves nothing) | `employee {id, displayName}` | `forbidden, employee_not_found, bad_pin, pin_locked` |
+| `expireRedemptions` | job, every minute (all brands) | `now?, batchSize?` | `expired, redemptionIds, giftsExpired, giftIds` | none |
+| `expirePoints` | job, daily (all brands) | `now?, batchSize?` | `expired, memberIds, pointsExpired` | none |
 
 `ErrorCode` is the union of every code; each operation also exports its own (`AwardPointsError`, ...).
 
@@ -40,7 +42,9 @@ Each one is `fn(sql, input)` and returns `{ ok: true, ... }` or `{ ok: false, co
 
 - **One transaction** (`sql.begin`). The member row is locked (`select ... for update`) before limits or balances are checked, so concurrent calls for one member run one after the other.
 - **Idempotency.** The key is locked for the transaction, then looked up in `private.idempotency_keys`. A stored result is returned unchanged, even if a fresh call would now fail (for example a retry after the undo window). A successful result is stored with its writes. Failures are not stored: they wrote nothing. Ledger entries get `<operation>:<key>` as their `idempotency_key`.
-- **Audit.** Every successful write adds an `audit_log` row (`member.join`, `points.award`, `points.undo`, `redemption.create|cancel|use|expire`). `resolveMemberToken` only reads and writes nothing.
+- **Audit.** Every successful write adds an `audit_log` row (`member.join`, `points.award`, `points.undo`, `points.expire`, `redemption.create|cancel|use|expire`, `gift.unlock|expire`, `employee.pin_lock`). `resolveMemberToken` only reads and writes nothing.
+- **Writes on a failure.** Two failures still write, and the transaction commits because the failure is returned, not thrown: a wrong PIN (`bad_pin` / `pin_locked`, stored for the lockout) and a gift found past its expiry (`gift_expired`, marked expired).
+- **Lock order.** Employee PIN lock → idempotency key → member → gift / receipt. Every operation takes them in this order, so concurrent calls never deadlock.
 - **Errors.** Expected business failures are returned. Bugs and infrastructure problems throw, including an invalid `brands.config` (`InvalidConfigError`).
 
 ## Decisions
@@ -52,6 +56,33 @@ Each one is `fn(sql, input)` and returns `{ ok: true, ... }` or `{ ok: false, co
 - Undo never lowers the tier (only the annual review does), and it leaves `last_purchase_at` as it is.
 - A pending code past its expiry can't be used (`expired`); the job marks it expired and returns the points.
 
+### Welcome gift (v0.2)
+
+- **Which reward:** `brands.config.welcome.rewardId` (core config, a UUID). Explicit, no guessing by price or name; without it the brand has no welcome gift (that is the on/off switch). The seed sets it to the reward named in `data/rewards.json` → `welcome_reward.reward` (the butter croissant, `md5('overoll:reward:butter-croissant')`). A `rewardId` that is not one of the brand's rewards throws `InvalidConfigError` at the first earn, like any other bad config. The reward's `active` flag doesn't matter: the gift was promised.
+- **When:** the member's first earn ever unlocks it (`welcomeGiftUnlocked: true`). Only that one: a member whose first earn came before the gift was switched on never gets one. One `member_gifts` row per member and kind, ever (unique index); undoing the unlocking earn **keeps the gift**. Decided this way because an undo is usually a typo fix followed by the right amount, and taking the gift back would need a rule for a gift already redeemed. A member who deletes their account and joins again is a new member and gets a new gift (follows the rejoining decision).
+- **Redeeming:** `createRedemption` with `giftId`: the caller's own gift (else `gift_not_found`), `available` (else `gift_used`, also while a code is pending) and before `expires_at` (else `gift_expired`). The code is a normal 15-minute code with `points_spent = 0`, `gift_id` set and no ledger entry; the gift becomes `redeemed`. Used: stays `redeemed`. Cancelled or expired unused: back to `available`, or `expired` if the gift's own 30 days are over. A code made in time works for its 15 minutes even past the gift's expiry.
+- **Expiry:** an `available` gift past `expires_at` counts as expired at once (core `giftStatusAt`, also for apps reading `member_gifts`); `createRedemption` marks it, and `expireRedemptions` marks the rest every minute.
+
+### Late points (v0.2)
+
+- `receiptNumber` is normalised by core `normalizeReceiptNumber` (trim, upper case, accents off, Greek capitals that look Latin → Latin, so `Α-12` and `a-12` are the same receipt) and stored on the earn (`ledger_entries.receipt_number`).
+- One receipt earns once per **store** per **calendar day in the brand's time zone** (core `receiptUsedToday`), for any member. An earn that was undone frees the receipt, so a wrong amount can be fixed. All other limits still apply. That the receipt is from today and this store is the cashier's check (the server can't see the receipt).
+- Race-safe without a unique index (the ledger is append-only, so an undone earn would block it forever): an advisory lock on store + day + receipt, taken after the member lock, then a lookup.
+
+### Staff PIN lockout (v0.2)
+
+- Every PIN check (`awardPoints`, `undoEarn` with an employee, `useRedemption`, `verifyEmployeePin`) goes through one function. Wrong PINs are stored in `private.employee_pin_failures`; the `limits.pinMaxAttempts`th (5) within `limits.pinLockMinutes` (15) locks that employee for `limits.pinLockMinutes` from that moment and already answers `pin_locked`. Sliding window (core `staff-pin.ts`).
+- While locked, PINs aren't checked, counted or extending the lock. After a lock, counting starts from zero.
+- **The right PIN clears the count** (deliberate refinement of "5 wrong within 15 minutes": a cashier who mistypes now and then over a shift is never locked out; a guesser never types the right PIN, so it changes nothing for them).
+- The lock is per employee, across all devices. A lock adds an `employee.pin_lock` audit row for HQ. A manager or HQ can still undo without a PIN.
+
+### Points expiry (v0.2)
+
+- Points expire `expiryMonths` after the last purchase (core `pointsExpireAt`, calendar months, month ends clamped). A member who never bought anything counts from joining (`created_at`). One `expire` entry takes the whole positive balance off.
+- Idempotent per member and expiry date: ledger key `expire_points:<member id>:<expiry time>`. Points added afterwards without a purchase (an HQ adjustment) are not expired again until a new purchase has also lapsed.
+- A member with a pending points code is skipped that run (the code resolves within 15 minutes; otherwise a refund after the expiry would bring points back). Gift codes don't block.
+- Deleted members are included: their balance expires like anyone's, which keeps the outstanding-points total honest.
+
 ## Tests
 
 ```bash
@@ -62,9 +93,8 @@ npm test -w @overoll/server   # or `npm test` from the repo root
 
 ## TODO (not in this package yet)
 
-- Points expiry job: 12 months after the last purchase (core `pointsExpireAt`), plus the 30/7-day reminders.
-- Welcome croissant after the first purchase.
+- Expiry reminders 30 and 7 days before (core `expiryReminderDue`); needs the notification channel.
+- Scheduling: call `jobs/expire-redemptions` every minute and `jobs/expire-points` daily (pg_cron or a scheduler), with the service key.
 - Alerts: same employee + same member more than 3 times a day; awards above €50.
-- Lock out a PIN after repeated wrong attempts (the PIN is 4 digits).
-- Remove old rows from `private.idempotency_keys` (for example after 30 days).
-- Edge Function wrappers (Deno: map `@overoll/core` and `postgres` in an import map; the `.js` import suffixes need sloppy imports or a bundling step).
+- Remove old rows from `private.idempotency_keys` (for example after 30 days) and stale rows from `private.employee_pin_failures` (older than `pinLockMinutes`; harmless, the right PIN also clears them).
+- Annual tier review on the join anniversary.

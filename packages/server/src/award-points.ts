@@ -2,17 +2,24 @@ import {
   type EarnLimitError,
   type PurchaseError,
   type TierId,
+  InvalidConfigError,
   checkEarnLimits,
   earnLimitsLookbackStart,
+  localDay,
+  normalizeReceiptNumber,
   parseToken,
   pointsEarnedForTier,
   pointsForPurchase,
+  receiptLookbackStart,
+  receiptNumberMaxLength,
+  receiptUsedToday,
   tierAfterEarn,
   tierRule,
   tierWindowStart,
   validatePurchaseAmount,
+  welcomeGiftExpiresAt,
 } from '@overoll/core';
-import { checkEmployee, storeAccess } from './internal/access.js';
+import { checkEmployeePin, storeAccess } from './internal/access.js';
 import { audit } from './internal/audit.js';
 import { loadBrand } from './internal/brand.js';
 import { idempotent, ledgerKey } from './internal/idempotency.js';
@@ -32,6 +39,12 @@ export interface AwardPointsInput {
   member: { memberId: string } | { token: string };
   /** Receipt total in integer cents. */
   amountCents: number;
+  /**
+   * Late points (forgotten card): the receipt number, letters, digits, "-" and
+   * "/", 1–40 characters. One receipt earns points once per store per
+   * calendar day. Blank or missing = an ordinary award.
+   */
+  receiptNumber?: string | null;
   idempotencyKey: string;
   now?: Date;
 }
@@ -43,9 +56,11 @@ export type AwardPointsError =
   | 'store_inactive'
   | 'employee_not_found'
   | 'bad_pin'
+  | 'pin_locked'
   | PurchaseError
   | 'amount_too_small'
   | EarnLimitError
+  | 'receipt_already_used'
   | 'member_not_found'
   | 'invalid_token'
   | 'expired_token'
@@ -59,6 +74,8 @@ export interface AwardedPoints {
   balance: number;
   tier: TierId;
   tierChanged: boolean;
+  /** True when this was the member's first earn and it unlocked the welcome gift (`member_gifts`). */
+  welcomeGiftUnlocked: boolean;
 }
 
 export type AwardPointsResult = Result<AwardedPoints, AwardPointsError>;
@@ -70,6 +87,12 @@ function parse(raw: AwardPointsInput) {
   else if (member && member.token !== undefined) ref = { token: input.text(member.token, 'member.token', 200) };
   else throw new InputError('member must have a memberId or a token');
   if (typeof raw.amountCents !== 'number') throw new InputError('amountCents must be a number');
+  let receiptNumber: string | null = null;
+  const receipt = input.optionalText(raw.receiptNumber, 'receiptNumber', receiptNumberMaxLength);
+  if (receipt !== null) {
+    receiptNumber = normalizeReceiptNumber(receipt);
+    if (!receiptNumber) throw new InputError('receiptNumber must be letters, digits, "-" or "/" (1–40 characters)');
+  }
   return {
     callerUserId: input.uuid(raw.callerUserId, 'callerUserId'),
     storeId: input.uuid(raw.storeId, 'storeId'),
@@ -77,6 +100,7 @@ function parse(raw: AwardPointsInput) {
     pin: input.text(raw.pin, 'pin', 72),
     member: ref,
     amountCents: raw.amountCents,
+    receiptNumber,
     idempotencyKey: input.idempotencyKey(raw.idempotencyKey),
     now: input.now(raw.now),
   };
@@ -84,9 +108,14 @@ function parse(raw: AwardPointsInput) {
 
 /**
  * Points for a purchase at the till. Checks, in order: caller is a device or
- * manager of the store, the store is open, the amount, the cashier's PIN, the
- * member, then the fraud limits (this member's earns network-wide; earns that
- * were undone don't count). Tier only goes up here.
+ * manager of the store, the store is open, the amount, the cashier's PIN
+ * (with the lockout), the member, the receipt number if given (once per store
+ * per calendar day), then the fraud limits (this member's earns network-wide;
+ * earns that were undone don't count). Tier only goes up here.
+ *
+ * The member's first earn ever unlocks the welcome gift when the brand has
+ * one (`welcome.rewardId`): one `member_gifts` row per member, kept even if
+ * that earn is undone later.
  */
 export async function awardPoints(sql: Db, raw: AwardPointsInput): Promise<AwardPointsResult> {
   const parsed = input.parseInput(() => parse(raw));
@@ -102,8 +131,15 @@ export async function awardPoints(sql: Db, raw: AwardPointsInput): Promise<Award
 
     const amountError = validatePurchaseAmount(i.amountCents, config);
     if (amountError) return fail(amountError);
-    const employeeError = await checkEmployee(tx, i.storeId, i.employeeId, i.pin);
-    if (employeeError) return fail(employeeError);
+    const employee = await checkEmployeePin(tx, {
+      storeId: i.storeId,
+      employeeId: i.employeeId,
+      pin: i.pin,
+      callerUserId: i.callerUserId,
+      now: i.now,
+      config,
+    });
+    if (!employee.ok) return employee;
 
     // The request as stored with the key: the member as given (a token is
     // reduced to its public member code, it rotates between retries).
@@ -114,7 +150,14 @@ export async function awardPoints(sql: Db, raw: AwardPointsInput): Promise<Award
       if (!token) return fail('invalid_token');
       memberRef = `code:${token.memberCode}`;
     }
-    const request = { storeId: i.storeId, employeeId: i.employeeId, amountCents: i.amountCents, member: memberRef };
+    // receiptNumber only when given, so ordinary awards keep the v0.1 fingerprint.
+    const request = {
+      storeId: i.storeId,
+      employeeId: i.employeeId,
+      amountCents: i.amountCents,
+      member: memberRef,
+      ...(i.receiptNumber ? { receiptNumber: i.receiptNumber } : {}),
+    };
 
     return idempotent(
       tx,
@@ -129,6 +172,27 @@ export async function awardPoints(sql: Db, raw: AwardPointsInput): Promise<Award
         }
         const member = await lockMember(tx, memberId);
         if (!member || member.brand_id !== brand.id || member.deleted_at) return fail('member_not_found');
+
+        // Late points: one receipt earns once per store per calendar day. The
+        // advisory lock (after the member lock, always in this order) makes two
+        // members claiming the same receipt at once wait for each other. An
+        // undone earn frees the receipt.
+        if (i.receiptNumber) {
+          const day = localDay(i.now, brand.timeZone);
+          await tx`select pg_advisory_xact_lock(hashtextextended(${`receipt:${i.storeId}:${day}:${i.receiptNumber}`}, 0))`;
+          const used = await tx<{ created_at: Date }[]>`
+            select e.created_at
+            from public.ledger_entries e
+            where e.store_id = ${i.storeId}
+              and e.receipt_number = ${i.receiptNumber}
+              and e.kind = 'earn'
+              and e.created_at > ${receiptLookbackStart(i.now)}
+              and not exists (select 1 from public.ledger_entries r where r.reverses_entry_id = e.id)
+          `;
+          if (receiptUsedToday(used.map((r) => r.created_at), i.now, brand.timeZone)) {
+            return fail('receipt_already_used', 'This receipt already earned points at this store today');
+          }
+        }
 
         // Fraud limits: this member's earns in any store. An earn that was
         // undone doesn't count, so a cashier can fix a typo straight away.
@@ -147,18 +211,55 @@ export async function awardPoints(sql: Db, raw: AwardPointsInput): Promise<Award
         const points = pointsForPurchase(i.amountCents, member.tier, config, bonusMultiplierPct);
         if (points <= 0) return fail('amount_too_small', 'This amount earns no points');
 
+        // Any earlier earn, even one that was undone, means this is not the first.
+        const [earlierEarn] = await tx`
+          select 1 from public.ledger_entries where member_id = ${member.id} and kind = 'earn' limit 1
+        `;
+
         const [entry] = await tx<{ id: string }[]>`
           insert into public.ledger_entries (
             brand_id, member_id, store_id, employee_id, kind, points, amount_cents,
-            multiplier_pct, bonus_multiplier_pct, idempotency_key, created_by, created_at
+            multiplier_pct, bonus_multiplier_pct, receipt_number, idempotency_key, created_by, created_at
           ) values (
             ${brand.id}, ${member.id}, ${i.storeId}, ${i.employeeId}, 'earn', ${points}, ${i.amountCents},
-            ${tierRule(config, member.tier).multiplierPct}, ${bonusMultiplierPct},
+            ${tierRule(config, member.tier).multiplierPct}, ${bonusMultiplierPct}, ${i.receiptNumber},
             ${ledgerKey('award', i.idempotencyKey)}, ${i.callerUserId}, ${i.now}
           )
           returning id
         `;
         if (!entry) throw new Error('Ledger insert returned no row');
+
+        let welcomeGiftUnlocked = false;
+        const welcomeRewardId = config.welcome.rewardId;
+        if (!earlierEarn && welcomeRewardId) {
+          const [reward] = await tx<{ id: string }[]>`
+            select id from public.rewards where id = ${welcomeRewardId} and brand_id = ${brand.id}
+          `;
+          // A setup bug, like any other invalid brands.config: throw, don't skip the gift silently.
+          if (!reward) throw new InvalidConfigError([`welcome.rewardId: brand ${brand.slug} has no reward ${welcomeRewardId}`]);
+          const [gift] = await tx<{ id: string }[]>`
+            insert into public.member_gifts (
+              brand_id, member_id, kind, reward_id, unlocked_at, expires_at, unlocked_by_entry_id
+            ) values (
+              ${brand.id}, ${member.id}, 'welcome', ${reward.id}, ${i.now}, ${welcomeGiftExpiresAt(i.now, config)}, ${entry.id}
+            )
+            on conflict (member_id, kind) do nothing
+            returning id
+          `;
+          if (gift) {
+            welcomeGiftUnlocked = true;
+            await audit(tx, {
+              brandId: brand.id,
+              actorUserId: i.callerUserId,
+              employeeId: i.employeeId,
+              action: 'gift.unlock',
+              entity: 'member_gifts',
+              entityId: gift.id,
+              details: { memberId: member.id, kind: 'welcome', rewardId: reward.id, entryId: entry.id },
+              at: i.now,
+            });
+          }
+        }
 
         const window = await tx<{ kind: string; points: number; created_at: Date }[]>`
           select kind, points, created_at from public.ledger_entries
@@ -192,10 +293,12 @@ export async function awardPoints(sql: Db, raw: AwardPointsInput): Promise<Award
             points,
             tier,
             tierChanged,
+            receiptNumber: i.receiptNumber,
+            welcomeGiftUnlocked,
           },
           at: i.now,
         });
-        return { ok: true, entryId: entry.id, memberId: member.id, points, balance, tier, tierChanged };
+        return { ok: true, entryId: entry.id, memberId: member.id, points, balance, tier, tierChanged, welcomeGiftUnlocked };
       },
     );
   });
