@@ -38,6 +38,9 @@ Legend: **D** = Dimos · **C** = Claude · ☐ open · ☑ done
 - ☑ D: copy deck questions answered: welcome gift 30 days, PIN once per shift, €80 cap, age 15+ (rules in `packages/core` config)
 - ☐ D: review the copy deck text itself; Overoll answers the rest (support email, legal name, pilot double points)
 - ☐ C: welcome gift in the database and `awardPoints` (unlock on first purchase, redeem with a code, expire after 30 days)
+- ☐ C: double-points campaigns (dates per store) and late points for a forgotten card (same day, same store, receipt number used once)
+- ☐ D: the Overoll design system mentions stores at the airport and in Nicosia: confirm with Overoll and add them to `data/stores.json`
+- ☑ C: screen designs v0.1 (member app, till console, landing page, Wallet passes) on the design canvas; Figma copy for the designer
 
 ## Week 2 · 16–22 Nov · Join flow + card + Wallet
 

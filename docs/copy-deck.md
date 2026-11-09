@@ -778,7 +778,7 @@ The owner asked for something "more social". **Overoll Club stays the default** 
 - Rejoining after deleting an account: yes, as a new member.
 - Club tier: keeps the name for now.
 - Service notifications need no marketing consent; offers need the consent.
-- Points after paying: only at the till; the store manager can add missed points with a reason.
-- Double points: launch weeks only (4–17 Jan 2027), not in the pilot.
+- Points after paying: allowed the same day at the same store with the receipt number (each receipt once).
+- Double points: first 2 weeks of the pilot and first 2 weeks after network launch.
 - Still open (for Overoll): legal entity name.
 
