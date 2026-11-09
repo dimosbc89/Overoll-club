@@ -7,7 +7,19 @@
 -- vault.decrypted_secrets and sent by pg_cron: no key leaves the database.
 
 create extension if not exists pg_cron;
-create extension if not exists pg_net;
+-- pg_net belongs in `extensions` (Supabase security advisor). The first setup put it in
+-- `public`: move it once (it keeps no data we need; its functions live in schema `net`).
+do $do$
+begin
+  if exists (
+    select 1 from pg_extension e join pg_namespace n on n.oid = e.extnamespace
+    where e.extname = 'pg_net' and n.nspname = 'public'
+  ) then
+    drop extension pg_net;
+  end if;
+end
+$do$;
+create extension if not exists pg_net with schema extensions;
 
 do $do$
 begin
