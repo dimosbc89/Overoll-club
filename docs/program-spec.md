@@ -19,7 +19,7 @@ All numbers live in `packages/core/src/config.ts` and can be changed by HQ later
 | Rejoining | A member who deleted their account can join again as a new member (old points are not restored) |
 | Notifications | Service messages (points added, reward ready, points expiring, code expired) need no marketing consent; offers and news only with the email / SMS / push consent. Push also needs the phone's permission |
 | Points after paying | Allowed: a customer who forgot to show the card can get the points later the same day, at the same store, by giving the receipt; the cashier enters the receipt number so a receipt earns points only once |
-| Double points | ×2 on every purchase for the first 2 weeks of the pilot (Chalandri, from 7 Dec) and again for the first 2 weeks after network launch (4–17 Jan 2027) |
+| Double points | **None**: no double-points weeks in the pilot or at launch (decided 9 Nov) |
 | Pilot store | **Chalandri** (Κατσουλιέρη 10): a neighbourhood store with regulars and calmer mornings than Praxitelous, so staff learn the flow without a queue |
 | App store accounts | Published under GROW's Apple Developer and Google Play accounts (see risk in §10) |
 | Deadline | All stores live by the week of **4 January 2027** |
@@ -45,8 +45,7 @@ All numbers live in `packages/core/src/config.ts` and can be changed by HQ later
 | Birthday | A free croissant valid during the birthday week (from v1.1, see roadmap) |
 | Referral | +100 points to both, after the friend's first purchase (v1.1) |
 | Streak | 3 visits in 7 days → +50 points (v1.1) |
-| Quiet hours | Double points in time windows set per store (v1.1) |
-| Launch weeks | Double points for the first 2 weeks after network launch |
+| Quiet hours | Possible later (v1.1+), only if HQ asks; not planned |
 
 Calculation (integer maths, no floating point):
 `points = floor(amount_cents × 10 × multiplier_pct / 10 000)` where `multiplier_pct` is 100, 125 or 150. A bonus (e.g. double points = 200) multiplies on top. Implemented in `packages/core/src/points.ts`.

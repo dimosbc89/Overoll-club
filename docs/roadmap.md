@@ -36,9 +36,9 @@ Legend: **D** = Dimos · **C** = Claude · ☐ open · ☑ done
 - ☐ D: from Overoll: their production domain and DNS access for `club.` (landing page + web app); the website itself runs on Cloudflare Pages
 - ☑ C: copy deck v0.1 el/en (`docs/copy-deck.md`, `data/copy/errors.*.json`)
 - ☑ D: copy deck questions answered: welcome gift 30 days, PIN once per shift, €80 cap, age 15+ (rules in `packages/core` config)
-- ☐ D: review the copy deck text itself; Overoll answers the rest (support email, legal name, pilot double points)
+- ☐ D: review the copy deck text itself; Overoll answers the rest (legal name)
 - ☐ C: welcome gift in the database and `awardPoints` (unlock on first purchase, redeem with a code, expire after 30 days)
-- ☐ C: double-points campaigns (dates per store) and late points for a forgotten card (same day, same store, receipt number used once)
+- ☐ C: late points for a forgotten card (same day, same store, receipt number used once)
 - ☐ D: the Overoll design system mentions stores at the airport and in Nicosia: confirm with Overoll and add them to `data/stores.json`
 - ☑ C: screen designs v0.1 (member app, till console, landing page, Wallet passes) on the design canvas; Figma copy for the designer
 
@@ -69,7 +69,7 @@ Legend: **D** = Dimos · **C** = Claude · ☐ open · ☑ done
 
 - ☐ D: train Chalandri staff (15 minutes), go live in the pilot store
 - ☐ C: daily check of errors and numbers; fixes within 24 h
-- ☐ C: welcome reward + launch double points switched on
+- ☐ C: welcome reward switched on (no double points: decided 9 Nov)
 
 ## Week 6 · 14–20 Dec · Fixes + apps to the stores
 

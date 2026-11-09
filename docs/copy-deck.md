@@ -779,6 +779,6 @@ The owner asked for something "more social". **Overoll Club stays the default** 
 - Club tier: keeps the name for now.
 - Service notifications need no marketing consent; offers need the consent.
 - Points after paying: allowed the same day at the same store with the receipt number (each receipt once).
-- Double points: first 2 weeks of the pilot and first 2 weeks after network launch.
+- Double points: none at all, neither in the pilot nor at launch. Every double-points text in this deck (`join.welcome.launch`, `card.launch`, `history.earnDouble`, `push.pointsAddedDouble`, `push.launchDouble`, `console.award.double`, `print.stand.launch`, `terms.8`) is dropped.
 - Still open (for Overoll): legal entity name.
 
