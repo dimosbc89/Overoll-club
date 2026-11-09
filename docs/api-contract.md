@@ -1,4 +1,4 @@
-# Contract between the apps and the server (v0.3, 9 Nov 2026)
+# Contract between the apps and the server (v0.4, 9 Nov 2026)
 
 Three workstreams build against this page at the same time: the server (`packages/core`, `packages/server`, `packages/api`, `supabase/`), the member app (`apps/mobile`) and the staff console (`apps/admin` → `/console`). Change it only together with all three.
 
@@ -6,7 +6,7 @@ Base URL: `{SUPABASE_URL}/functions/v1/api`. Every call: `POST`, JSON body, `Aut
 
 ## Existing routes (unchanged)
 
-`join`, `scan`, `award`, `undo`, `redemptions/create`, `redemptions/cancel`, `redemptions/use`, `jobs/expire-redemptions`: inputs and outputs in `packages/server/README.md`.
+`join`, `scan`, `award`, `undo`, `redemptions/create`, `redemptions/cancel`, `redemptions/use`, `jobs/expire-redemptions`: inputs and outputs in `packages/server/README.md`. (`scan` gains `memberCode` in v0.4.)
 
 ## New in v0.2 (server workstream builds them)
 
@@ -32,11 +32,36 @@ Base URL: `{SUPABASE_URL}/functions/v1/api`. Every call: `POST`, JSON body, `Aut
 - `redemptions/create` returns `giftId` (the welcome gift the code redeems, or `null` for a reward bought with points).
 - `jobs/*` also accept the scheduler's token (Vault secret `jobs_token`). pg_cron calls `jobs/expire-redemptions` every minute and `jobs/expire-points` daily at 01:15 UTC (`supabase/jobs.sql`).
 
+## New in v0.4 (account deletion, typed member code, English store names)
+
+### Account deletion: `account/delete`
+- Caller: the signed-in member (their own token). Body `{ confirm: true, idempotencyKey }`; without `confirm: true` → `invalid_input`. Staff accounts (any `staff_roles` row) → `forbidden`: HQ removes those.
+- One transaction, under the member lock (`packages/server` `deleteMember`): pending codes are **cancelled and their points are not returned** (the account is closing; program spec "Rejoining": old points are not restored); an unused welcome gift is closed (`expired`); the personal fields are wiped (`first_name` = `''`, `last_name`, `email`, `phone`, `birthday`, `referral_code`, `user_id` → null, consents → false), `members.deleted_at` is set, `member_secrets` is deleted (app card, screenshots and Wallet pass stop working); stored request/results with personal data in `private.idempotency_keys` are removed or have the first name emptied; an `audit_log` row `member.delete`; last, the Supabase Auth user is deleted. The ledger stays (append-only) with no personal data; the balance left expires like anyone's (`jobs/expire-points`). No push tokens are stored yet; when they are, this operation deletes them too.
+- Result `{ ok, memberIds, codesCancelled, authUserDeleted }`. Retries are safe without a stored result: a second call finds nothing left (`memberIds: []`) and answers `ok` again.
+- Auth user: deleted inside the database transaction (the Edge Function connects as `postgres`). If that role may not delete from `auth.users`, the server returns `authUserDeleted: false` and the Edge Function deletes the user with the Auth admin API (service key); if that fails the route answers 500 and a retry finishes it. The response the app sees always has `authUserDeleted: true`.
+- The member app signs out on the device after `ok` (the access token itself stays valid until it expires, but row-level security shows a deleted member nothing). On a retry after `network_error` / `internal_error`, `unauthenticated` means the first attempt went through.
+- Rejoining with the same email later works: signing in creates a new auth user, `join` creates a new member (new member code, 0 points, a new welcome gift after the first purchase).
+- A deleted member at the till: `scan` (QR, Wallet or typed code) and `award` answer `member_deleted`; `redemptions/create` answers `member_deleted` too. Row-level security: a deleted member's rows (`members`, `ledger_entries`, `redemptions`, `member_gifts`) are readable by HQ and platform admins only; store devices and managers no longer see them in their store's activity.
+- Database: `ledger_entries.created_by` and `audit_log.actor_user_id` keep the user id but are no longer foreign keys (so an auth user can be deleted while the append-only tables name it); a check constraint `member_deleted_wiped` refuses a deleted member that still has personal data.
+
+### Typed member code at the till: `scan` with `memberCode`
+- `scan` takes `{ storeId, token }` **or** `{ storeId, memberCode }` (exactly one, else `invalid_input`). `memberCode` is the code printed under the QR, shown in groups of 4 ("ABCD 2345"). Case, spaces, dashes and Greek capitals that look Latin (Α Β Ε Ζ Η Ι Κ Μ Ν Ο Ρ Τ Υ Χ) don't matter (core `normalizeMemberCode`). Same callers and same result as a QR scan. Errors: `invalid_token` (can't be a member code), `member_not_found`, `member_deleted`.
+- Why this is safe enough: the member code is public (it is printed on the card), so a typed code only identifies the member. The console shows the first name to check (`console.member.check`) and then awards with `member: { memberId }` as after any scan. It can't spend anything: rewards always need a redemption code made in the member's app. The rotating QR stays the normal way; the Wallet pass was already a static code.
+- `award` is unchanged (`member: { memberId }` or `{ token }`).
+- Redemption codes typed at the till now also accept Greek look-alike capitals and any dash (core `normalizeRedemptionCode`).
+- Console: the typed field on the scan screen takes the full `OC1.…` token, the member code or a reward code. A typed 8-character code is looked up as a member code first; on `member_not_found`, if it can be a reward code, the console opens Redeem with it. A code read by the camera that is not a member token still opens Redeem directly (a member card's QR is always a token).
+
+### English store names
+- `stores.name_en`, `stores.address_en` (text, null or not blank), filled by `supabase/seed.sql` from `data/stores.json`. `name` / `address` stay Greek. The apps show the English one in English and fall back to Greek. Same access as the rest of `stores` (anyone reads active stores, HQ edits).
+
+### Error codes
+- No new code. `member_deleted` (already in the union) is now also returned by `scan`, `award` and `redemptions/create`; its text changed (it is shown at the till) and so did `member_not_found` ("check the code"): copy deck §f2, to approve.
+
 ## What the apps read directly (Supabase client, row-level security)
 
-Member app (signed-in member): `members` (own row), `member_balances` (own), `member_secrets` (own: `qr_secret`, `pass_version` → core `createRotatingToken` for the QR, offline), `rewards` (active), `stores` (active), `member_gifts` (own), `redemptions` (own; a `pending` one not past `expires_at` is the active code), `ledger_entries` (own, history). Costs per tier: core `rewardCostForTier`; progress: core `nextRewardProgress`, `tierProgress`.
+Member app (signed-in member): `members` (own row, not once deleted), `member_balances` (own), `member_secrets` (own: `qr_secret`, `pass_version` → core `createRotatingToken` for the QR, offline), `rewards` (active), `stores` (active; `name_en` / `address_en` from v0.4), `member_gifts` (own), `redemptions` (own; a `pending` one not past `expires_at` is the active code), `ledger_entries` (own, history). Costs per tier: core `rewardCostForTier`; progress: core `nextRewardProgress`, `tierProgress`.
 
-Staff console (signed-in device user with `store_device` for its store): `stores` (its store), `employees` (its store: id, display_name, active), `ledger_entries` and `redemptions` of its store (today's activity). Everything that writes goes through the routes above.
+Staff console (signed-in device user with `store_device` for its store): `stores` (its store), `employees` (its store: id, display_name, active), `ledger_entries` and `redemptions` of its store (today's activity; not those of deleted members, from v0.4). Everything that writes goes through the routes above.
 
 ## Sign-in
 

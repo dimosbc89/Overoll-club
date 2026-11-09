@@ -18,6 +18,7 @@ All numbers live in `packages/core/src/config.ts` and can be changed by HQ later
 | Minimum age | 15 (GDPR digital consent age in Greece): "I am 15 or older" at sign-up (`minimumAge`) |
 | Support email | `club-support@growagency.online` for testing; replace with Overoll's address before launch |
 | Rejoining | A member who deleted their account can join again as a new member (old points are not restored) |
+| Account deletion | In the app, Profile → Delete account (type ΔΙΑΓΡΑΦΗ / DELETE). At once: pending reward codes are cancelled **without giving the points back**, an unused welcome gift lapses, personal details are erased (name, email, mobile, birthday, contact choices), the card (app, web, Wallet) stops working and the sign-in account is deleted. The points history stays without personal data (stores' accounts); the points left simply expire 12 months after the last purchase. Only HQ still sees the erased record. The same email can join again later as a new member. "Download my data" comes later |
 | Notifications | Service messages (points added, reward ready, points expiring, code expired) need no marketing consent; offers and news only with the email / SMS / push consent. Push also needs the phone's permission |
 | Points after paying | Allowed: a customer who forgot to show the card can get the points later the same day, at the same store, by giving the receipt; the cashier enters the receipt number so a receipt earns points only once |
 | Double points | **None**: no double-points weeks in the pilot or at launch (decided 9 Nov) |
@@ -83,7 +84,7 @@ Example: €6.40 receipt, Gold member → floor(640 × 10 × 125 / 10 000) = 80 
 
 ## 7. Redemption flow
 
-1. Member picks a reward in the app / web app → a redemption code is created, points are taken. Codes are 8 characters without look-alikes (no 0/O, 1/I); staff can type them with or without spaces and dashes.
+1. Member picks a reward in the app / web app → a redemption code is created, points are taken. Codes are 8 characters without look-alikes (no 0/O, 1/I); staff can type them with or without spaces and dashes, on a Greek or a Latin keyboard (Greek capitals that look Latin count as Latin).
 2. The code is valid for **15 minutes**. The member can cancel before use and gets the points back.
 3. Staff scan the code on the staff console → it is marked used, with store and employee.
 4. The cashier rings the item on the POS as a 100% discount line (keeps receipts correct for AADE/myDATA).
@@ -96,6 +97,7 @@ Example: €6.40 receipt, Gold member → floor(640 × 10 × 125 / 10 000) = 80 
 | --- | --- |
 | Member QR in app / web | Rotates every 30 seconds, works offline; codes one step (30 s) either side are accepted for clock differences |
 | Wallet pass QR | Static but signed member code (Wallet can't rotate offline); reissuing the pass kills the old code; staff see the member's first name |
+| Typed member code | When the card won't scan, the cashier types the 8-character member code printed under the QR (groups of 4; case, spaces, dashes and Greek look-alike capitals don't matter). It only identifies the member for points: staff check the first name shown, and rewards always need a redemption code from the member's app |
 | Max receipt total per transaction | €80. For a bigger receipt the cashier enters €80: points up to the limit, no override |
 | Max earn transactions per member per day | 5 (network-wide, Athens calendar day) |
 | Double scans | Same member can't earn twice within 2 minutes |
@@ -115,7 +117,7 @@ Example: €6.40 receipt, Gold member → floor(640 × 10 × 125 / 10 000) = 80 
 | HQ admin (Overoll) | Whole network: rules, rewards, stores, staff, members, messages, reports |
 | Store manager | Own store: dashboard, employees, transactions, undo older than 10 minutes |
 | Store device | The till tablet/phone: scan, award, redeem, undo within 10 minutes, with an employee PIN |
-| Member | Own card, points, rewards, profile, data export and deletion |
+| Member | Own card, points, rewards, profile, account deletion (data export later) |
 
 ## 10. Risks and how we handle them
 
