@@ -48,7 +48,6 @@ Sources: `docs/program-spec.md` v0.1, `packages/core/src/config.ts`, `docs/brand
 | Undo by staff | 10 minutes | `limits.undoWindowMinutes` |
 | Member QR | changes every 30 seconds, works offline | `qr.stepSeconds` |
 | Welcome | a free butter croissant after the first purchase, once | spec §3 |
-| Launch | double points for the first 2 weeks after network launch | spec §3 (bonus 200%) |
 
 ### Greek writing notes (for developers too)
 
@@ -154,7 +153,6 @@ Rules for the screen: three **separate** checkboxes, **all unticked** by default
 | `join.welcome.croissant` | Με την πρώτη σου αγορά ξεκλειδώνεις ένα κρουασάν βουτύρου, κερασμένο. | Your first purchase unlocks a butter croissant, on us. |
 | `join.welcome.wallet` | Πρόσθεσέ την και στο Wallet, για να είναι πάντα πρόχειρη. | Add it to your Wallet so it's always to hand. |
 | `join.welcome.cta` | Δες την κάρτα μου | Show my card |
-| `join.welcome.launch` *(only while launch points are on)* | Τώρα στην αρχή: διπλοί πόντοι μέχρι τις {date}. | Launch treat: double points until {date}. |
 
 ---
 
@@ -181,7 +179,6 @@ Rules for the screen: three **separate** checkboxes, **all unticked** by default
 | `card.welcome.locked` | Κάνε την πρώτη σου αγορά και ξεκλείδωσε ένα κρουασάν βουτύρου, κερασμένο. | Make your first purchase to unlock a butter croissant, on us. |
 | `card.welcome.ready` | Το κρουασάν καλωσορίσματος σε περιμένει στα Δώρα. | Your welcome croissant is waiting in Rewards. |
 | `card.expiry` | Οι πόντοι σου ισχύουν μέχρι τις {date}. Κάθε αγορά τους ανανεώνει για {months} μήνες. | Your points are valid until {date}. Every purchase renews them for {months} months. |
-| `card.launch` | Διπλοί πόντοι σε κάθε αγορά μέχρι τις {date}. | Double points on every purchase until {date}. |
 
 The Wallet buttons must use Apple's and Google's official badge artwork (Greek and English versions exist); the two strings above are the accessibility labels.
 
@@ -231,7 +228,6 @@ One line per ledger kind (`earn`, `bonus`, `redeem`, `refund_redeem`, `reverse`,
 | `history.title` | Ιστορικό | History |
 | `history.empty` | Εδώ θα βλέπεις τους πόντους σου μετά την πρώτη σου αγορά. | Your points will show up here after your first purchase. |
 | `history.earn` | Αγορά · {store} | Purchase · {store} |
-| `history.earnDouble` | Αγορά · {store} · διπλοί πόντοι | Purchase · {store} · double points |
 | `history.receipt` | Απόδειξη {amount} | Receipt {amount} |
 | `history.bonus` | Bonus πόντοι | Bonus points |
 | `history.redeem` | Δώρο: {reward} | Reward: {reward} |
@@ -312,7 +308,6 @@ Title = `{programName}`; the text below is the body (≤ 100 characters). Counts
 | Key | When | Ελληνικά | English | Chars el / en |
 | --- | --- | --- | --- | --- |
 | `push.pointsAdded` | Points added | +{points} πόντοι στο {store}. Σύνολο: {balance}. Ευχαριστούμε! | +{points} points at {store}. Total: {balance}. Thank you! | 65 / 61 |
-| `push.pointsAddedDouble` | Points added, launch weeks | Διπλοί πόντοι! +{points} στο {store}. Σύνολο: {balance}. | Double points! +{points} at {store}. Total: {balance}. | 59 / 58 |
 | `push.rewardUnlocked` | Balance reaches a reward | Έχεις αρκετούς πόντους για δώρο: {reward}. Πέρνα να το πάρεις! | You've got enough points for a reward: {reward}. Come and get it! | 81 / 88 |
 | `push.welcomeReady` | Welcome croissant unlocked (first purchase) | Καλή αρχή! Ένα κρουασάν βουτύρου σε περιμένει κερασμένο στα Δώρα σου. | Great start! A butter croissant is waiting in your Rewards, on us. | 69 / 66 |
 | `push.tierUp.gold` | Tier up to Gold | Ανέβηκες στο Gold! Τώρα παίρνεις 25% περισσότερους πόντους και δώρα με 20% λιγότερους. | You're Gold now! 25% more points on every purchase and rewards for 20% fewer points. | 86 / 84 |
@@ -320,9 +315,8 @@ Title = `{programName}`; the text below is the body (≤ 100 characters). Counts
 | `push.expiry30` | Points expire in 30 days | Οι {points} πόντοι σου λήγουν σε 30 μέρες. Μία αγορά τους κρατάει για άλλους 12 μήνες. | Your {points} points expire in 30 days. One purchase keeps them for another 12 months. | 80 / 80 |
 | `push.expiry7` | Points expire in 7 days | Μόνο 7 μέρες ακόμα για τους {points} πόντους σου! Πέρνα για έναν καφέ και κράτα τους. | Only 7 days left for your {points} points! Pop in for a coffee and keep them. | 79 / 71 |
 | `push.redemptionExpired` | Code expired, points returned | Ο κωδικός δώρου έληξε, αλλά μην ανησυχείς: οι {points} πόντοι γύρισαν στην κάρτα σου. | Your reward code expired, but don't worry: your {points} points are back on your card. | 79 / 80 |
-| `push.launchDouble` | Network launch (first 2 weeks) | Διπλοί πόντοι σε κάθε αγορά, σε όλα τα Overoll, μέχρι τις {date}! | Double points on every purchase at every Overoll until {date}! | 72 / 66 |
 
-`push.launchDouble` and `push.pointsAddedDouble` are promotional: send them only to members with push consent. Tier-up lines spell out today's numbers; change them with the config.
+Tier-up lines spell out today's numbers; change them with the config.
 
 ### d2. Wallet pass
 
@@ -419,7 +413,6 @@ SMS sign-in code (sender ID "Overoll"). Greek lowercase letters switch the SMS t
 | `console.member.check` | Βεβαιώσου ότι το όνομα ταιριάζει. Αν έχεις αμφιβολία, ρώτα. | Check the name matches. If in doubt, ask. |
 | `console.member.balance` | {points} πόντοι | {points} points |
 | `console.award.preview` | Θα πάρει {points} πόντους | They'll get {points} points |
-| `console.award.double` | Σήμερα διπλοί πόντοι | Double points today |
 | `console.award.success` | {firstName}: +{points} πόντοι | {firstName}: +{points} points |
 | `console.award.firstPurchase` | Πρώτη αγορά! Το κρουασάν καλωσορίσματος ξεκλειδώθηκε. Πες το στον πελάτη. | First purchase! The welcome croissant is now unlocked. Let them know. |
 | `console.award.tierUp` | {firstName}: νέο επίπεδο {tier}. Ώρα για συγχαρητήρια! | {firstName} just reached {tier}. Time for a congrats! |
@@ -496,7 +489,6 @@ The QR on the counter stand opens `{clubUrl}/join?store={storeCode}`: one stand 
 | `print.stand.cta` | Σκάναρε και γίνε μέλος | Scan to join |
 | `print.stand.url` | ή άνοιξε το {clubUrl} | or go to {clubUrl} |
 | `print.stand.wallet` | Δεν χρειάζεται εφαρμογή: η κάρτα σου ζει στο κινητό και στο Wallet. | No app needed: your card lives on your phone and in Wallet. |
-| `print.stand.launch` *(removable strip, launch weeks only)* | Διπλοί πόντοι μέχρι τις {date} | Double points until {date} |
 
 ### g2. Cup / bag sticker
 
@@ -735,7 +727,6 @@ Good things come in layers.
 | `terms.5` | Τα δώρα εξαργυρώνονται με κωδικό μίας χρήσης που ισχύει 15 λεπτά. Αν τον ακυρώσεις ή λήξει, οι πόντοι επιστρέφουν. Τα δώρα και οι πόντοι που χρειάζονται μπορεί να αλλάξουν. | Rewards are redeemed with a single-use code that's valid for 15 minutes. If you cancel it or it expires, the points come back. Rewards and their points can change. |
 | `terms.6` | Κρουασάν καλωσορίσματος: ένα κρουασάν βουτύρου, μία φορά ανά μέλος, μετά την πρώτη αγορά. Δεν μετράει για τα επίπεδα. | Welcome croissant: one butter croissant, once per member, after the first purchase. It doesn't count towards tiers. |
 | `terms.7` | Οι πόντοι λήγουν 12 μήνες μετά την τελευταία σου αγορά με την κάρτα και κάθε αγορά τους ανανεώνει. Σου στέλνουμε υπενθύμιση 30 και 7 μέρες πριν. | Points expire 12 months after your last purchase with your card, and every purchase renews them. We remind you 30 and 7 days before. |
-| `terms.8` | Λανσάρισμα: διπλοί πόντοι τις πρώτες 2 εβδομάδες αφού το πρόγραμμα ξεκινήσει σε όλα τα καταστήματα. | Launch: double points for the first 2 weeks after the programme goes live in all stores. |
 | `terms.9` | Λάθη στο ταμείο διορθώνονται. Αν επιστραφεί μια αγορά, αφαιρούνται και οι πόντοι της, ακόμα κι αν το υπόλοιπό σου γίνει αρνητικό. *[Προτείνεται]* Τα δώρα δεν ανταλλάσσονται με χρήματα, και σε περίπτωση κατάχρησης ο λογαριασμός μπορεί να ανασταλεί. | Mistakes at the till are corrected. If a purchase is refunded, its points are taken back, even if your balance goes below zero. *[Proposed]* Rewards have no cash value, and an account can be suspended for misuse. |
 | `terms.10` | Τα στοιχεία σου χρησιμοποιούνται για να λειτουργεί το πρόγραμμα· προσφορές μόνο με τη συγκατάθεσή σου. Κατεβάζεις ή διαγράφεις τα δεδομένα σου όποτε θες από το Προφίλ (με τη διαγραφή χάνονται οι πόντοι). *[Προτείνεται]* Αλλαγές στους όρους ανακοινώνονται στα μέλη πριν ισχύσουν. | Your data is used to run the programme; offers only with your consent. Download or delete your data any time in Profile (deleting loses your points). *[Proposed]* Members are told about changes to the terms before they apply. |
 
