@@ -38,6 +38,13 @@ export interface ProgramConfig {
   expiryReminderDays: readonly number[];
   /** Redemption codes stay valid for this many minutes. */
   redemptionValidMinutes: number;
+  /** Welcome gift: a free reward unlocked by the first purchase, once per member; it never counts towards tiers. */
+  welcome: {
+    /** The gift expires this many days after it is unlocked. */
+    validDays: number;
+  };
+  /** Youngest age allowed to join (GDPR digital consent age in Greece). */
+  minimumAge: number;
   limits: {
     /** Largest receipt total accepted for one earn transaction, in cents. */
     maxAmountCents: number;
@@ -47,6 +54,8 @@ export interface ProgramConfig {
     minSecondsBetweenEarns: number;
     /** Staff can undo their own transaction for this many minutes. */
     undoWindowMinutes: number;
+    /** A cashier enters their PIN once per shift; the console locks after this many idle minutes. */
+    staffPinIdleMinutes: number;
   };
   qr: {
     /** Rotating member QR changes every this many seconds. */
@@ -72,11 +81,16 @@ export const defaultConfig: ProgramConfig = {
   expiryMonths: 12,
   expiryReminderDays: [30, 7],
   redemptionValidMinutes: 15,
+  welcome: {
+    validDays: 30,
+  },
+  minimumAge: 15,
   limits: {
     maxAmountCents: 8000,
     maxEarnsPerDay: 5,
     minSecondsBetweenEarns: 120,
     undoWindowMinutes: 10,
+    staffPinIdleMinutes: 5,
   },
   qr: {
     stepSeconds: 30,

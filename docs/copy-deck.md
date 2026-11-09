@@ -767,3 +767,12 @@ The owner asked for something "more social". **Overoll Club stays the default** 
 8. **PIN once per shift or every time?** The server checks the PIN on every award, undo and redemption; the training card says "sign in with your PIN" at the start.
 9. **Names:** a "Club" tier inside "Overoll Club" reads oddly ("a Club member of Overoll Club"). Rename the tier when the program name is final? Points stay "πόντοι / points"?
 10. **Minimum age to join:** not in the spec (lawyer).
+
+### Answered by Dimos (9 Nov 2026)
+
+- Welcome croissant: a free reward redeemed with a code, valid 30 days after the first purchase; never counts towards tiers.
+- PIN: once per shift; the console locks after 5 idle minutes.
+- Receipt over €80: the cashier enters €80; points up to the limit.
+- Minimum age: 15.
+- Still open (for Overoll): support email and legal entity name, double points in the pilot, rejoining after deleting an account, consent for service pushes, points on an already-paid order, renaming the Club tier.
+

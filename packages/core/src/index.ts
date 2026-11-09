@@ -6,3 +6,4 @@ export * from './rewards.js';
 export * from './redemptions.js';
 export * from './expiry.js';
 export * from './member-token.js';
+export * from './onboarding.js';

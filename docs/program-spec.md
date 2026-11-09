@@ -14,6 +14,7 @@ All numbers live in `packages/core/src/config.ts` and can be changed by HQ later
 | Delivery orders | Not decided. Built behind a switch, **off at launch**; decide after the pilot |
 | Existing customers | Overoll's newsletter list is a marketing task for later, not part of the launch |
 | Landing page | Own subdomain `club.<overoll domain>`: the web app's home page is the landing page; the counter QR opens `/join?store=<code>` (domain and DNS from Overoll) |
+| Minimum age | 15 (GDPR digital consent age in Greece): "I am 15 or older" at sign-up (`minimumAge`) |
 | Pilot store | **Chalandri** (Κατσουλιέρη 10): a neighbourhood store with regulars and calmer mornings than Praxitelous, so staff learn the flow without a queue |
 | App store accounts | Published under GROW's Apple Developer and Google Play accounts (see risk in §10) |
 | Deadline | All stores live by the week of **4 January 2027** |
@@ -35,7 +36,7 @@ All numbers live in `packages/core/src/config.ts` and can be changed by HQ later
 | --- | --- |
 | Base | **10 points per €1** of the receipt total, rounded down |
 | Tier multiplier | Classic ×1.00 · Gold ×1.25 · Club ×1.50 |
-| Welcome reward | Unlocked after the first purchase, once per member: a free butter croissant. Does not count towards tiers |
+| Welcome reward | A free butter croissant, unlocked by the first purchase, once per member, redeemed with a code like any reward; valid **30 days** after it unlocks (`welcome.validDays`). Not points: it never counts towards tiers |
 | Birthday | A free croissant valid during the birthday week (from v1.1, see roadmap) |
 | Referral | +100 points to both, after the friend's first purchase (v1.1) |
 | Streak | 3 visits in 7 days → +50 points (v1.1) |
@@ -87,12 +88,12 @@ Example: €6.40 receipt, Gold member → floor(640 × 10 × 125 / 10 000) = 80 
 | --- | --- |
 | Member QR in app / web | Rotates every 30 seconds, works offline; codes one step (30 s) either side are accepted for clock differences |
 | Wallet pass QR | Static but signed member code (Wallet can't rotate offline); reissuing the pass kills the old code; staff see the member's first name |
-| Max receipt total per transaction | €80 |
+| Max receipt total per transaction | €80. For a bigger receipt the cashier enters €80: points up to the limit, no override |
 | Max earn transactions per member per day | 5 (network-wide, Athens calendar day) |
 | Double scans | Same member can't earn twice within 2 minutes |
 | Undone earns | Don't count towards the daily limit or the 2-minute rule, so a cashier can fix a typo straight away |
 | Undo | Last transaction within 10 minutes (store device, with an employee PIN); older needs the store manager or HQ |
-| Staff identity | Every action is tied to an employee PIN |
+| Staff identity | Every action is tied to an employee. The cashier enters their PIN once per shift; the console locks after 5 idle minutes (`limits.staffPinIdleMinutes`) |
 | Refunds | Points taken back; balance may go negative |
 | Alerts | Same employee + same member more than 3 times a day; awards above €50 |
 

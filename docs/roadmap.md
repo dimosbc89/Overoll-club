@@ -35,7 +35,9 @@ Legend: **D** = Dimos · **C** = Claude · ☐ open · ☑ done
 - ☑ D: Supabase access token as GitHub secret: CI deploys the `api` Edge Function from `main` (live since 9 Nov)
 - ☐ D: from Overoll: their production domain and DNS access for `club.` (landing page + web app); the website itself runs on Cloudflare Pages
 - ☑ C: copy deck v0.1 el/en (`docs/copy-deck.md`, `data/copy/errors.*.json`)
-- ☐ D: review the copy deck and answer its open questions
+- ☑ D: copy deck questions answered: welcome gift 30 days, PIN once per shift, €80 cap, age 15+ (rules in `packages/core` config)
+- ☐ D: review the copy deck text itself; Overoll answers the rest (support email, legal name, pilot double points)
+- ☐ C: welcome gift in the database and `awardPoints` (unlock on first purchase, redeem with a code, expire after 30 days)
 
 ## Week 2 · 16–22 Nov · Join flow + card + Wallet
 

@@ -78,7 +78,8 @@ export function validateConfig(candidate: unknown): string[] {
     cfg,
     [
       'pointsPerEuro', 'tiers', 'tierWindowMonths', 'rewardPriceFactor', 'rewardRoundTo',
-      'tierCostRoundTo', 'expiryMonths', 'expiryReminderDays', 'redemptionValidMinutes', 'limits', 'qr',
+      'tierCostRoundTo', 'expiryMonths', 'expiryReminderDays', 'redemptionValidMinutes', 'welcome', 'minimumAge',
+      'limits', 'qr',
     ],
     '',
   );
@@ -89,6 +90,11 @@ export function validateConfig(candidate: unknown): string[] {
   c.int(cfg.tierCostRoundTo, 'tierCostRoundTo', 1, 10_000);
   c.int(cfg.expiryMonths, 'expiryMonths', 1, 120);
   c.int(cfg.redemptionValidMinutes, 'redemptionValidMinutes', 1, 1440);
+  c.int(cfg.minimumAge, 'minimumAge', 13, 21);
+  if (c.object(cfg.welcome, 'welcome')) {
+    c.keys(cfg.welcome, ['validDays'], 'welcome.');
+    c.int(cfg.welcome.validDays, 'welcome.validDays', 1, 365);
+  }
 
   if (!Array.isArray(cfg.expiryReminderDays)) {
     c.problems.push('expiryReminderDays: must be a list of days');
@@ -132,11 +138,12 @@ export function validateConfig(candidate: unknown): string[] {
 
   if (c.object(cfg.limits, 'limits')) {
     const l = cfg.limits;
-    c.keys(l, ['maxAmountCents', 'maxEarnsPerDay', 'minSecondsBetweenEarns', 'undoWindowMinutes'], 'limits.');
+    c.keys(l, ['maxAmountCents', 'maxEarnsPerDay', 'minSecondsBetweenEarns', 'undoWindowMinutes', 'staffPinIdleMinutes'], 'limits.');
     c.int(l.maxAmountCents, 'limits.maxAmountCents', 1, 10_000_000);
     c.int(l.maxEarnsPerDay, 'limits.maxEarnsPerDay', 1, 1000);
     c.int(l.minSecondsBetweenEarns, 'limits.minSecondsBetweenEarns', 0, 86_400);
     c.int(l.undoWindowMinutes, 'limits.undoWindowMinutes', 0, 1440);
+    c.int(l.staffPinIdleMinutes, 'limits.staffPinIdleMinutes', 1, 720);
   }
 
   if (c.object(cfg.qr, 'qr')) {
