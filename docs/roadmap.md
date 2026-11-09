@@ -34,8 +34,9 @@ Legend: **D** = Dimos · **C** = Claude · ☐ open · ☑ done
 - ☑ C: HTTP API (`packages/api`) + Edge Function `api` bundle; CI on GitHub Actions (typecheck, tests, DB tests, build)
 - ☑ D: Supabase access token as GitHub secret: CI deploys the `api` Edge Function from `main` (live since 9 Nov)
 - ☑ D: web address decided: `loyalty.overoll.gr` (landing + web app), `admin.loyalty.overoll.gr` (back office + till console), hosted on Cloudflare Pages; sign-in emails via Resend
-- ☑ C: email to Overoll's IT with the DNS records for Papaki (2 CNAME for the sites, 4 for the sign-in email)
-- ☐ D: Resend account: add the domain `loyalty.overoll.gr` (region Ireland), put the DKIM value in the IT email, API key as GitHub secret `RESEND_API_KEY`; Pro plan ($20/month) before the pilot
+- ☑ C: email to Overoll's IT with the DNS records for Papaki (2 CNAME for the sites, 4 for the sign-in email; `docs/dns-records.md`)
+- ☑ D + C: Resend (team growagency, Pro since 9 Nov): domain `loyalty.overoll.gr` added in Ireland (eu-west-1); final DNS records in `docs/dns-records.md` and in the IT email
+- ☐ C + D: once Resend shows the domain verified, connect SMTP to Supabase (Resend's Supabase integration or an API key as GitHub secret `RESEND_API_KEY`) and set `email.enabled`
 - ☐ D: Overoll's IT adds the DNS records
 - ☑ C: Cloudflare Pages projects `overoll-loyalty` (member web app → https://overoll-loyalty.pages.dev) and `overoll-loyalty-admin` (back office + till → https://overoll-loyalty-admin.pages.dev), connected to the GitHub repo: every push to `main` builds and deploys (`npm run build:web:mobile|admin`), no token. Custom domains added, waiting for the DNS records
 - ☑ C: Supabase settings as code (`supabase/project.config.json`): site URL, redirect URLs, 6-digit sign-in code valid 10 minutes, Greek + English code email, API CORS origins; applied by CI
