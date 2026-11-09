@@ -15,5 +15,15 @@ export function supabaseEnv(): SupabaseEnv | null {
   return { url, publishableKey };
 }
 
+/** The HTTP API (Edge Function `api`) under the Supabase project URL. */
+export function apiBaseUrl(supabaseUrl: string): string {
+  return `${supabaseUrl.replace(/\/+$/, '')}/functions/v1/api`;
+}
+
+/** The club site and web app (`club.<overoll domain>`, domain not confirmed yet). */
+export function clubUrlSetting(): string | null {
+  return process.env.EXPO_PUBLIC_CLUB_URL?.trim() || null;
+}
+
 /** The brand this app belongs to (multi-brand database, one brand per app). */
 export const BRAND_SLUG = 'overoll';

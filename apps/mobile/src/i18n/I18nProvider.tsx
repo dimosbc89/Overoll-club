@@ -1,7 +1,8 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from 'react';
 
-import { createTranslate, defaultLocale, isLocale, type Locale, type Translate } from './messages';
+import { clubUrl, clubUrlStatic, PROGRAM_NAME, SUPPORT_EMAIL } from '../lib/program';
+import { createTranslate, defaultLocale, isLocale, type Locale, type MessageParams, type Translate } from './messages';
 
 const STORAGE_KEY = 'overoll.locale';
 
@@ -11,14 +12,22 @@ interface I18nValue {
   t: Translate;
 }
 
+function globalParams(club: string): MessageParams {
+  return { programName: PROGRAM_NAME, clubUrl: club, supportEmail: SUPPORT_EMAIL };
+}
+
 const I18nContext = createContext<I18nValue>({
   locale: defaultLocale,
   setLocale: () => {},
-  t: createTranslate(defaultLocale),
+  t: createTranslate(defaultLocale, globalParams(clubUrlStatic())),
 });
 
 export function I18nProvider({ children }: { children: ReactNode }) {
   const [locale, setLocaleState] = useState<Locale>(defaultLocale);
+  // The web app's own host is only known in the browser: fill it in after
+  // mount so the static HTML and the first client render match.
+  const [club, setClub] = useState(clubUrlStatic);
+  useEffect(() => setClub(clubUrl()), []);
 
   // Restore the saved choice after mount (also keeps static web rendering in Greek).
   useEffect(() => {
@@ -43,7 +52,10 @@ export function I18nProvider({ children }: { children: ReactNode }) {
     AsyncStorage.setItem(STORAGE_KEY, next).catch(() => {});
   }, []);
 
-  const value = useMemo(() => ({ locale, setLocale, t: createTranslate(locale) }), [locale, setLocale]);
+  const value = useMemo(
+    () => ({ locale, setLocale, t: createTranslate(locale, globalParams(club)) }),
+    [locale, setLocale, club],
+  );
 
   return <I18nContext.Provider value={value}>{children}</I18nContext.Provider>;
 }

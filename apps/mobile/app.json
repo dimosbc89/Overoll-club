@@ -6,7 +6,7 @@
     "scheme": "overollclub",
     "orientation": "portrait",
     "userInterfaceStyle": "light",
-    "backgroundColor": "#f6f1e8",
+    "backgroundColor": "#f9f0e9",
     "ios": {
       "bundleIdentifier": "online.growagency.overoll",
       "supportsTablet": false
@@ -19,6 +19,9 @@
       "output": "static",
       "bundler": "metro"
     },
-    "plugins": ["expo-router"]
+    "plugins": [
+      "expo-router",
+      "expo-font"
+    ]
   }
 }

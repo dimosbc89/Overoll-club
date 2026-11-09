@@ -1,15 +1,17 @@
 import { Linking, Platform, Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { RemoteContent } from '../../components/RemoteContent';
-import { Body, Screen, Title } from '../../components/ui';
+import { Muted, Screen, Title } from '../../components/ui';
 import { useI18n } from '../../i18n/I18nProvider';
 import type { Translate } from '../../i18n/messages';
 import { fetchStores, type StoreRow } from '../../lib/data';
 import { todayHours } from '../../lib/hours';
 import { mapsUrl } from '../../lib/maps';
 import { useRemote } from '../../lib/useRemote';
-import { fonts } from '../../theme/fonts';
+import { type } from '../../theme/fonts';
 import { colors, minTouch, radius, space } from '../../theme/tokens';
+
+const shadow = Platform.OS === 'web' ? { boxShadow: '0 1px 2px #48423e14, 0 8px 24px #48423e14' } : { elevation: 2, shadowColor: colors.ink, shadowOpacity: 0.08, shadowRadius: 12, shadowOffset: { width: 0, height: 4 } };
 
 function hoursLabel(store: StoreRow, t: Translate, now: Date): string {
   const today = todayHours(store.opening_hours, now, store.time_zone);
@@ -30,7 +32,7 @@ export default function StoresScreen() {
       <RemoteContent state={state} onRetry={reload}>
         {(stores) =>
           stores.length === 0 ? (
-            <Body>{t('stores.empty')}</Body>
+            <Muted>{t('stores.empty')}</Muted>
           ) : (
             <View style={styles.list}>
               {stores.map((store) => {
@@ -66,13 +68,12 @@ const styles = StyleSheet.create({
     minHeight: minTouch,
     backgroundColor: colors.white,
     borderRadius: radius.md,
-    borderWidth: 1,
-    borderColor: colors.butter,
     padding: space.md,
-    gap: space.xs,
+    gap: 2,
+    ...shadow,
   },
-  pressed: { backgroundColor: colors.pinkLight },
-  name: { fontFamily: fonts.serif, fontSize: 21, letterSpacing: -0.5, color: colors.cocoa },
-  address: { fontFamily: fonts.sans, fontSize: 15, color: colors.ink },
-  hours: { fontFamily: fonts.sans, fontSize: 15, fontWeight: '600', color: colors.ink },
+  pressed: { backgroundColor: colors.cream },
+  name: { ...type.bodyStrong, fontSize: 17, lineHeight: 24 },
+  address: { ...type.body, color: colors.inkMuted },
+  hours: { ...type.label, color: colors.plumDeep },
 });
