@@ -185,6 +185,7 @@ describe('redeeming the gift (createRedemption with giftId)', () => {
       redemptionId: expect.any(String),
       code: expect.stringMatching(/^[A-HJ-NP-Z2-9]{8}$/),
       rewardId: ids.croissant,
+      giftId: member.giftId,
       pointsSpent: 0,
       expiresAt: at(base, 600 + 15 * 60).toISOString(),
       balance: 64,

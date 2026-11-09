@@ -111,7 +111,7 @@ describe('concurrent calls for the same member (Promise.all)', () => {
     const userId = await newUser(db.admin);
     const now = new Date('2027-02-01T15:00:00Z');
     const results = await Promise.all(
-      Array.from({ length: 4 }, () => joinMember(db.server, { userId, brandSlug: 'overoll', firstName: 'Anna', idempotencyKey: key('j'), now })),
+      Array.from({ length: 4 }, () => joinMember(db.server, { userId, brandSlug: 'overoll', confirmsMinimumAge: true, firstName: 'Anna', idempotencyKey: key('j'), now })),
     );
     const ids_ = new Set(results.map((r) => (r.ok ? r.memberId : r.code)));
     expect(ids_.size).toBe(1);

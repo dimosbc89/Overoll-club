@@ -76,6 +76,7 @@ describe('createRedemption', () => {
         redemptionId: expect.any(String),
         code: expect.stringMatching(/^[A-HJ-NP-Z2-9]{8}$/),
         rewardId,
+        giftId: null,
         pointsSpent: cost,
         expiresAt: '2027-01-20T09:15:00.000Z',
         balance: 1000 - cost,

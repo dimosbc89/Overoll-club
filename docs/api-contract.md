@@ -1,4 +1,4 @@
-# Contract between the apps and the server (v0.2, 9 Nov 2026)
+# Contract between the apps and the server (v0.3, 9 Nov 2026)
 
 Three workstreams build against this page at the same time: the server (`packages/core`, `packages/server`, `packages/api`, `supabase/`), the member app (`apps/mobile`) and the staff console (`apps/admin` → `/console`). Change it only together with all three.
 
@@ -25,6 +25,12 @@ Base URL: `{SUPABASE_URL}/functions/v1/api`. Every call: `POST`, JSON body, `Aut
 
 ### Points expiry job
 - `jobs/expire-points` (service key only): writes an `expire` entry for every member whose last purchase is more than `expiryMonths` ago and whose balance is above 0. Idempotent per member and expiry date.
+
+## New in v0.3 (after the first build)
+
+- `join` takes `confirmsMinimumAge: true` (the "I am 15 or older" box). A new member without it gets `invalid_input`; the server stores `members.minimum_age_confirmed_at`. Joining again as an existing member does not need it.
+- `redemptions/create` returns `giftId` (the welcome gift the code redeems, or `null` for a reward bought with points).
+- `jobs/*` also accept the scheduler's token (Vault secret `jobs_token`). pg_cron calls `jobs/expire-redemptions` every minute and `jobs/expire-points` daily at 01:15 UTC (`supabase/jobs.sql`).
 
 ## What the apps read directly (Supabase client, row-level security)
 

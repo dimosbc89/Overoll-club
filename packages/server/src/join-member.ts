@@ -21,6 +21,11 @@ export interface JoinMemberInput {
   /** Store code from the counter QR join link, e.g. "chalandri". */
   joinedStoreCode?: string | null;
   consents?: { email?: boolean; sms?: boolean; push?: boolean } | null;
+  /**
+   * The "I am 15 or older" box (core `minimumAge`). Required (true) for a new
+   * member; stored as `members.minimum_age_confirmed_at`.
+   */
+  confirmsMinimumAge?: boolean | null;
   /** Another member's referral code. */
   referralCode?: string | null;
   idempotencyKey: string;
@@ -81,6 +86,9 @@ function parse(raw: JoinMemberInput) {
   const referralCode = referral ? referral.toUpperCase() : null;
   if (referralCode && !/^[A-Z0-9]{6,16}$/.test(referralCode)) throw new InputError('referralCode is not valid');
 
+  const confirmsMinimumAge = raw.confirmsMinimumAge ?? false;
+  if (typeof confirmsMinimumAge !== 'boolean') throw new InputError('confirmsMinimumAge must be true or false');
+
   const consents = raw.consents ?? {};
   for (const key of ['email', 'sms', 'push'] as const) {
     const v = consents[key];
@@ -101,6 +109,7 @@ function parse(raw: JoinMemberInput) {
     consentEmail: consents.email ?? false,
     consentSms: consents.sms ?? false,
     consentPush: consents.push ?? false,
+    confirmsMinimumAge,
     idempotencyKey: input.idempotencyKey(raw.idempotencyKey),
     now: input.now(raw.now),
   };
@@ -141,6 +150,7 @@ export async function joinMember(sql: Db, raw: JoinMemberInput): Promise<JoinMem
             from public.members where brand_id = ${brand.id} and user_id = ${i.userId}
           `;
           if (existing) return existingMember(existing);
+          if (!i.confirmsMinimumAge) return fail('invalid_input', 'confirmsMinimumAge must be true to join');
 
           let joinedStoreId: string | null = null;
           if (i.joinedStoreCode) {
@@ -180,11 +190,11 @@ export async function joinMember(sql: Db, raw: JoinMemberInput): Promise<JoinMem
             insert into public.members (
               brand_id, user_id, first_name, last_name, email, phone, birthday, locale,
               joined_store_id, referred_by, consent_email, consent_sms, consent_push,
-              consents_updated_at, created_at
+              consents_updated_at, minimum_age_confirmed_at, created_at
             ) values (
               ${brand.id}, ${i.userId}, ${i.firstName}, ${i.lastName}, ${i.email}, ${i.phone}, ${i.birthday}, ${locale},
               ${joinedStoreId}, ${referredBy}, ${i.consentEmail}, ${i.consentSms}, ${i.consentPush},
-              ${now}, ${now}
+              ${now}, ${now}, ${now}
             )
             on conflict (brand_id, user_id) do nothing
             returning id, member_code, first_name, tier, locale, deleted_at

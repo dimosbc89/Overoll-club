@@ -15,11 +15,31 @@ afterAll(async () => {
 const now = new Date('2027-01-14T09:00:00Z');
 
 describe('joinMember', () => {
+  it('refuses a new member without the minimum-age box and records it when given', async () => {
+    const userId = await newUser(db.admin);
+    const base = { userId, brandSlug: 'overoll', firstName: 'Ioanna', now };
+    expect(await joinMember(db.server, { ...base, idempotencyKey: key() })).toMatchObject({ ok: false, code: 'invalid_input' });
+    expect(await joinMember(db.server, { ...base, confirmsMinimumAge: false, idempotencyKey: key() })).toMatchObject({
+      ok: false,
+      code: 'invalid_input',
+    });
+    const joined = await joinMember(db.server, { ...base, confirmsMinimumAge: true, idempotencyKey: key() });
+    expect(joined).toMatchObject({ ok: true, created: true });
+    if (!joined.ok) return;
+    const [m] = await db.admin<{ at: Date | null }[]>`
+      select minimum_age_confirmed_at as at from public.members where id = ${joined.memberId}
+    `;
+    expect(m!.at?.toISOString()).toBe(now.toISOString());
+    // Joining again (the member exists) needs no box: it returns the member.
+    expect(await joinMember(db.server, { ...base, idempotencyKey: key() })).toMatchObject({ ok: true, created: false });
+  });
+
   it('creates the member and its QR secret, and audits it', async () => {
     const userId = await newUser(db.admin);
     const result = await joinMember(db.server, {
       userId,
       brandSlug: 'overoll',
+      confirmsMinimumAge: true,
       firstName: '  Eleni ',
       lastName: 'Papadopoulou',
       email: 'Eleni@Example.com',
@@ -55,7 +75,7 @@ describe('joinMember', () => {
 
   it('joining twice returns the same member (same key: same result; new key: created false)', async () => {
     const userId = await newUser(db.admin);
-    const input = { userId, brandSlug: 'overoll', firstName: 'Kostas', locale: 'en' as const, idempotencyKey: key(), now };
+    const input = { userId, brandSlug: 'overoll', confirmsMinimumAge: true, firstName: 'Kostas', locale: 'en' as const, idempotencyKey: key(), now };
     const first = await joinMember(db.server, input);
     const retry = await joinMember(db.server, input);
     const again = await joinMember(db.server, { ...input, idempotencyKey: key() });
@@ -69,14 +89,14 @@ describe('joinMember', () => {
   it('refuses a reused key with a different request', async () => {
     const userId = await newUser(db.admin);
     const k = key();
-    await joinMember(db.server, { userId, brandSlug: 'overoll', firstName: 'A', idempotencyKey: k, now });
-    const other = await joinMember(db.server, { userId, brandSlug: 'overoll', firstName: 'B', idempotencyKey: k, now });
+    await joinMember(db.server, { userId, brandSlug: 'overoll', confirmsMinimumAge: true, firstName: 'A', idempotencyKey: k, now });
+    const other = await joinMember(db.server, { userId, brandSlug: 'overoll', confirmsMinimumAge: true, firstName: 'B', idempotencyKey: k, now });
     expect(other).toMatchObject({ ok: false, code: 'idempotency_conflict' });
   });
 
   it('validates input and references', async () => {
     const userId = await newUser(db.admin);
-    const base = { userId, brandSlug: 'overoll', firstName: 'Maria', idempotencyKey: key(), now };
+    const base = { userId, brandSlug: 'overoll', confirmsMinimumAge: true, firstName: 'Maria', idempotencyKey: key(), now };
     expect(await joinMember(db.server, { ...base, firstName: '   ' })).toMatchObject({ ok: false, code: 'invalid_input' });
     expect(await joinMember(db.server, { ...base, userId: 'nope' })).toMatchObject({ ok: false, code: 'invalid_input' });
     expect(await joinMember(db.server, { ...base, birthday: '1990-02-30' })).toMatchObject({ ok: false, code: 'invalid_input' });
@@ -92,7 +112,7 @@ describe('joinMember', () => {
     await db.admin`update public.members set email = 'taken@example.com', phone = '+306900000001' where id = ${referrer.memberId}`;
 
     const userId = await newUser(db.admin);
-    const base = { userId, brandSlug: 'overoll', firstName: 'Nikos', now };
+    const base = { userId, brandSlug: 'overoll', confirmsMinimumAge: true, firstName: 'Nikos', now };
     expect(await joinMember(db.server, { ...base, email: 'TAKEN@example.com', idempotencyKey: key() })).toMatchObject({ ok: false, code: 'email_taken' });
     expect(await joinMember(db.server, { ...base, phone: '+306900000001', idempotencyKey: key() })).toMatchObject({ ok: false, code: 'phone_taken' });
     const joined = await joinMember(db.server, { ...base, referralCode: referral_code.toLowerCase(), idempotencyKey: key() });
@@ -104,7 +124,7 @@ describe('joinMember', () => {
 
   it('keeps brands apart: the same user can join another brand', async () => {
     const member = await newMember(db.server, db.admin);
-    const other = await joinMember(db.server, { userId: member.userId, brandSlug: 'other', firstName: 'Eleni', idempotencyKey: key(), now });
+    const other = await joinMember(db.server, { userId: member.userId, brandSlug: 'other', confirmsMinimumAge: true, firstName: 'Eleni', idempotencyKey: key(), now });
     expect(other).toMatchObject({ ok: true, created: true });
     expect(other.ok && other.memberId).not.toBe(member.memberId);
   });

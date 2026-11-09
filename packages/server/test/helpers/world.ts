@@ -101,7 +101,7 @@ export async function newMember(
   const userId = await newUser(admin);
   const joined = await joinMember(server, {
     userId,
-    brandSlug: options.brandSlug ?? 'overoll',
+    brandSlug: options.brandSlug ?? 'overoll', confirmsMinimumAge: true,
     firstName: options.firstName ?? 'Eleni',
     idempotencyKey: key('join'),
     now: new Date('2027-01-01T08:00:00Z'),

@@ -49,6 +49,7 @@ describe('join form', () => {
       locale: 'el',
       joinedStoreCode: 'chalandri',
       consents: { email: true, sms: false, push: false },
+      confirmsMinimumAge: true,
     });
   });
 

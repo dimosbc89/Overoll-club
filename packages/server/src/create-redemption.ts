@@ -46,6 +46,8 @@ export interface CreatedRedemption {
   /** 8 characters to show at the till. */
   code: string;
   rewardId: string;
+  /** The welcome gift this code redeems; null for a reward bought with points. */
+  giftId: string | null;
   /** 0 for a gift. */
   pointsSpent: number;
   /** ISO 8601. */
@@ -177,6 +179,7 @@ export async function createRedemption(sql: Db, raw: CreateRedemptionInput): Pro
           redemptionId: redemption.id,
           code: redemption.code,
           rewardId: reward.id,
+          giftId: null,
           pointsSpent: cost,
           expiresAt: expiresAt.toISOString(),
           balance: await memberBalance(tx, member.id),
@@ -231,6 +234,7 @@ async function redeemGift(
     redemptionId: redemption.id,
     code: redemption.code,
     rewardId: gift.reward_id,
+    giftId: gift.id,
     pointsSpent: 0,
     expiresAt: expiresAt.toISOString(),
     balance: await memberBalance(tx, member.id),

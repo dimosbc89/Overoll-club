@@ -68,6 +68,8 @@ export function joinBody(details: JoinDetails): Record<string, unknown> {
     locale: details.locale,
     joinedStoreCode: details.storeCode,
     consents: { ...details.consents },
+    // The profile step only lets the member on once they are old enough (profileProblems).
+    confirmsMinimumAge: true,
   };
 }
 

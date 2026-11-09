@@ -72,7 +72,7 @@ describe('HTTP layer', () => {
     const real = await newUser(db.admin);
     const spoofed = await newUser(db.admin);
     const res = await handle(
-      post('/api/join', { brandSlug: 'overoll', firstName: 'Anna', userId: spoofed, idempotencyKey: key() }, tokenFor(real)),
+      post('/api/join', { brandSlug: 'overoll', confirmsMinimumAge: true, firstName: 'Anna', userId: spoofed, idempotencyKey: key() }, tokenFor(real)),
     );
     expect(res.status).toBe(200);
     const body = (await res.json()) as { memberId: string };
