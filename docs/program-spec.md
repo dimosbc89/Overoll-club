@@ -41,7 +41,7 @@ All numbers live in `packages/core/src/config.ts` and can be changed by HQ later
 | --- | --- |
 | Base | **10 points per €1** of the receipt total, rounded down |
 | Tier multiplier | Classic ×1.00 · Gold ×1.25 · Club ×1.50 |
-| Welcome reward | A free butter croissant, unlocked by the first purchase, once per member, redeemed with a code like any reward; valid **30 days** after it unlocks (`welcome.validDays`). Not points: it never counts towards tiers |
+| Welcome reward | A free butter croissant, unlocked by the first purchase, once per member, redeemed with a code like any reward; valid **30 days** after it unlocks (`welcome.validDays`). Not points: it never counts towards tiers. Which reward is a setting (`welcome.rewardId`; no setting = no welcome gift). It stays if that first purchase is undone. Only the very first purchase unlocks it |
 | Birthday | A free croissant valid during the birthday week (from v1.1, see roadmap) |
 | Referral | +100 points to both, after the friend's first purchase (v1.1) |
 | Streak | 3 visits in 7 days → +50 points (v1.1) |
@@ -75,8 +75,10 @@ Example: €6.40 receipt, Gold member → floor(640 × 10 × 125 / 10 000) = 80 
 
 ## 6. Expiry
 
-- Points expire **12 months after the member's last purchase**. Any purchase resets the clock.
+- Points expire **12 months after the member's last purchase**. Any purchase resets the clock. A member who never bought anything counts from the day they joined.
+- A daily job takes the whole remaining balance off with one `expire` entry, once per member and expiry date. A member with a reward code still pending is done the next day. Points HQ adds after an expiry stay until 12 months after the next purchase.
 - 30 days and 7 days before expiry, the member gets a reminder.
+- The welcome gift has its own expiry (30 days, §3): an unused one simply expires.
 
 ## 7. Redemption flow
 
@@ -85,6 +87,7 @@ Example: €6.40 receipt, Gold member → floor(640 × 10 × 125 / 10 000) = 80 
 3. Staff scan the code on the staff console → it is marked used, with store and employee.
 4. The cashier rings the item on the POS as a 100% discount line (keeps receipts correct for AADE/myDATA).
 5. Unused codes expire automatically and the points return.
+6. The welcome gift works the same way, for 0 points: the member makes a code from the gift, staff scan it. If that code is cancelled or expires, the gift is available again (until the gift's own 30 days are over).
 
 ## 8. Fraud limits
 
@@ -95,9 +98,11 @@ Example: €6.40 receipt, Gold member → floor(640 × 10 × 125 / 10 000) = 80 
 | Max receipt total per transaction | €80. For a bigger receipt the cashier enters €80: points up to the limit, no override |
 | Max earn transactions per member per day | 5 (network-wide, Athens calendar day) |
 | Double scans | Same member can't earn twice within 2 minutes |
+| Points after paying | The receipt number earns points once per store per calendar day (Athens), for any member. An undone earn frees it again. All other limits still apply |
 | Undone earns | Don't count towards the daily limit or the 2-minute rule, so a cashier can fix a typo straight away |
 | Undo | Last transaction within 10 minutes (store device, with an employee PIN); older needs the store manager or HQ |
 | Staff identity | Every action is tied to an employee. The cashier enters their PIN once per shift; the console locks after 5 idle minutes (`limits.staffPinIdleMinutes`) |
+| PIN guessing | 5 wrong PINs for one employee within 15 minutes lock that employee for 15 minutes on every device (`limits.pinMaxAttempts`, `limits.pinLockMinutes`). The right PIN clears the count. Each lock is logged for HQ |
 | Refunds | Points taken back; balance may go negative |
 | Alerts | Same employee + same member more than 3 times a day; awards above €50 |
 

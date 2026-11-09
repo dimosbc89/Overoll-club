@@ -47,7 +47,9 @@ Sources: `docs/program-spec.md` v0.1, `packages/core/src/config.ts`, `docs/brand
 | Between two earns | 2 minutes | `limits.minSecondsBetweenEarns` (120 s) |
 | Undo by staff | 10 minutes | `limits.undoWindowMinutes` |
 | Member QR | changes every 30 seconds, works offline | `qr.stepSeconds` |
-| Welcome | a free butter croissant after the first purchase, once | spec §3 |
+| Welcome | a free butter croissant after the first purchase, once, valid 30 days | `welcome.validDays`, `welcome.rewardId` |
+| Points after paying | same day, same store, one receipt earns once | spec §8 |
+| PIN lock | 5 wrong PINs within 15 minutes lock the cashier for 15 minutes | `limits.pinMaxAttempts`, `limits.pinLockMinutes` |
 
 ### Greek writing notes (for developers too)
 
@@ -430,7 +432,7 @@ SMS sign-in code (sender ID "Overoll"). Greek lowercase letters switch the SMS t
 
 ### f2. Error messages
 
-One line per code, telling the person what to do next. Source of truth: `data/copy/errors.el.json` and `data/copy/errors.en.json` (this table is generated from them). Covers every code in the `ErrorCode` union in `packages/server/src/result.ts`, including `PurchaseError` and `EarnLimitError` from `packages/core/src/points.ts`, plus two API-level codes from `packages/api/src/handler.ts` (`unauthenticated`, `internal_error`) and two for the apps (`network_error` when offline, `unknown` as the fallback for any other code, e.g. `route_not_found`). After an `internal_error` or `network_error` during an award, retry with the **same** idempotency key so points are never added twice.
+One line per code, telling the person what to do next. Source of truth: `data/copy/errors.el.json` and `data/copy/errors.en.json` (this table is generated from them). Covers every code in the `ErrorCode` union in `packages/server/src/result.ts` (v0.2 added `pin_locked`, `receipt_already_used`, `gift_not_found`, `gift_used`, `gift_expired`: **new, for Dimos to approve**), including `PurchaseError` and `EarnLimitError` from `packages/core/src/points.ts`, plus two API-level codes from `packages/api/src/handler.ts` (`unauthenticated`, `internal_error`) and two for the apps (`network_error` when offline, `unknown` as the fallback for any other code, e.g. `route_not_found`). After an `internal_error` or `network_error` during an award, retry with the **same** idempotency key so points are never added twice.
 
 | Code | Who sees it | Ελληνικά | English | Fill |
 | --- | --- | --- | --- | --- |
@@ -441,6 +443,7 @@ One line per code, telling the person what to do next. Source of truth: `data/co
 | `employee_not_found` | staff | Δεν βρίσκουμε το όνομά σου στο προσωπικό του καταστήματος. Διάλεξέ το ξανά ή ρώτα τον υπεύθυνο. | We can't find you on this store's staff list. Pick your name again or ask your store manager. | – |
 | `employee_required` | staff (undo) | Για την αναίρεση χρειάζεται το PIN σου. Διάλεξε το όνομά σου και πληκτρολόγησέ το. | Undo needs your PIN. Pick your name and type it in. | – |
 | `bad_pin` | staff | Λάθος PIN. Δοκίμασε ξανά. Αν το ξέχασες, ο υπεύθυνος μπορεί να σου ορίσει νέο. | Wrong PIN. Try again. If you've forgotten it, your store manager can set a new one. | – |
+| `pin_locked` | staff (any PIN check) | Πολλές λάθος προσπάθειες, οπότε το PIN κλείδωσε για {minutes} λεπτά. Περίμενε λίγο ή ζήτα βοήθεια από τον υπεύθυνο. | Too many wrong tries, so this PIN is locked for {minutes} minutes. Wait a bit, or ask your store manager for help. | `{minutes}` = `limits.pinLockMinutes` (15) |
 | `brand_not_found` | member (join) | Δεν βρήκαμε το πρόγραμμα. Σκάναρε ξανά το QR στο ταμείο ή άνοιξε το {clubUrl}. | We couldn't find the programme. Scan the QR at the counter again or open {clubUrl}. | `{clubUrl}` = club URL |
 | `store_not_found` | member (join from store QR) | Αυτό το QR καταστήματος δεν δουλεύει. Γίνε μέλος από το {clubUrl} ή ζήτα ένα χεράκι στο ταμείο. | This store QR isn't working. Join at {clubUrl} instead, or ask us at the counter. | `{clubUrl}` = club URL |
 | `referral_not_found` | member (join, v1.1) | Δεν βρίσκουμε αυτόν τον κωδικό πρόσκλησης. Έλεγξέ τον ή σβήσε τον για να συνεχίσεις χωρίς αυτόν. | We can't find that invite code. Check it, or remove it to carry on without one. | – |
@@ -457,6 +460,7 @@ One line per code, telling the person what to do next. Source of truth: `data/co
 | `amount_too_small` | staff | Αυτό το ποσό είναι πολύ μικρό για να δώσει πόντους. Έλεγξε ότι το πληκτρολόγησες σωστά. | That amount is too small to earn points. Check you typed it correctly. | – |
 | `too_soon_after_last_earn` | staff | Σε αυτή την κάρτα μπήκαν πόντοι μόλις τώρα. Περίμενε {minutes} λεπτά ή, αν ήταν λάθος, κάνε αναίρεση και πέρασέ το ξανά. | Points were just added to this card. Wait {minutes} minutes or, if it was a mistake, undo it and enter it again. | `{minutes}` = `limits.minSecondsBetweenEarns` ÷ 60, rounded up (2) |
 | `daily_earn_limit_reached` | staff | Αυτή η κάρτα έφτασε το όριο των {maxEarns} αγορών για σήμερα. Πόντοι μπαίνουν ξανά από αύριο. | This card has reached today's limit of {maxEarns} purchases. Points can be added again tomorrow. | `{maxEarns}` = `limits.maxEarnsPerDay` (5) |
+| `receipt_already_used` | staff (late points) | Αυτή η απόδειξη έχει ήδη πάρει πόντους σήμερα σε αυτό το κατάστημα. Έλεγξε τον αριθμό της απόδειξης. | This receipt has already earned points at this store today. Check the receipt number. | – |
 | `not_found` | staff (undo, redeem); member (cancel code) | Δεν το βρίσκουμε. Αν είναι κωδικός δώρου, έλεγξε τους 8 χαρακτήρες και δοκίμασε ξανά. | We can't find that. If it's a reward code, check the 8 characters and try again. | – |
 | `not_undoable` | staff | Αναίρεση γίνεται μόνο σε πόντους από αγορά. Για οτιδήποτε άλλο, ενημέρωσε τον υπεύθυνο. | Only points from a purchase can be undone. For anything else, tell your store manager. | – |
 | `already_undone` | staff | Αυτή η κίνηση έχει ήδη αναιρεθεί. Δεν χρειάζεται να κάνεις κάτι άλλο. | This one has already been undone. Nothing else to do. | – |
@@ -468,6 +472,9 @@ One line per code, telling the person what to do next. Source of truth: `data/co
 | `already_used` | staff (redeem); member (cancel) | Αυτός ο κωδικός έχει ήδη χρησιμοποιηθεί, οπότε δεν ισχύει ξανά. | This code has already been used, so it won't work again. | – |
 | `cancelled` | staff (redeem); member (cancel) | Αυτός ο κωδικός ακυρώθηκε και οι πόντοι γύρισαν στην κάρτα. Για το δώρο χρειάζεται νέος κωδικός από την εφαρμογή. | This code was cancelled and the points went back on the card. The reward needs a new code from the app. | – |
 | `expired` | staff (redeem); member (cancel) | Αυτός ο κωδικός έληξε και οι πόντοι γυρίζουν στην κάρτα. Για το δώρο χρειάζεται νέος κωδικός από την εφαρμογή. | This code has expired and the points go back on the card. The reward needs a new code from the app. | – |
+| `gift_not_found` | member (welcome gift) | Δεν βρίσκουμε αυτό το δώρο. Ανανέωσε την οθόνη και δοκίμασε ξανά. | We can't find this gift. Refresh the screen and try again. | – |
+| `gift_used` | member (welcome gift) | Για αυτό το δώρο έχεις ήδη κωδικό ή το έχεις ήδη πάρει. Αν ο κωδικός ισχύει ακόμα, θα τον βρεις στα Δώρα. | You already have a code for this gift, or you've already had it. If the code is still valid, you'll find it in Rewards. | – |
+| `gift_expired` | member (welcome gift) | Αυτό το δώρο έληξε, οπότε δεν εξαργυρώνεται πια. Συνέχισε να μαζεύεις πόντους για το επόμενο! | This gift has expired, so it can't be redeemed any more. Keep collecting points for the next one! | – |
 | `unauthenticated` | both (API) | Η σύνδεσή σου έληξε. Συνδέσου ξανά για να συνεχίσεις. | You've been signed out. Sign in again to carry on. | – |
 | `internal_error` | both (API) | Κάτι πήγε στραβά από τη μεριά μας. Δοκίμασε ξανά σε λίγο. | Something went wrong on our side. Try again in a moment. | – |
 | `network_error` | both (app, offline) | Δεν υπάρχει σύνδεση στο ίντερνετ. Έλεγξε το Wi-Fi ή τα δεδομένα και δοκίμασε ξανά. | No internet connection. Check your Wi-Fi or mobile data and try again. | – |

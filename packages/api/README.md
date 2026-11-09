@@ -9,17 +9,21 @@ All routes are `POST` with a JSON body and `Authorization: Bearer <token>`:
 | --- | --- | --- |
 | `/api/join` | signed-in user | `joinMember` |
 | `/api/scan` | store device / manager / HQ | `resolveMemberToken` |
-| `/api/award` | store device / manager | `awardPoints` |
+| `/api/award` | store device / manager | `awardPoints` (optional `receiptNumber`; result has `welcomeGiftUnlocked`) |
 | `/api/undo` | device (within 10 min, with PIN) / manager / HQ | `undoEarn` |
-| `/api/redemptions/create` | the member | `createRedemption` |
+| `/api/redemptions/create` | the member | `createRedemption` (`rewardId` or `giftId`) |
 | `/api/redemptions/cancel` | the member | `cancelRedemption` |
 | `/api/redemptions/use` | store device / manager | `useRedemption` |
-| `/api/jobs/expire-redemptions` | service role key only | `expireRedemptions` |
+| `/api/staff/verify-pin` | store device / manager | `verifyEmployeePin`: `{ storeId, employeeId, pin }` → `{ ok, employee: { id, displayName } }` |
+| `/api/jobs/expire-redemptions` | service role key only | `expireRedemptions` (every minute; also expires gifts) |
+| `/api/jobs/expire-points` | service role key only | `expirePoints` (daily) |
 
 - Identity comes only from the verified token; `userId`, `callerUserId` and `now` in a body are dropped.
 - Responses: `200 {ok:true,…}`; errors `{ok:false, code, message?}` with 400 `invalid_input`,
   401 `unauthenticated`, 403 `forbidden`, 404 unknown route, 409 `idempotency_conflict`,
-  422 any other business error (e.g. `amount_over_limit`, `daily_earn_limit_reached`), 500 `internal_error`.
+  422 any other business error (e.g. `amount_over_limit`, `daily_earn_limit_reached`, `receipt_already_used`,
+  `pin_locked`, `gift_used`), 500 `internal_error`.
+- Jobs take an optional `batchSize` (a positive whole number; anything else means the default, 100).
 - Bodies over 16 KB are refused. CORS origins from `ALLOWED_ORIGINS` (default `*`).
 
 Tests (`npm test -w @overoll/api`) reuse the throwaway Postgres of `packages/server`.
