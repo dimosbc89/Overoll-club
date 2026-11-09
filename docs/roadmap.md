@@ -11,6 +11,7 @@ Legend: **D** = Dimos · **C** = Claude · ☐ open · ☑ done
 - ☑ C: program spec v0.1 (`docs/program-spec.md`)
 - ☑ C: database schema with access rules (`supabase/migrations`)
 - ☑ C: points engine with tests (`packages/core`)
+- ☑ C: server operations that move points, with integration tests on a throwaway Postgres (`packages/server`): join, scan, award, undo, redeem, cancel, use, expire codes. Next: wrap them as Supabase Edge Functions
 - ☑ C: Supabase project `overoll-club` (GROW Agency org, Frankfurt, free plan): schema + seed applied, security advisor clean
 - ☐ D: upgrade the GROW Agency Supabase org to Pro (about $25/month) before the pilot on 7 Dec: free projects pause after a week without traffic and have no daily backups
 - ☑ C: Apple Developer (GROW AGENCY L.P., team `JUVGRB24Q6`): Pass Type ID `pass.online.growagency.overoll` registered

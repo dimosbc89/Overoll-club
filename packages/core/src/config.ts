@@ -24,6 +24,8 @@ export interface ProgramConfig {
   pointsPerEuro: number;
   /** Tiers ordered from lowest to highest threshold. */
   tiers: readonly TierRule[];
+  /** Tiers count the points earned in this many months before now. */
+  tierWindowMonths: number;
   /** Reward point cost = shelf price in € × this factor (before rounding). */
   rewardPriceFactor: number;
   /** Base reward costs are rounded to the nearest multiple of this. */
@@ -63,6 +65,7 @@ export const defaultConfig: ProgramConfig = {
     { id: 'gold', threshold: 1500, multiplierPct: 125, rewardDiscountBp: 2000 },
     { id: 'club', threshold: 4000, multiplierPct: 150, rewardDiscountBp: 3000 },
   ],
+  tierWindowMonths: 12,
   rewardPriceFactor: 140,
   rewardRoundTo: 50,
   tierCostRoundTo: 10,

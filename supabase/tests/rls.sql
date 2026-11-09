@@ -169,4 +169,28 @@ select tst.refused($$insert into public.ledger_entries (brand_id, member_id, sto
 select tst.eq((select balance from public.member_balances where member_id = '40000000-0000-0000-0000-000000000001'), 0, 'undo brings balance back to 0');
 select tst.eq((select earned_12m from public.member_balances where member_id = '40000000-0000-0000-0000-000000000001'), 0, 'undo also removes the points from tier progress');
 
+-- ------------------------------------------- server-only: idempotency keys
+set role service_role;
+insert into private.idempotency_keys (brand_id, key, operation, actor_user_id, fingerprint, result)
+values ('10000000-0000-0000-0000-000000000001', 'k-award-1', 'award', '00000000-0000-0000-0000-0000000000c1', '{}', '{"ok": true}');
+select tst.eq((select count(*) from private.idempotency_keys), 1, 'service role stores idempotency keys');
+reset role;
+select tst.refused($$insert into private.idempotency_keys (brand_id, key, operation, fingerprint, result) values ('10000000-0000-0000-0000-000000000001', 'k-award-1', 'award', '{}', '{}')$$, 'an idempotency key is stored once per brand', '23505');
+select set_config('request.jwt.claim.sub', '00000000-0000-0000-0000-0000000000c1', false);
+set role authenticated;
+select tst.refused($$select count(*) from private.idempotency_keys$$, 'store device cannot read idempotency keys');
+select tst.refused($$insert into private.idempotency_keys (brand_id, key, operation, fingerprint, result) values ('10000000-0000-0000-0000-000000000001', 'k-x', 'award', '{}', '{"ok": true}')$$, 'store device cannot write idempotency keys');
+reset role;
+select set_config('request.jwt.claim.sub', '00000000-0000-0000-0000-0000000000b1', false);
+set role authenticated;
+select tst.refused($$select count(*) from private.idempotency_keys$$, 'even HQ cannot read idempotency keys');
+reset role;
+select set_config('request.jwt.claim.sub', '', false);
+set role anon;
+select tst.refused($$select count(*) from private.idempotency_keys$$, 'anonymous cannot read idempotency keys');
+reset role;
+select tst.eq((select count(*) from pg_class c join pg_namespace n on n.oid = c.relnamespace
+               where n.nspname in ('public', 'private') and c.relkind = 'r' and not c.relrowsecurity), 0,
+              'every table in public and private has row-level security on');
+
 \echo ALL RLS TESTS PASSED

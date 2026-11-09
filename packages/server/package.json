@@ -1,0 +1,22 @@
+{
+  "name": "@overoll/server",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Overoll Club server operations that move points: join, scan, award, undo, redeem, use, expire",
+  "type": "module",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "scripts": {
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@overoll/core": "0.1.0",
+    "postgres": "^3.4.9"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.6",
+    "typescript": "^7.0.2",
+    "vitest": "^5.1.0"
+  }
+}

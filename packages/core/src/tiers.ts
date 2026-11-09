@@ -1,4 +1,5 @@
 import type { ProgramConfig, TierId, TierRule } from './config.js';
+import { addMonthsUtc } from './expiry.js';
 
 function sortedTiers(config: ProgramConfig): TierRule[] {
   return [...config.tiers].sort((a, b) => a.threshold - b.threshold);
@@ -14,10 +15,55 @@ export function qualifyingTier(points12m: number, config: ProgramConfig): TierId
   return result.id;
 }
 
-function rank(id: TierId, config: ProgramConfig): number {
+/** Position of a tier counted from the lowest (0), by threshold. */
+export function tierRank(id: TierId, config: ProgramConfig): number {
   const index = sortedTiers(config).findIndex((t) => t.id === id);
   if (index < 0) throw new Error(`Tier "${id}" is not configured`);
   return index;
+}
+const rank = tierRank;
+
+/** Is `tier` the same as or above `minTier`? Used for rewards limited to "Gold and above". */
+export function isTierAtLeast(tier: TierId, minTier: TierId, config: ProgramConfig): boolean {
+  return tierRank(tier, config) >= tierRank(minTier, config);
+}
+
+/**
+ * Ledger kinds that count towards tiers: earn and bonus entries, and the
+ * reversals (undo) of those. Redemptions, their refunds, manual adjustments
+ * and expiry do not change a member's tier progress.
+ */
+export const tierLedgerKinds = ['earn', 'bonus', 'reverse'] as const;
+
+export interface LedgerPoints {
+  kind: string;
+  points: number;
+  createdAt: Date;
+}
+
+/** Start (exclusive) of the window whose points count for tiers. */
+export function tierWindowStart(now: Date, config: ProgramConfig): Date {
+  return addMonthsUtc(now, -config.tierWindowMonths);
+}
+
+/**
+ * Points earned for tier purposes at `now`: entries of the counted kinds
+ * created after `tierWindowStart(now)` and not after `now`.
+ */
+export function pointsEarnedForTier(
+  entries: readonly LedgerPoints[],
+  now: Date,
+  config: ProgramConfig,
+): number {
+  const from = tierWindowStart(now, config).getTime();
+  const to = now.getTime();
+  const kinds: readonly string[] = tierLedgerKinds;
+  let total = 0;
+  for (const e of entries) {
+    const t = e.createdAt.getTime();
+    if (t > from && t <= to && kinds.includes(e.kind)) total += e.points;
+  }
+  return total;
 }
 
 /** After an earn: members move up instantly, never down. */

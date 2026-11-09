@@ -1,4 +1,5 @@
 import { type ProgramConfig, type TierId, tierRule } from './config.js';
+import { isTierAtLeast } from './tiers.js';
 
 function roundTo(value: number, step: number): number {
   return Math.round(value / step) * step;
@@ -38,8 +39,6 @@ export interface NextRewardProgress {
   pointsNeeded: number;
 }
 
-const tierOrder: Record<TierId, number> = { classic: 0, gold: 1, club: 2 };
-
 /**
  * The cheapest active reward the member is allowed to redeem but can't afford
  * yet: drives "120 points to your free coffee". Null when they can afford
@@ -52,7 +51,7 @@ export function nextRewardProgress(
   config: ProgramConfig,
 ): NextRewardProgress | null {
   const candidates = catalog
-    .filter((r) => r.active && (!r.minTier || tierOrder[tier] >= tierOrder[r.minTier]))
+    .filter((r) => r.active && (!r.minTier || isTierAtLeast(tier, r.minTier, config)))
     .map((r) => ({ rewardId: r.id, cost: rewardCostForTier(r.baseCost, tier, config) }))
     .filter((r) => r.cost > balance)
     .sort((a, b) => a.cost - b.cost);

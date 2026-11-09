@@ -64,7 +64,8 @@ Example: €6.40 receipt, Gold member → floor(640 × 10 × 125 / 10 000) = 80 
 | Club | 4,000 | ×1.50 | 30% |
 
 - Moving up is instant. Tiers are reviewed on the member's join anniversary and drop at most one level per year.
-- "Points earned" counts earn and bonus entries, not redemptions.
+- "Points earned" counts earn and bonus entries minus their undos, not redemptions or HQ adjustments. The window is `tierWindowMonths` (12) in the config.
+- Undoing an earn never lowers the tier straight away; the annual review does.
 
 ## 6. Expiry
 
@@ -73,7 +74,7 @@ Example: €6.40 receipt, Gold member → floor(640 × 10 × 125 / 10 000) = 80 
 
 ## 7. Redemption flow
 
-1. Member picks a reward in the app / web app → a redemption code is created, points are taken.
+1. Member picks a reward in the app / web app → a redemption code is created, points are taken. Codes are 8 characters without look-alikes (no 0/O, 1/I); staff can type them with or without spaces and dashes.
 2. The code is valid for **15 minutes**. The member can cancel before use and gets the points back.
 3. Staff scan the code on the staff console → it is marked used, with store and employee.
 4. The cashier rings the item on the POS as a 100% discount line (keeps receipts correct for AADE/myDATA).
@@ -88,7 +89,8 @@ Example: €6.40 receipt, Gold member → floor(640 × 10 × 125 / 10 000) = 80 
 | Max receipt total per transaction | €80 |
 | Max earn transactions per member per day | 5 (network-wide, Athens calendar day) |
 | Double scans | Same member can't earn twice within 2 minutes |
-| Undo | Last transaction within 10 minutes; older needs the store manager |
+| Undone earns | Don't count towards the daily limit or the 2-minute rule, so a cashier can fix a typo straight away |
+| Undo | Last transaction within 10 minutes (store device, with an employee PIN); older needs the store manager or HQ |
 | Staff identity | Every action is tied to an employee PIN |
 | Refunds | Points taken back; balance may go negative |
 | Alerts | Same employee + same member more than 3 times a day; awards above €50 |

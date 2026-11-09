@@ -70,6 +70,16 @@ export function checkEarnLimits(
   return null;
 }
 
+/**
+ * Earliest earn time that `checkEarnLimits` needs to see for `now`: a local
+ * calendar day lasts at most 25 h (DST change), and the double-scan window
+ * can be configured longer than that. Older earns can be left out of the query.
+ */
+export function earnLimitsLookbackStart(now: Date, config: ProgramConfig): Date {
+  const ms = Math.max(26 * 3_600_000, config.limits.minSecondsBetweenEarns * 1000);
+  return new Date(now.getTime() - ms);
+}
+
 /** Can staff still undo a transaction made at `createdAt`? */
 export function canUndo(createdAt: Date, now: Date, config: ProgramConfig): boolean {
   const ageMs = now.getTime() - createdAt.getTime();
