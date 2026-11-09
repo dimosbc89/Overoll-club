@@ -45,8 +45,8 @@ Legend: **D** = Dimos · **C** = Claude · ☐ open · ☑ done
 ## Week 2 · 16–22 Nov · Join flow + card + Wallet
 
 - ☑ C: scaffold `apps/mobile` (Expo: iOS, Android, web) and `apps/admin` (Next.js)
-- ☐ C: sign-up / login (email or SMS one-time code), Greek + English
-- ☐ C: member card with rotating QR, points, progress to next reward
+- ☑ C: sign-up / login with an email one-time code, Greek + English (`apps/mobile`: join from the counter QR, sign-in, consents); SMS when the provider is chosen
+- ☑ C: member card with rotating QR, points, progress to next reward and tier; rewards with tier prices and the redeem flow (code, countdown, cancel), history, profile
 - ☐ C: Apple Wallet + Google Wallet passes with live updates
 - ☐ D: test sign-up on iPhone and Android; review designs with Overoll
 
