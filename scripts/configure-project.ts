@@ -158,12 +158,29 @@ async function apply(cfg: ProjectConfig, desired: ReturnType<typeof buildDesired
     // The API never returns the password, so it is sent whenever SMTP settings change or SMTP is new.
     if (Object.keys(patch).some((k) => k.startsWith('smtp_')) || !current.smtp_host) patch.smtp_pass = pass;
   }
-  if (Object.keys(patch).length) {
-    await api(token, 'PATCH', `/projects/${ref}/config/auth`, patch);
-    console.log(`auth: updated ${Object.keys(patch).join(', ')}`);
-  } else {
-    console.log('auth: already up to date');
+  // Supabase refuses template changes on the free plan with its built-in sender, so the
+  // templates go in a second request; the rest applies either way.
+  const isTemplate = (k: string) => k.startsWith('mailer_subjects_') || k.startsWith('mailer_templates_');
+  const base = Object.fromEntries(Object.entries(patch).filter(([k]) => !isTemplate(k)));
+  const templates = Object.fromEntries(Object.entries(patch).filter(([k]) => isTemplate(k)));
+  if (Object.keys(base).length) {
+    await api(token, 'PATCH', `/projects/${ref}/config/auth`, base);
+    console.log(`auth: updated ${Object.keys(base).join(', ')}`);
   }
+  if (Object.keys(templates).length) {
+    try {
+      await api(token, 'PATCH', `/projects/${ref}/config/auth`, templates);
+      console.log('auth: sign-in email template updated');
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : String(err);
+      if (!/free tier|upgrade your plan|custom SMTP/i.test(msg)) throw err;
+      console.log(
+        '::warning::Sign-in email template not applied: Supabase needs the Pro plan or custom SMTP ' +
+          '(switch on email.enabled once Resend is verified). Until then emails use the default template.',
+      );
+    }
+  }
+  if (!Object.keys(patch).length) console.log('auth: already up to date');
 
   const existing = (await api(token, 'GET', `/projects/${ref}/secrets`)) as { name: string; value: string }[];
   const changed = Object.entries(desired.secrets).filter(([name, value]) => {
