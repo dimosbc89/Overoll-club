@@ -28,8 +28,9 @@ export type ErrorCode =
   | 'referral_not_found'
   | 'email_taken'
   | 'phone_taken'
+  // the member deleted their account (join, scan, award, redeem; v0.4 deleteMember)
   | 'member_deleted'
-  // member QR
+  // member QR or typed member code
   | 'member_not_found'
   | 'invalid_token'
   | 'expired_token'

@@ -5,6 +5,7 @@ import { useDocumentTitle, useI18n } from '../../../i18n/client';
 import type { Translate } from '../../../i18n/messages';
 import { loadStores, useLoaded, type StoreRow } from '../../../lib/data';
 import { todayHours } from '../../../lib/hours';
+import { inLocale } from '../../../lib/store-names';
 
 function todayLabel(store: StoreRow, t: Translate, now: Date): string {
   const today = todayHours(store.opening_hours, now, store.time_zone);
@@ -14,7 +15,7 @@ function todayLabel(store: StoreRow, t: Translate, now: Date): string {
 
 /** Store list from Supabase (active stores, readable with the publishable key). */
 export default function StoresPage() {
-  const { t } = useI18n();
+  const { t, locale } = useI18n();
   useDocumentTitle(t('stores.title'));
   const stores = useLoaded(loadStores);
   const now = new Date();
@@ -47,12 +48,12 @@ export default function StoresPage() {
             <tbody>
               {stores.data.map((store) => (
                 <tr key={store.id}>
-                  <th scope="row">{store.name}</th>
+                  <th scope="row">{inLocale(store.name, store.name_en, locale)}</th>
                   <td>
                     <code>{store.code}</code>
                   </td>
                   <td>{store.city}</td>
-                  <td>{store.address}</td>
+                  <td>{store.address ? inLocale(store.address, store.address_en, locale) : null}</td>
                   <td>{store.phone ? <a href={`tel:${store.phone}`}>{store.phone}</a> : null}</td>
                   <td className="nowrap">{todayLabel(store, t, now)}</td>
                 </tr>

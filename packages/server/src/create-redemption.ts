@@ -33,6 +33,7 @@ export type CreateRedemptionError =
   | 'idempotency_conflict'
   | 'forbidden'
   | 'member_not_found'
+  | 'member_deleted'
   | 'reward_not_found'
   | 'reward_unavailable'
   | 'tier_too_low'
@@ -114,7 +115,8 @@ export async function createRedemption(sql: Db, raw: CreateRedemptionInput): Pro
     const [owner] = await tx<{ brand_id: string; user_id: string | null; deleted_at: Date | null }[]>`
       select brand_id, user_id, deleted_at from public.members where id = ${i.memberId}
     `;
-    if (!owner || owner.deleted_at) return fail('member_not_found');
+    if (!owner) return fail('member_not_found');
+    if (owner.deleted_at) return fail('member_deleted');
     if (owner.user_id !== i.callerUserId) return fail('forbidden');
     const brand = await loadBrand(tx, owner.brand_id);
     const target = i.target;
@@ -132,6 +134,8 @@ export async function createRedemption(sql: Db, raw: CreateRedemptionInput): Pro
       async (): Promise<CreateRedemptionResult> => {
         const member = await lockMember(tx, i.memberId);
         if (!member) return fail('member_not_found');
+        // Deleted while this call waited for the member lock.
+        if (member.deleted_at) return fail('member_deleted');
         if ('giftId' in target) return redeemGift(tx, brand, member, target.giftId, i);
 
         const [reward] = await tx<{ id: string; base_cost: number; min_tier: TierId | null; active: boolean }[]>`

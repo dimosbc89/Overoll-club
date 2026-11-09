@@ -265,7 +265,7 @@ One line per ledger kind (`earn`, `bonus`, `redeem`, `refund_redeem`, `reverse`,
 
 ### b6. Delete account
 
-Matches the schema: personal fields are wiped, the points ledger stays without them.
+Matches the schema: personal fields are wiped, the points ledger stays without them. Built in v0.4 (member app `/delete-account`, API `account/delete`): `delete.exportFirst` stays hidden until "download my data" exists; a pending reward code is cancelled without giving the points back, which `delete.body` ("Your points and rewards are lost") already says. The confirmation accepts either word (ΔΙΑΓΡΑΦΗ or DELETE). After `delete.done` the button is `common.close` (back to the home page).
 
 | Key | Ελληνικά | English |
 | --- | --- | --- |
@@ -311,7 +311,6 @@ Texts the screens needed that §a–§b6 don't have: the welcome-gift variants o
 | `redeem.cancelledGift` | Ακυρώθηκε. Το δώρο σου σε περιμένει στα Δώρα. | Cancelled. Your gift is waiting in Rewards. | `redeem.cancelled` for the gift |
 | `redeem.expiredGift` | Ο κωδικός έληξε, αλλά το δώρο σου σε περιμένει ακόμα στα Δώρα. Φτιάξε νέο όταν είσαι στο ταμείο. | The code expired, but your gift is still waiting in Rewards. Get a new one when you're at the till. | `redeem.expired` for the gift |
 | `redeem.backToRewards` | Πίσω στα Δώρα | Back to Rewards | back link and button after a code is finished |
-| `delete.comingSoon` | Η διαγραφή από την εφαρμογή έρχεται σύντομα. Μέχρι τότε, γράψε μας στο {supportEmail} και θα τη φροντίσουμε εμείς. | Deleting your account in the app is coming soon. Until then, email us at {supportEmail} and we'll take care of it. | Profile → Delete account, until deletion is built |
 | `common.close` | Κλείσιμο | Close | closes a sheet |
 | `common.comingSoon` | Έρχεται σύντομα | Coming soon | Wallet button placeholders (screen-reader hint) |
 | `language.elShort` | ΕΛ | ΕΛ | language switch on the pink header (design: "EN") |
@@ -496,6 +495,7 @@ Labels the screens needed beyond the table above (device sign-in, PIN pad, late 
 | `console.scan.noCamera` | Η κάμερα δεν είναι διαθέσιμη. Πληκτρολόγησε τον κωδικό. | The camera isn't available. Type the code instead. |
 | `console.scan.useCamera` | Σάρωση με κάμερα | Scan with the camera |
 | `console.scan.codeLabel` | Κωδικός μέλους ή δώρου | Member or reward code |
+| `console.scan.typeHint` | Ο κωδικός μέλους κάτω από το QR ή ο κωδικός δώρου, με ή χωρίς κενά. | The member code under the QR, or a reward code, with or without spaces. |
 | `console.scan.submit` | Συνέχεια | Continue |
 | `console.scan.checking` | Έλεγχος… | Checking… |
 | `console.member.newScan` | Νέα σάρωση | New scan |
@@ -532,7 +532,7 @@ Labels the screens needed beyond the table above (device sign-in, PIN pad, late 
 
 ### f2. Error messages
 
-One line per code, telling the person what to do next. Source of truth: `data/copy/errors.el.json` and `data/copy/errors.en.json` (this table is generated from them). Covers every code in the `ErrorCode` union in `packages/server/src/result.ts` (v0.2 added `pin_locked`, `receipt_already_used`, `gift_not_found`, `gift_used`, `gift_expired`: **new, for Dimos to approve**), including `PurchaseError` and `EarnLimitError` from `packages/core/src/points.ts`, plus two API-level codes from `packages/api/src/handler.ts` (`unauthenticated`, `internal_error`) and two for the apps (`network_error` when offline, `unknown` as the fallback for any other code, e.g. `route_not_found`). After an `internal_error` or `network_error` during an award, retry with the **same** idempotency key so points are never added twice.
+One line per code, telling the person what to do next. Source of truth: `data/copy/errors.el.json` and `data/copy/errors.en.json` (this table is generated from them). Covers every code in the `ErrorCode` union in `packages/server/src/result.ts` (v0.2 added `pin_locked`, `receipt_already_used`, `gift_not_found`, `gift_used`, `gift_expired`: **new, for Dimos to approve**), including `PurchaseError` and `EarnLimitError` from `packages/core/src/points.ts` (v0.4 changed `member_deleted`, now shown at the till too, and `member_not_found`: **for Dimos to approve**), plus two API-level codes from `packages/api/src/handler.ts` (`unauthenticated`, `internal_error`) and two for the apps (`network_error` when offline, `unknown` as the fallback for any other code, e.g. `route_not_found`). After an `internal_error` or `network_error` during an award, retry with the **same** idempotency key so points are never added twice.
 
 | Code | Who sees it | Ελληνικά | English | Fill |
 | --- | --- | --- | --- | --- |
@@ -549,8 +549,8 @@ One line per code, telling the person what to do next. Source of truth: `data/co
 | `referral_not_found` | member (join, v1.1) | Δεν βρίσκουμε αυτόν τον κωδικό πρόσκλησης. Έλεγξέ τον ή σβήσε τον για να συνεχίσεις χωρίς αυτόν. | We can't find that invite code. Check it, or remove it to carry on without one. | – |
 | `email_taken` | member (join) | Αυτό το email ανήκει ήδη σε μέλος. Συνδέσου με αυτό ή χρησιμοποίησε άλλο. | This email already belongs to a member. Sign in with it, or use a different one. | – |
 | `phone_taken` | member (join) | Αυτό το κινητό ανήκει ήδη σε μέλος. Συνδέσου με αυτό ή χρησιμοποίησε άλλο. | This mobile number already belongs to a member. Sign in with it, or use a different one. | – |
-| `member_deleted` | member (join / sign-in) | Αυτός ο λογαριασμός έχει διαγραφεί. Αν θες να ξαναγίνεις μέλος, γράψε μας στο {supportEmail}. | This account has been deleted. If you'd like to join again, email us at {supportEmail}. | `{supportEmail}` = support address |
-| `member_not_found` | staff (scan); member rarely | Δεν βρίσκουμε αυτό το μέλος. Ζήτα να ξανανοίξει την κάρτα και σκάναρε πάλι. | We can't find this member. Ask them to reopen their card and scan again. | – |
+| `member_deleted` | staff (scan, award); member rarely | Αυτός ο λογαριασμός έχει διαγραφεί, οπότε δεν μαζεύει πόντους ούτε εξαργυρώνει δώρα. Νέα εγγραφή γίνεται από την αρχή στο {clubUrl}. | This account has been deleted, so it can't collect points or redeem rewards. Joining again starts from scratch at {clubUrl}. | `{clubUrl}` = club URL. **v0.4, changed: to approve** (a deleted account can join again on its own now) |
+| `member_not_found` | staff (scan, typed member code); member rarely | Δεν βρίσκουμε αυτό το μέλος. Έλεγξε τον κωδικό ή ζήτα να ξανανοίξει την κάρτα και σκάναρε πάλι. | We can't find this member. Check the code, or ask them to reopen their card and scan again. | **v0.4, changed: to approve** ("check the code" for a typed member code) |
 | `invalid_token` | staff (scan) | Αυτός δεν είναι κωδικός του {programName}. Ζήτα την κάρτα μέλους από την εφαρμογή ή το Wallet. | That's not a {programName} code. Ask for the member card in the app or Wallet. | `{programName}` = program name |
 | `expired_token` | staff (scan) | Ο κωδικός άλλαξε. Ζήτα την κάρτα ζωντανά, όχι screenshot, και σκάναρε ξανά. Αν επιμένει, ίσως η ώρα στο κινητό δεν είναι σωστή. | That code has changed. Ask for the live card, not a screenshot, and scan again. If it keeps happening, their phone's clock may be off. | – |
 | `old_pass` | staff (scan) | Αυτή η κάρτα Wallet είναι παλιά και δεν ισχύει πια. Ζήτα την κάρτα από την εφαρμογή ή τη νέα κάρτα Wallet. | This is an old Wallet card and it no longer works. Ask for the card in the app or the new Wallet card. | – |

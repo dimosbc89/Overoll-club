@@ -13,7 +13,7 @@ import type { ProgramConfig, TierId } from '@overoll/core';
 import errorsEl from '../../../../data/copy/errors.el.json';
 import errorsEn from '../../../../data/copy/errors.en.json';
 import { fillTemplate, type Locale } from '../i18n/messages';
-import { PROGRAM_NAME, SUPPORT_EMAIL } from './env';
+import { CLUB_URL, PROGRAM_NAME, SUPPORT_EMAIL } from './env';
 import { formatEuroFromCents } from './format';
 
 // ---------------------------------------------------------------------------
@@ -114,6 +114,12 @@ export interface UndoInput {
   idempotencyKey: string;
 }
 
+/**
+ * Who to look up at the till: what the camera read (or the full `OC1.…`
+ * token typed), or the member code printed under the QR (v0.4).
+ */
+export type ScanInput = { storeId: string; token: string } | { storeId: string; memberCode: string };
+
 export interface UseRedemptionInput {
   storeId: string;
   employeeId: string;
@@ -124,7 +130,7 @@ export interface UseRedemptionInput {
 
 export interface ApiClient {
   verifyPin(input: { storeId: string; employeeId: string; pin: string }): Promise<ApiResponse<VerifiedPin>>;
-  scan(input: { storeId: string; token: string }): Promise<ApiResponse<ScannedMember>>;
+  scan(input: ScanInput): Promise<ApiResponse<ScannedMember>>;
   award(input: AwardInput): Promise<ApiResponse<AwardedPoints>>;
   undo(input: UndoInput): Promise<ApiResponse<UndoneEarn>>;
   useRedemption(input: UseRedemptionInput): Promise<ApiResponse<UsedRedemption>>;
@@ -187,7 +193,8 @@ export function createApiClient(options: ApiClientOptions): ApiClient {
 
   return {
     verifyPin: ({ storeId, employeeId, pin }) => post('staff/verify-pin', { storeId, employeeId, pin }),
-    scan: ({ storeId, token }) => post('scan', { storeId, token }),
+    scan: (input) =>
+      post('scan', 'memberCode' in input ? { storeId: input.storeId, memberCode: input.memberCode } : { storeId: input.storeId, token: input.token }),
     award: ({ storeId, employeeId, pin, memberId, amountCents, receiptNumber, idempotencyKey }) =>
       post('award', {
         storeId,
@@ -226,6 +233,7 @@ export function errorMessage(code: string, locale: Locale, config: ProgramConfig
   const { limits } = config;
   return fillTemplate(template, {
     programName: PROGRAM_NAME,
+    clubUrl: CLUB_URL,
     supportEmail: SUPPORT_EMAIL,
     maxAmount: formatEuroFromCents(limits.maxAmountCents, locale),
     maxEarns: limits.maxEarnsPerDay,

@@ -22,7 +22,9 @@ const readJson = <T>(path: string): T => JSON.parse(readFileSync(join(root, path
 interface Store {
   code: string;
   name_el: string;
+  name_en: string;
   address_el: string;
+  address_en: string;
   city: string;
   country: 'GR' | 'CY';
   latitude: number;
@@ -59,6 +61,7 @@ const codes = new Set<string>();
 for (const s of stores) {
   if (!/^[a-z0-9-]+$/.test(s.code)) problems.push(`store ${s.code}: bad code`);
   if (codes.has(s.code)) problems.push(`store ${s.code}: duplicate code`);
+  if (!s.name_en?.trim() || !s.address_en?.trim()) problems.push(`store ${s.code}: name_en and address_en are required`);
   codes.add(s.code);
 }
 for (const r of rewards) {
@@ -86,7 +89,7 @@ const welcomeConfig = `jsonb_build_object('rewardId', ${rewardIdSql(welcome.rewa
 
 const storeRows = stores.map((s) => {
   const hours = Object.fromEntries(dayOrder.filter((d) => s.hours[d]).map((d) => [d, s.hours[d]]));
-  return `  (${brandId}, ${q(s.code)}, ${q(s.name_el)}, ${q(s.address_el)}, ${q(s.city)}, ${q(s.country)}, ${s.latitude}, ${s.longitude}, ${q(s.phone)}, ${q(JSON.stringify(hours))}::jsonb)`;
+  return `  (${brandId}, ${q(s.code)}, ${q(s.name_el)}, ${q(s.name_en)}, ${q(s.address_el)}, ${q(s.address_en)}, ${q(s.city)}, ${q(s.country)}, ${s.latitude}, ${s.longitude}, ${q(s.phone)}, ${q(JSON.stringify(hours))}::jsonb)`;
 });
 
 const rewardRows = rewards.map((r, i) => {
@@ -109,11 +112,13 @@ on conflict (slug) do update set
   config = public.brands.config || jsonb_build_object(
     'welcome', coalesce(public.brands.config -> 'welcome', '{}'::jsonb) || ${welcomeConfig});
 
-insert into public.stores (brand_id, code, name, address, city, country, latitude, longitude, phone, opening_hours)
+-- name / address are Greek; name_en / address_en English (apps fall back to Greek).
+insert into public.stores (brand_id, code, name, name_en, address, address_en, city, country, latitude, longitude, phone, opening_hours)
 values
 ${storeRows.join(',\n')}
 on conflict (brand_id, code) do update set
-  name = excluded.name, address = excluded.address, city = excluded.city, country = excluded.country,
+  name = excluded.name, name_en = excluded.name_en, address = excluded.address, address_en = excluded.address_en,
+  city = excluded.city, country = excluded.country,
   latitude = excluded.latitude, longitude = excluded.longitude, phone = excluded.phone,
   opening_hours = excluded.opening_hours;
 

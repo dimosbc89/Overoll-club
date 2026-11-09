@@ -4,6 +4,7 @@ import { useI18n } from '../../i18n/client';
 import { locales } from '../../i18n/messages';
 import { shortStoreName } from '../../lib/console/device';
 import type { Cashier, StoreInfo } from '../../lib/console/machine';
+import { inLocale } from '../../lib/store-names';
 import styles from './console.module.css';
 import { Button, Initial, type ScreenContext } from './ui';
 
@@ -23,7 +24,7 @@ export function ConsoleHeader({ ctx, store, cashier, todayOpen, busy }: Props) {
     <header className={styles.header}>
       {/* Plain <img>: a static SVG needs no image optimisation. */}
       <img src="/overoll-wordmark.svg" alt={t('brand.wordmark')} width={104} height={28} />
-      {store ? <p className={styles.storeName}>{t('console.header', { store: shortStoreName(store.name) })}</p> : null}
+      {store ? <p className={styles.storeName}>{t('console.header', { store: shortStoreName(inLocale(store.name, store.nameEn, locale)) })}</p> : null}
       <div className={styles.spacer} />
       {cashier ? (
         <>

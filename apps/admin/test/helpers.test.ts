@@ -4,6 +4,8 @@ import { formatEuroFromCents, formatPoints } from '../src/lib/format';
 import { todayHours } from '../src/lib/hours';
 import { digitKeys, pressKey, pressPinKey, type KeypadKey, type PinKey } from '../src/lib/keypad';
 import { rewardCosts } from '../src/lib/reward-costs';
+import { inLocale } from '../src/lib/store-names';
+import { shortStoreName } from '../src/lib/console/device';
 
 // Intl uses a no-break space in "2,20 €".
 const plain = (text: string) => text.replace(/\s/g, ' ');
@@ -75,5 +77,15 @@ describe('rewardCosts (rule from @overoll/core)', () => {
     expect(rewardCosts(300)).toEqual({ classic: 300, gold: 240, club: 210 });
     // Croissant box: base 1950 → 1560 and 1365 rounded to the nearest 10 = 1370.
     expect(rewardCosts(1950)).toEqual({ classic: 1950, gold: 1560, club: 1370 });
+  });
+});
+
+describe('store names (v0.4)', () => {
+  it('shows the English name in English and falls back to the Greek one', () => {
+    expect(inLocale('Overoll Χαλάνδρι', 'Overoll Chalandri', 'en')).toBe('Overoll Chalandri');
+    expect(inLocale('Overoll Χαλάνδρι', 'Overoll Chalandri', 'el')).toBe('Overoll Χαλάνδρι');
+    expect(inLocale('Overoll Χαλάνδρι', null, 'en')).toBe('Overoll Χαλάνδρι');
+    expect(inLocale('Overoll Χαλάνδρι', ' ', 'en')).toBe('Overoll Χαλάνδρι');
+    expect(shortStoreName(inLocale('Overoll Χαλάνδρι', 'Overoll Chalandri', 'en'))).toBe('Chalandri');
   });
 });

@@ -225,6 +225,49 @@ describe('scan', () => {
     expect(state.screen).toMatchObject({ name: 'redeem', input: 'ABCDEFGH' });
     expect(pendingRequest(state)).toBeNull();
   });
+
+  it('a typed code is first the member code under the QR (v0.4)', () => {
+    let state = run(onTill(), { type: 'scan/submit', requestId: 's', text: ' abcd 2345 ', typed: true });
+    expect(pendingRequest(state)).toEqual({ id: 's', kind: 'scan', storeId: 'store-1', memberCode: 'ABCD2345' });
+    state = run(state, { type: 'scan/succeeded', requestId: 's', member: scanned });
+    expect(state.screen).toMatchObject({ name: 'member', member: { memberId: 'mem-1', firstName: 'Ελένη' } });
+    // Greek capitals that look Latin are read as Latin.
+    const greek = run(onTill(), { type: 'scan/submit', requestId: 's', text: 'ΑΒCD-2345', typed: true });
+    expect(pendingRequest(greek)).toMatchObject({ memberCode: 'ABCD2345' });
+  });
+
+  it('a typed code that is no member\'s opens redeem with it (it may be a reward code)', () => {
+    const state = run(
+      onTill(),
+      { type: 'scan/submit', requestId: 's', text: 'abcd-efgh', typed: true },
+      { type: 'scan/failed', requestId: 's', error: 'member_not_found' },
+    );
+    expect(state.screen).toMatchObject({ name: 'redeem', mode: 'type', input: 'ABCDEFGH', requestId: null });
+    expect(pendingRequest(state)).toBeNull();
+  });
+
+  it('a typed code that cannot be a reward code shows the error', () => {
+    // "1" is never in a reward code, but member codes may be any letters and digits.
+    const notFound = run(
+      onTill(),
+      { type: 'scan/submit', requestId: 's', text: 'AB1D2345', typed: true },
+      { type: 'scan/failed', requestId: 's', error: 'member_not_found' },
+    );
+    expect(notFound.screen).toMatchObject({ name: 'idle', error: 'member_not_found', requestId: null, lookup: null });
+    const deleted = run(
+      onTill(),
+      { type: 'scan/submit', requestId: 's', text: 'ABCD2345', typed: true },
+      { type: 'scan/failed', requestId: 's', error: 'member_deleted' },
+    );
+    expect(deleted.screen).toMatchObject({ name: 'idle', error: 'member_deleted' });
+  });
+
+  it('a typed full QR token is still sent as a token, anything else too', () => {
+    const typedToken = run(onTill(), { type: 'scan/submit', requestId: 's', text: token, typed: true });
+    expect(pendingRequest(typedToken)).toEqual({ id: 's', kind: 'scan', storeId: 'store-1', token });
+    const garbage = run(onTill(), { type: 'scan/submit', requestId: 's', text: 'hello!', typed: true });
+    expect(pendingRequest(garbage)).toEqual({ id: 's', kind: 'scan', storeId: 'store-1', token: 'hello!' });
+  });
 });
 
 describe('amount and preview', () => {

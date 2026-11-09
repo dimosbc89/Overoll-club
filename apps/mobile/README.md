@@ -38,12 +38,13 @@ Only the **publishable** key, never the service-role key: `EXPO_PUBLIC_*` values
 | Route | What |
 | --- | --- |
 | `/` (Card tab) | Signed out: the landing page (copy deck §h). Signed in: points (`member_balances`), tier, the **rotating QR** (core `createRotatingToken` with `member_secrets.qr_secret`, new code every `qr.stepSeconds`, works offline once loaded), member code in groups of 4, progress to the next reward (core `nextRewardProgress`) and tier (core `tierProgress`), welcome-gift banner, points expiry date, Wallet button placeholders, the active code if there is one |
-| `/join`, `/join?store=<code>` | Counter QR: greets with the store name, then email → one-time code (Supabase `signInWithOtp` / `verifyOtp` type `email`) → first name + "I am 15 or older" (required, `minimumAge`) → email / SMS / push consents (separate, optional, unticked; push only on native) → `POST join` → welcome. Members who sign in go straight to the card |
+| `/join`, `/join?store=<code>` | Counter QR: greets with the store name (English name in English, `stores.name_en`, else Greek), then email → one-time code (Supabase `signInWithOtp` / `verifyOtp` type `email`) → first name + "I am 15 or older" (required, `minimumAge`) → email / SMS / push consents (separate, optional, unticked; push only on native) → `POST join` → welcome. Members who sign in go straight to the card |
 | `/sign-in` | The same flow starting at the email step |
 | Rewards tab | Catalog with the member's tier price (core `rewardCostForTier`), "x to go" or "You can have this!", "Gold and above" limits; the welcome gift on top while it is available (`member_gifts`). Tap → confirm sheet → `POST redemptions/create` (`rewardId` or `giftId`) → code screen |
 | `/redeem` | The active code: QR of the code, the code in letters, live countdown to `expiresAt`, cancel (`POST redemptions/cancel`). Checks every 5 s whether the till used it. Shown again (banner on Card and Rewards) when the member comes back while it is still pending |
-| Stores tab | Store list with today's hours; tap opens maps |
-| Profile tab | Language switch (el/en), name and email, points history (`ledger_entries`, copy `history.*`), sign out, "delete my account" (placeholder sheet: explains and gives the support email) |
+| Stores tab | Store list with today's hours, name and address in the current language (`name_en` / `address_en`, Greek fallback); tap opens maps |
+| Profile tab | Language switch (el/en), name and email, points history (`ledger_entries`, copy `history.*`, store names in the current language), sign out, "Delete account" → `/delete-account` |
+| `/delete-account` | Copy deck §b6: what is erased and what is kept, type ΔΙΑΓΡΑΦΗ / DELETE (either word, any case or accents), "Delete for good" → `POST account/delete` `{ confirm: true }` (one idempotency key, reused when tapped again after an error) → sign out on the device → `delete.done`. "Download your data" (`delete.exportFirst`) is not shown until the export exists |
 
 Data the app reads directly (row-level security): `brands` (config), `members`, `member_balances`, `member_secrets`, `rewards`, `stores`, `member_gifts`, `redemptions`, `ledger_entries` (`src/lib/data.ts`). Everything that moves points goes through the API (`src/lib/api.ts`). The last member data, QR secret included, is kept on the device (`src/lib/cache.ts`) so the card opens offline; it is removed on sign-out.
 
@@ -76,7 +77,6 @@ Rules: no user-facing text in components (add keys to both message files **and**
 ## Placeholders and next steps
 
 - **Wallet buttons**: disabled dashed placeholders with the copy-deck accessibility labels until the official Apple/Google badges and the passes exist.
-- **Delete account**: explains what deletion will do and gives `{supportEmail}`; needs a server route.
 - **Push**: the consent is saved; the OS permission prompt and notifications come later (expo-notifications).
 - **Terms / privacy links**: the terms line is shown; the links wait for `{termsUrl}` / `{privacyUrl}`.
 - **SMS sign-in**: email only until the SMS provider is chosen.

@@ -8,12 +8,13 @@ All routes are `POST` with a JSON body and `Authorization: Bearer <token>`:
 | Route | Caller | Operation |
 | --- | --- | --- |
 | `/api/join` | signed-in user | `joinMember` |
-| `/api/scan` | store device / manager / HQ | `resolveMemberToken` |
+| `/api/scan` | store device / manager / HQ | `resolveMemberToken`: `{ storeId, token }` or `{ storeId, memberCode }` (typed code under the QR, v0.4) |
 | `/api/award` | store device / manager | `awardPoints` (optional `receiptNumber`; result has `welcomeGiftUnlocked`) |
 | `/api/undo` | device (within 10 min, with PIN) / manager / HQ | `undoEarn` |
 | `/api/redemptions/create` | the member | `createRedemption` (`rewardId` or `giftId`) |
 | `/api/redemptions/cancel` | the member | `cancelRedemption` |
 | `/api/redemptions/use` | store device / manager | `useRedemption` |
+| `/api/account/delete` | the member (own token) | `deleteMember`: `{ confirm: true, idempotencyKey }` → `{ ok, memberIds, codesCancelled, authUserDeleted }`; deletes the auth user with `deps.deleteAuthUser` (Auth admin API) when the database role could not (v0.4) |
 | `/api/staff/verify-pin` | store device / manager | `verifyEmployeePin`: `{ storeId, employeeId, pin }` → `{ ok, employee: { id, displayName } }` |
 | `/api/jobs/expire-redemptions` | service role key only | `expireRedemptions` (every minute; also expires gifts) |
 | `/api/jobs/expire-points` | service role key only | `expirePoints` (daily) |
@@ -31,7 +32,7 @@ Tests (`npm test -w @overoll/api`) reuse the throwaway Postgres of `packages/ser
 ## Edge Function
 
 `supabase/functions/api/app.ts` wires the handler to Supabase (JWT check with `getClaims`,
-Postgres through `SUPABASE_DB_URL`). `npm run functions:build` bundles it into
+Postgres through `SUPABASE_DB_URL`, `deleteAuthUser` with the Auth admin API and the service key). `npm run functions:build` bundles it into
 `supabase/functions/api/dist/app.js` with no imports left; `index.ts` passes in
 `npm:postgres` and `npm:@supabase/supabase-js`. CI deploys it on every push to `main`
 once the `SUPABASE_ACCESS_TOKEN` secret is set in GitHub.

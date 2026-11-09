@@ -29,8 +29,11 @@ export interface RewardRow {
 export interface StoreRow {
   id: string;
   code: string;
+  /** Greek; `name_en` / `address_en` English (v0.4, null until filled in). Show with `localStore`. */
   name: string;
+  name_en: string | null;
   address: string | null;
+  address_en: string | null;
   city: string | null;
   latitude: number | null;
   longitude: number | null;
@@ -145,13 +148,12 @@ export async function fetchRewards(client: SupabaseClient): Promise<RewardRow[]>
   }));
 }
 
-const storeColumns = 'id, code, name, address, city, latitude, longitude, opening_hours, time_zone';
-
 /** Active stores of this brand, by name. */
 export async function fetchStores(client: SupabaseClient): Promise<StoreRow[]> {
+  // `*`: name_en / address_en exist from v0.4 on; until then the Greek ones are shown.
   const { data, error } = await client
     .from('stores')
-    .select(`${storeColumns}, brands!inner(slug)`)
+    .select('*, brands!inner(slug)')
     .eq('brands.slug', BRAND_SLUG)
     .eq('active', true)
     .order('name');
@@ -160,7 +162,9 @@ export async function fetchStores(client: SupabaseClient): Promise<StoreRow[]> {
     id: row.id,
     code: row.code,
     name: row.name,
+    name_en: row.name_en ?? null,
     address: row.address,
+    address_en: row.address_en ?? null,
     city: row.city,
     latitude: row.latitude,
     longitude: row.longitude,
@@ -169,18 +173,21 @@ export async function fetchStores(client: SupabaseClient): Promise<StoreRow[]> {
   }));
 }
 
-/** The store of a counter QR (`?store=<code>`), if it is active. */
-export async function fetchStoreByCode(client: SupabaseClient, code: string): Promise<{ code: string; name: string } | null> {
+/** The store of a counter QR (`?store=<code>`), if it is active. `name_en`: v0.4, may be missing. */
+export async function fetchStoreByCode(
+  client: SupabaseClient,
+  code: string,
+): Promise<{ code: string; name: string; name_en: string | null } | null> {
   if (!/^[a-z0-9-]{1,64}$/.test(code)) return null;
   const { data, error } = await client
     .from('stores')
-    .select('code, name, brands!inner(slug)')
+    .select('*, brands!inner(slug)')
     .eq('brands.slug', BRAND_SLUG)
     .eq('code', code)
     .eq('active', true)
     .maybeSingle();
   if (error) throw error;
-  return data ? { code: data.code, name: data.name } : null;
+  return data ? { code: data.code, name: data.name, name_en: data.name_en ?? null } : null;
 }
 
 function toRedemption(row: Record<string, unknown>): RedemptionRow {
@@ -293,7 +300,8 @@ export async function fetchMemberBundle(client: SupabaseClient, userId: string, 
 }
 
 export interface HistoryItem extends LedgerRow {
-  storeName: string | null;
+  /** Greek and English store names (pick with `inLocale`). */
+  store: { name: string; name_en: string | null } | null;
   reward: { name_el: string; name_en: string } | null;
 }
 
@@ -316,7 +324,7 @@ export async function fetchHistory(client: SupabaseClient, memberId: string, rew
       : Promise.resolve({ data: [] as Record<string, unknown>[], error: null }),
   ]);
   if (redemptions.error) throw redemptions.error;
-  const storeName = new Map(stores.map((s) => [s.id, s.name]));
+  const storeById = new Map(stores.map((s) => [s.id, { name: s.name, name_en: s.name_en }]));
   const redemptionById = new Map((redemptions.data ?? []).map((r) => [r.id as string, toRedemption(r)]));
   const rewardById = new Map(rewards.map((r) => [r.id, r]));
 
@@ -325,7 +333,7 @@ export async function fetchHistory(client: SupabaseClient, memberId: string, rew
     const reward = redemption ? rewardById.get(redemption.reward_id) : undefined;
     return {
       ...row,
-      storeName: row.store_id ? (storeName.get(row.store_id) ?? null) : null,
+      store: row.store_id ? (storeById.get(row.store_id) ?? null) : null,
       reward: reward ? { name_el: reward.name_el, name_en: reward.name_en } : null,
     };
   });

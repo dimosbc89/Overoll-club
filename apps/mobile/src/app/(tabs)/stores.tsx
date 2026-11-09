@@ -7,6 +7,7 @@ import type { Translate } from '../../i18n/messages';
 import { fetchStores, type StoreRow } from '../../lib/data';
 import { todayHours } from '../../lib/hours';
 import { mapsUrl } from '../../lib/maps';
+import { localStore } from '../../lib/storeNames';
 import { useRemote } from '../../lib/useRemote';
 import { type } from '../../theme/fonts';
 import { colors, minTouch, radius, space } from '../../theme/tokens';
@@ -22,7 +23,7 @@ function hoursLabel(store: StoreRow, t: Translate, now: Date): string {
 
 /** Store list: name, address, today's hours; tap opens the maps app. */
 export default function StoresScreen() {
-  const { t } = useI18n();
+  const { t, locale } = useI18n();
   const { state, reload } = useRemote(fetchStores);
   const now = new Date();
 
@@ -35,7 +36,9 @@ export default function StoresScreen() {
             <Muted>{t('stores.empty')}</Muted>
           ) : (
             <View style={styles.list}>
-              {stores.map((store) => {
+              {stores.map((row) => {
+                // Name and address in the current language (Greek when there is no English yet).
+                const store = localStore(row, locale);
                 const hours = hoursLabel(store, t, now);
                 return (
                   <Pressable

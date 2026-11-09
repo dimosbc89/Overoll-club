@@ -122,6 +122,11 @@
   "delete.title": "Delete your account?",
   "delete.body": "We erase your personal details: name, email, mobile number, birthday and contact choices. Your points and rewards are lost, and your card, in Wallet too, stops working. This can't be undone.",
   "delete.keep": "We only keep the points history, without your details, for the stores' accounts.",
+  "delete.confirmLabel": "Type DELETE to confirm",
+  "delete.confirmWord": "DELETE",
+  "delete.confirm": "Delete for good",
+  "delete.cancel": "Cancel, I'm staying",
+  "delete.done": "Your account has been deleted. It was a pleasure. If you miss the croissants, you know where to find us.",
   "tiers.classic.name": "Classic",
   "tiers.gold.name": "Gold",
   "tiers.club.name": "Club",
@@ -188,6 +193,5 @@
   "redeem.cancel.bodyGift": "Your gift stays in Rewards, and you can get a new code when you're at the till.",
   "redeem.cancelledGift": "Cancelled. Your gift is waiting in Rewards.",
   "redeem.expiredGift": "The code expired, but your gift is still waiting in Rewards. Get a new one when you're at the till.",
-  "redeem.backToRewards": "Back to Rewards",
-  "delete.comingSoon": "Deleting your account in the app is coming soon. Until then, email us at {supportEmail} and we'll take care of it."
+  "redeem.backToRewards": "Back to Rewards"
 }

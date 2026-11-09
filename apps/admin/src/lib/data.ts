@@ -7,8 +7,11 @@ import { BRAND_SLUG, supabaseEnv } from './env';
 export interface StoreRow {
   id: string;
   code: string;
+  /** Greek; `name_en` / `address_en` English (v0.4, null until filled in). */
   name: string;
+  name_en: string | null;
   address: string | null;
+  address_en: string | null;
   city: string | null;
   phone: string | null;
   opening_hours: unknown;
@@ -52,7 +55,8 @@ export function loadStores(): Promise<Loaded<StoreRow[]>> {
   return load(async (client) => {
     const { data, error } = await client
       .from('stores')
-      .select('id, code, name, address, city, phone, opening_hours, time_zone, brands!inner(slug)')
+      // `*`: name_en / address_en exist from v0.4 on (Greek shown until then).
+      .select('*, brands!inner(slug)')
       .eq('brands.slug', BRAND_SLUG)
       .eq('active', true)
       .order('name');
@@ -61,7 +65,9 @@ export function loadStores(): Promise<Loaded<StoreRow[]>> {
       id: row.id,
       code: row.code,
       name: row.name,
+      name_en: row.name_en ?? null,
       address: row.address,
+      address_en: row.address_en ?? null,
       city: row.city,
       phone: row.phone,
       opening_hours: row.opening_hours,

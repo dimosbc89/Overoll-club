@@ -96,6 +96,7 @@
   "console.scan.noCamera": "The camera isn't available. Type the code instead.",
   "console.scan.useCamera": "Scan with the camera",
   "console.scan.codeLabel": "Member or reward code",
+  "console.scan.typeHint": "The member code under the QR, or a reward code, with or without spaces.",
   "console.scan.submit": "Continue",
   "console.scan.checking": "Checking…",
   "console.member.newScan": "New scan",

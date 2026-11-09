@@ -50,4 +50,8 @@ got_welcome=$($seed_cmd -At -c "select r.name_en from public.brands b join publi
 if [ "$got_welcome" != "$want_welcome" ]; then
   echo "SEED CHECK FAILED: welcome reward = '$got_welcome', expected '$want_welcome' ($welcome_reward)"; exit 1
 fi
-echo "SEED OK: 1 brand, $want_stores stores, $want_rewards rewards, welcome gift: $want_welcome"
+got_en=$($seed_cmd -At -c "select count(*) from public.stores where name_en is not null and address_en is not null")
+if [ "$got_en" != "$want_stores" ]; then
+  echo "SEED CHECK FAILED: $got_en of $want_stores stores have an English name and address"; exit 1
+fi
+echo "SEED OK: 1 brand, $want_stores stores (English names too), $want_rewards rewards, welcome gift: $want_welcome"

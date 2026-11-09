@@ -109,9 +109,10 @@ export function supabaseDeviceAuth(client: SupabaseClient): DeviceAuth {
       const storeId = (roles.data?.[0] as { store_id: string } | undefined)?.store_id;
       if (!storeId) return { status: 'no-store' };
 
+      // `*`: name_en exists from v0.4 on; until then the Greek name is shown.
       const store = await client
         .from('stores')
-        .select('id, name, time_zone, brands(config)')
+        .select('*, brands(config)')
         .eq('id', storeId)
         .maybeSingle();
       if (store.error) return { status: 'error', code: queryErrorCode(store.error) };
@@ -119,6 +120,7 @@ export function supabaseDeviceAuth(client: SupabaseClient): DeviceAuth {
       const row = store.data as unknown as {
         id: string;
         name: string;
+        name_en?: string | null;
         time_zone: string;
         brands: { config: unknown } | null;
       };
@@ -138,7 +140,7 @@ export function supabaseDeviceAuth(client: SupabaseClient): DeviceAuth {
         return { status: 'error', code: queryErrorCode(error as QueryError) };
       }
 
-      const storeInfo: StoreInfo = { id: row.id, name: row.name, timeZone: row.time_zone };
+      const storeInfo: StoreInfo = { id: row.id, name: row.name, nameEn: row.name_en ?? null, timeZone: row.time_zone };
       return { status: 'ready', context: { store: storeInfo, employees, config } };
     },
   };

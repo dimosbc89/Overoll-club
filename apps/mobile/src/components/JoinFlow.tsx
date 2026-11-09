@@ -5,6 +5,7 @@ import { Platform, StyleSheet, Text, View } from 'react-native';
 import { useI18n } from '../i18n/I18nProvider';
 import { ActionSlot } from '../lib/api';
 import { fetchStoreByCode } from '../lib/data';
+import { inLocale } from '../lib/storeNames';
 import { formatPoints } from '../lib/format';
 import {
   authProblem,
@@ -55,7 +56,7 @@ export function JoinFlow({ initialMode }: { initialMode: Mode }) {
 
   const [mode, setMode] = useState<Mode>(initialMode);
   const [step, setStep] = useState<Step>(initialMode === 'signin' ? 'email' : 'start');
-  const [storeName, setStoreName] = useState<string | null>(null);
+  const [store, setStore] = useState<{ name: string; name_en: string | null } | null>(null);
   const [email, setEmail] = useState('');
   const [code, setCode] = useState('');
   const [firstName, setFirstName] = useState('');
@@ -75,7 +76,7 @@ export function JoinFlow({ initialMode }: { initialMode: Mode }) {
     if (!client || !storeCode) return;
     let cancelled = false;
     fetchStoreByCode(client, storeCode)
-      .then((store) => !cancelled && setStoreName(store?.name ?? null))
+      .then((found) => !cancelled && setStore(found))
       .catch(() => {});
     return () => {
       cancelled = true;
@@ -163,7 +164,7 @@ export function JoinFlow({ initialMode }: { initialMode: Mode }) {
         firstName,
         email: auth.session.user.email ?? (email.trim() || null),
         locale,
-        storeCode: storeName ? storeCode : null,
+        storeCode: store ? storeCode : null,
         consents: { ...consents, push: Platform.OS !== 'web' && consents.push },
       }),
     );
@@ -177,7 +178,8 @@ export function JoinFlow({ initialMode }: { initialMode: Mode }) {
     setBusy(false);
   };
 
-  const greeting = storeName ? t('join.hero.storeHello', { store: storeName }) : null;
+  // The store's name in the current language (Greek until the English one is filled in).
+  const greeting = store ? t('join.hero.storeHello', { store: inLocale(store.name, store.name_en, locale) }) : null;
 
   if (step === 'start') {
     return (

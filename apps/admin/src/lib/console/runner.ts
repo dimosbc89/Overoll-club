@@ -47,7 +47,11 @@ async function run(request: PendingRequest, deps: RunnerDeps): Promise<ConsoleAc
         : { type: 'pin/failed', requestId, error: result.code };
     }
     case 'scan': {
-      const result = await deps.api.scan({ storeId: request.storeId, token: request.token });
+      const result = await deps.api.scan(
+        'memberCode' in request
+          ? { storeId: request.storeId, memberCode: request.memberCode }
+          : { storeId: request.storeId, token: request.token },
+      );
       return result.ok
         ? { type: 'scan/succeeded', requestId, member: strip(result) }
         : { type: 'scan/failed', requestId, error: result.code };
