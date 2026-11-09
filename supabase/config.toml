@@ -1,0 +1,8 @@
+# Supabase CLI settings for this repo (only what we use).
+project_id = "lwhxqnmntihmavqngeca"
+
+[functions.api]
+# The function checks the caller's JWT itself (getClaims) and the service key for jobs.
+verify_jwt = false
+# Run `npm run functions:build` first: index.ts imports dist/app.js.
+entrypoint = "./functions/api/index.ts"

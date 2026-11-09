@@ -13,3 +13,6 @@ supabase/.temp/
 *.p12
 *.pem
 *.pkpass
+
+# Edge Function bundles (npm run functions:build)
+supabase/functions/*/dist/

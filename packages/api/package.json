@@ -1,0 +1,21 @@
+{
+  "name": "@overoll/api",
+  "version": "0.1.0",
+  "private": true,
+  "description": "HTTP layer for the Overoll Club server operations (runs as a Supabase Edge Function)",
+  "type": "module",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "scripts": {
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@overoll/server": "0.1.0"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.6",
+    "typescript": "^7.0.2",
+    "vitest": "^5.1.0"
+  }
+}

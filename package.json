@@ -12,12 +12,14 @@
     "typecheck": "npm run typecheck --workspaces --if-present && tsc -p scripts",
     "test:db": "bash supabase/tests/run-local.sh",
     "seed:generate": "tsx scripts/generate-seed.ts",
-    "seed:check": "tsx scripts/generate-seed.ts --check"
+    "seed:check": "tsx scripts/generate-seed.ts --check",
+    "functions:build": "tsx scripts/build-functions.ts"
   },
   "engines": {
     "node": ">=22"
   },
   "devDependencies": {
+    "esbuild": "^0.28.2",
     "tsx": "^4.23.15"
   }
 }

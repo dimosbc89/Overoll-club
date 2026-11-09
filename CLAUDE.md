@@ -14,11 +14,12 @@ https://claude.ai/artifact/WaTPFf7zJmC1hqVqioeEDC
 | --- | --- |
 | `packages/core` | Program rules as pure TypeScript: points, tiers, rewards, expiry, member QR tokens. No I/O. |
 | `packages/server` | Transactional operations that move points (join, scan, award, undo, redeem, use, expire). Postgres via `postgres`, rules from `packages/core`, integration tests on a throwaway Postgres |
+| `packages/api` | HTTP layer (Fetch API) in front of `packages/server`: routes, auth from the verified token, status codes |
 | `supabase/migrations` | Database schema, row-level security, triggers |
 | `supabase/tests` | `run-local.sh` spins up a throwaway Postgres and runs `rls.sql` |
-| `supabase/functions` | (next) thin Edge Function wrappers around `packages/server`, plus Wallet passes |
-| `apps/mobile` | (next) Expo app: iOS, Android **and** the customer web app (Expo web) |
-| `apps/admin` | (next) Next.js back office: HQ admin, store manager, staff console |
+| `supabase/functions` | Edge Function `api` (wires `packages/api` to Supabase; bundled by `scripts/build-functions.ts`); Wallet passes next |
+| `apps/mobile` | Expo app: iOS, Android **and** the customer web app (Expo web) |
+| `apps/admin` | Next.js back office: HQ admin, store manager, staff console |
 | `data` | Source data: stores, menu (Wolt prices), reward catalog. Feeds `supabase/seed.sql` |
 | `scripts` | `generate-seed.ts`: builds `supabase/seed.sql` from `data/` with reward costs from `packages/core` |
 | `assets/brand` | Overoll logos (SVG); colours and fonts in `docs/brand.md` |
@@ -44,11 +45,13 @@ npm test               # all workspace unit tests (packages/core: vitest) + seed
 npm run typecheck
 npm run test:db        # database schema + access-rule tests on a local throwaway Postgres, plus the seed
 npm run seed:generate  # rebuild supabase/seed.sql after changing data/*.json
+npm run functions:build # bundle Edge Functions (CI deploys them from main)
 ```
 
 ## Workflow
 
-- Small branches, one feature each; tests must pass before merging to `main`.
+- Small branches, one feature each; tests must pass before merging to `main` (GitHub Actions runs typecheck, tests, database tests and the function build).
+- New migrations: apply to Supabase, then rename the local file to the version Supabase recorded, so both histories match.
 - When a rule changes, update `docs/program-spec.md`, `packages/core/src/config.ts` and its tests in the same change.
 - Tick items in `docs/roadmap.md` as they're done.
 - Dimos approves anything customer-facing (copy, screens, rewards) before it ships.

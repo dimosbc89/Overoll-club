@@ -29,6 +29,8 @@ Week 1 foundation: program rules engine (`packages/core`, 32 tests), database sc
 
 Variable names are in `.env.example`; values never go in git.
 
+API: Edge Function `api` (`packages/api` → `supabase/functions/api`), deployed by GitHub Actions from `main` once the `SUPABASE_ACCESS_TOKEN` secret is set.
+
 ## Quick start
 
 ```bash

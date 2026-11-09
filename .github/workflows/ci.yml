@@ -1,0 +1,55 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    runs-on: ubuntu-24.04 # ships PostgreSQL 16 binaries, used by the database tests
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm test
+      - run: npm run test:db
+      - run: npm run functions:build
+
+  deploy-functions:
+    # Runs only on main and only once the SUPABASE_ACCESS_TOKEN secret exists
+    # (Supabase dashboard → Account → Access tokens; GitHub repo → Settings →
+    # Secrets and variables → Actions). Migrations are applied separately.
+    needs: test
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    runs-on: ubuntu-24.04
+    env:
+      SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+    steps:
+      - name: Skip when the deploy token is not set
+        if: env.SUPABASE_ACCESS_TOKEN == ''
+        run: echo "SUPABASE_ACCESS_TOKEN is not set; skipping the deploy."
+      - uses: actions/checkout@v4
+        if: env.SUPABASE_ACCESS_TOKEN != ''
+      - uses: actions/setup-node@v4
+        if: env.SUPABASE_ACCESS_TOKEN != ''
+        with:
+          node-version: 22
+          cache: npm
+      - if: env.SUPABASE_ACCESS_TOKEN != ''
+        run: npm ci && npm run functions:build
+      - uses: supabase/setup-cli@v1
+        if: env.SUPABASE_ACCESS_TOKEN != ''
+        with:
+          version: latest
+      - name: Deploy Edge Functions
+        if: env.SUPABASE_ACCESS_TOKEN != ''
+        run: supabase functions deploy api --project-ref lwhxqnmntihmavqngeca --use-api --no-verify-jwt
