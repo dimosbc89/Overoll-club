@@ -21,6 +21,7 @@ export type ErrorCode =
   | 'employee_not_found'
   | 'employee_required'
   | 'bad_pin'
+  | 'pin_locked'
   // joining
   | 'brand_not_found'
   | 'store_not_found'
@@ -37,6 +38,7 @@ export type ErrorCode =
   | PurchaseError
   | 'amount_too_small'
   | EarnLimitError
+  | 'receipt_already_used'
   // undo
   | 'not_found'
   | 'not_undoable'
@@ -49,7 +51,11 @@ export type ErrorCode =
   | 'insufficient_points'
   | 'already_used'
   | 'cancelled'
-  | 'expired';
+  | 'expired'
+  // gifts (welcome croissant)
+  | 'gift_not_found'
+  | 'gift_used'
+  | 'gift_expired';
 
 export interface Failure<C extends ErrorCode = ErrorCode> {
   ok: false;

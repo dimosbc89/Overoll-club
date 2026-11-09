@@ -9,6 +9,8 @@ import {
   lockAfterWrongPin,
   normalizeReceiptNumber,
   pinLockedUntil,
+  receiptLookbackStart,
+  receiptUsedToday,
   resolveConfig,
   wrongPinLookbackStart,
 } from '../src/index.js';
@@ -119,6 +121,20 @@ describe('receipt numbers', () => {
     expect(normalizeReceiptNumber('ά-1')).toBe('A-1');
     expect(normalizeReceiptNumber('ΤΠΥ/ΔΣ')).toBe('TΠY/ΔΣ');
     expect(normalizeReceiptNumber('ς1')).toBe('Σ1');
+  });
+});
+
+describe('receipt used today', () => {
+  it('counts the calendar day in Athens, not UTC', () => {
+    // 21:30Z on 14 Jan = 23:30 in Athens; 22:30Z = 00:30 on 15 Jan in Athens.
+    const used = [new Date('2027-01-14T21:30:00Z')];
+    expect(receiptUsedToday(used, new Date('2027-01-14T21:59:59Z'))).toBe(true);
+    expect(receiptUsedToday(used, new Date('2027-01-14T22:00:00Z'))).toBe(false);
+    expect(receiptUsedToday(used, new Date('2027-01-14T22:00:00Z'), 'UTC')).toBe(true);
+    expect(receiptUsedToday([], new Date('2027-01-14T21:59:59Z'))).toBe(false);
+  });
+  it('looks back 26 hours, enough for a 25-hour day', () => {
+    expect(receiptLookbackStart(new Date('2027-10-31T12:00:00Z')).toISOString()).toBe('2027-10-30T10:00:00.000Z');
   });
 });
 

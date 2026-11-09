@@ -1,5 +1,5 @@
 import { canUndo } from '@overoll/core';
-import { brandAccess, checkEmployee, storeAccess } from './internal/access.js';
+import { brandAccess, checkEmployeePin, storeAccess } from './internal/access.js';
 import { audit } from './internal/audit.js';
 import { loadBrand } from './internal/brand.js';
 import { idempotent, ledgerKey } from './internal/idempotency.js';
@@ -32,7 +32,8 @@ export type UndoEarnError =
   | 'undo_window_passed'
   | 'employee_required'
   | 'employee_not_found'
-  | 'bad_pin';
+  | 'bad_pin'
+  | 'pin_locked';
 
 export interface UndoneEarn {
   /** The new `reverse` ledger entry. */
@@ -91,11 +92,18 @@ export async function undoEarn(sql: Db, raw: UndoEarnInput): Promise<UndoEarnRes
     const storeId = entry.store_id;
 
     if (!anyTime && !i.employee) return fail('employee_required', 'A store device needs the cashier PIN to undo');
-    if (i.employee) {
-      const employeeError = await checkEmployee(tx, storeId, i.employee.employeeId, i.employee.pin);
-      if (employeeError) return fail(employeeError);
-    }
     const brand = await loadBrand(tx, entry.brand_id);
+    if (i.employee) {
+      const employee = await checkEmployeePin(tx, {
+        storeId,
+        employeeId: i.employee.employeeId,
+        pin: i.employee.pin,
+        callerUserId: i.callerUserId,
+        now: i.now,
+        config: brand.config,
+      });
+      if (!employee.ok) return employee;
+    }
     const employeeId = i.employee?.employeeId ?? null;
 
     return idempotent(

@@ -1,5 +1,6 @@
 import { isRedemptionExpired, normalizeRedemptionCode } from '@overoll/core';
-import { checkEmployee, storeAccess } from './internal/access.js';
+import { checkEmployeePin, storeAccess } from './internal/access.js';
+import { loadBrand } from './internal/brand.js';
 import { audit } from './internal/audit.js';
 import { idempotent } from './internal/idempotency.js';
 import * as input from './internal/input.js';
@@ -25,6 +26,7 @@ export type UseRedemptionError =
   | 'store_inactive'
   | 'employee_not_found'
   | 'bad_pin'
+  | 'pin_locked'
   | 'not_found'
   | 'expired'
   | 'already_used'
@@ -47,7 +49,8 @@ export type UseRedemptionResult = Result<UsedRedemption, UseRedemptionError>;
 /**
  * Staff scan the member's code at the till: a pending, unexpired code of this
  * brand is marked used with the store and the cashier. The cashier then rings
- * the item as a 100% discount line on the POS.
+ * the item as a 100% discount line on the POS. Gift codes (welcome croissant)
+ * work the same way, with pointsSpent 0; the gift stays `redeemed`.
  */
 export async function useRedemption(sql: Db, raw: UseRedemptionInput): Promise<UseRedemptionResult> {
   const parsed = input.parseInput(() => ({
@@ -66,8 +69,16 @@ export async function useRedemption(sql: Db, raw: UseRedemptionInput): Promise<U
     const access = await storeAccess(tx, i.callerUserId, i.storeId);
     if (!access || !(access.device || access.manager)) return fail('forbidden');
     if (!access.storeActive) return fail('store_inactive');
-    const employeeError = await checkEmployee(tx, i.storeId, i.employeeId, i.pin);
-    if (employeeError) return fail(employeeError);
+    const brand = await loadBrand(tx, access.brandId);
+    const employee = await checkEmployeePin(tx, {
+      storeId: i.storeId,
+      employeeId: i.employeeId,
+      pin: i.pin,
+      callerUserId: i.callerUserId,
+      now: i.now,
+      config: brand.config,
+    });
+    if (!employee.ok) return employee;
     const code = normalizeRedemptionCode(i.code);
     if (!code) return fail('not_found');
 

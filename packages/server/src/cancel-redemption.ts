@@ -1,4 +1,5 @@
 import { audit } from './internal/audit.js';
+import { returnGift } from './internal/gifts.js';
 import { idempotent, ledgerKey } from './internal/idempotency.js';
 import * as input from './internal/input.js';
 import { lockMember, memberBalance } from './internal/members.js';
@@ -23,13 +24,14 @@ export type CancelRedemptionError =
 
 export interface CancelledRedemption {
   redemptionId: string;
+  /** 0 for a gift code: the gift is available again instead (or expired, if past its own expiry). */
   pointsRefunded: number;
   balance: number;
 }
 
 export type CancelRedemptionResult = Result<CancelledRedemption, CancelRedemptionError>;
 
-/** The member cancels a pending code and gets the points back. */
+/** The member cancels a pending code and gets the points (or the gift) back. */
 export async function cancelRedemption(sql: Db, raw: CancelRedemptionInput): Promise<CancelRedemptionResult> {
   const parsed = input.parseInput(() => ({
     callerUserId: input.uuid(raw.callerUserId, 'callerUserId'),
@@ -61,8 +63,8 @@ export async function cancelRedemption(sql: Db, raw: CancelRedemptionInput): Pro
       },
       async (): Promise<CancelRedemptionResult> => {
         await lockMember(tx, found.member_id);
-        const [redemption] = await tx<{ status: string; points_spent: number }[]>`
-          select status, points_spent from public.redemptions where id = ${i.redemptionId} for update
+        const [redemption] = await tx<{ status: string; points_spent: number; gift_id: string | null }[]>`
+          select status, points_spent, gift_id from public.redemptions where id = ${i.redemptionId} for update
         `;
         if (!redemption) return fail('not_found');
         if (redemption.status === 'used') return fail('already_used');
@@ -72,21 +74,30 @@ export async function cancelRedemption(sql: Db, raw: CancelRedemptionInput): Pro
         await tx`
           update public.redemptions set status = 'cancelled', cancelled_at = ${i.now} where id = ${i.redemptionId}
         `;
-        await tx`
-          insert into public.ledger_entries (
-            brand_id, member_id, kind, points, redemption_id, idempotency_key, created_by, created_at
-          ) values (
-            ${found.brand_id}, ${found.member_id}, 'refund_redeem', ${redemption.points_spent}, ${i.redemptionId},
-            ${ledgerKey('cancel_redemption', i.idempotencyKey)}, ${i.callerUserId}, ${i.now}
-          )
-        `;
+        // A gift code cost no points: the gift comes back instead of a refund.
+        const giftStatus = redemption.gift_id ? await returnGift(tx, redemption.gift_id, i.redemptionId, i.now) : null;
+        if (!redemption.gift_id) {
+          await tx`
+            insert into public.ledger_entries (
+              brand_id, member_id, kind, points, redemption_id, idempotency_key, created_by, created_at
+            ) values (
+              ${found.brand_id}, ${found.member_id}, 'refund_redeem', ${redemption.points_spent}, ${i.redemptionId},
+              ${ledgerKey('cancel_redemption', i.idempotencyKey)}, ${i.callerUserId}, ${i.now}
+            )
+          `;
+        }
         await audit(tx, {
           brandId: found.brand_id,
           actorUserId: i.callerUserId,
           action: 'redemption.cancel',
           entity: 'redemptions',
           entityId: i.redemptionId,
-          details: { memberId: found.member_id, pointsRefunded: redemption.points_spent },
+          details: {
+            memberId: found.member_id,
+            pointsRefunded: redemption.points_spent,
+            giftId: redemption.gift_id,
+            giftStatus,
+          },
           at: i.now,
         });
         return {

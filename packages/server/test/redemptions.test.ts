@@ -253,7 +253,7 @@ describe('expireRedemptions', () => {
     expect(first.expired).toBe(first.redemptionIds.length);
 
     const second = await expireRedemptions(db.server, { now: at(base, 20 * 60) });
-    expect(second).toEqual({ ok: true, expired: 0, redemptionIds: [] });
+    expect(second).toEqual({ ok: true, expired: 0, redemptionIds: [], giftsExpired: 0, giftIds: [] });
 
     for (const r of made) {
       expect(await refunds(r.redemptionId)).toBe(1);

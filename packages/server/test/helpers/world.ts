@@ -151,5 +151,20 @@ export async function ledgerCount(admin: Sql, memberId: string, kind?: string): 
   return row!.n;
 }
 
+/** A fresh active cashier (own PIN lockout state), at store A unless given. */
+export async function newEmployee(admin: Sql, pin: string, storeId: string = ids.storeA, displayName = 'Cashier'): Promise<string> {
+  const [row] = await admin<{ id: string }[]>`
+    insert into public.employees (brand_id, store_id, display_name, pin_hash)
+    select brand_id, id, ${displayName}, extensions.crypt(${pin}, extensions.gen_salt('bf')) from public.stores where id = ${storeId}
+    returning id
+  `;
+  return row!.id;
+}
+
+/** Replace a brand's config overrides (brands.config). */
+export async function setBrandConfig(admin: Sql, brandId: string, config: Record<string, unknown>): Promise<void> {
+  await admin`update public.brands set config = ${admin.json(config as never)} where id = ${brandId}`;
+}
+
 /** Minutes/seconds after a base time. */
 export const at = (base: string, offsetSeconds = 0): Date => new Date(new Date(base).getTime() + offsetSeconds * 1000);

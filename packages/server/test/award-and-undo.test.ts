@@ -67,6 +67,7 @@ describe('awardPoints', () => {
         balance: points,
         tier,
         tierChanged: false,
+        welcomeGiftUnlocked: false, // this brand has no welcome gift configured
       });
       if (!result.ok) return;
       expect(await earnedEntry(result.entryId)).toMatchObject({
