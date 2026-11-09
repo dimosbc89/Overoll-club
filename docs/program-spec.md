@@ -13,6 +13,7 @@ All numbers live in `packages/core/src/config.ts` and can be changed by HQ later
 | POS | Unknown. Version 1 does **not** integrate with the POS: staff type the receipt total on the staff console |
 | Delivery orders | Not decided. Built behind a switch, **off at launch**; decide after the pilot |
 | Existing customers | Overoll's newsletter list is a marketing task for later, not part of the launch |
+| Landing page | Own subdomain `club.<overoll domain>`: the web app's home page is the landing page; the counter QR opens `/join?store=<code>` (domain and DNS from Overoll) |
 | Pilot store | **Chalandri** (Κατσουλιέρη 10): a neighbourhood store with regulars and calmer mornings than Praxitelous, so staff learn the flow without a queue |
 | App store accounts | Published under GROW's Apple Developer and Google Play accounts (see risk in §10) |
 | Deadline | All stores live by the week of **4 January 2027** |

@@ -33,6 +33,8 @@ Legend: **D** = Dimos · **C** = Claude · ☐ open · ☑ done
 - ☑ C: points engine (`packages/server`: join, scan, award, undo, redeem, use, expire) with 61 database tests
 - ☑ C: HTTP API (`packages/api`) + Edge Function `api` bundle; CI on GitHub Actions (typecheck, tests, DB tests, build)
 - ☐ D: Supabase access token as GitHub secret `SUPABASE_ACCESS_TOKEN` so CI deploys the API (until then it is built and tested but not live)
+- ☐ D: from Overoll: their production domain and DNS access for `club.` (landing page + web app); the website itself runs on Cloudflare Pages
+- ☐ C: copy deck el/en (app, notifications, emails, staff errors, print, landing, store listings) → Dimos approves
 
 ## Week 2 · 16–22 Nov · Join flow + card + Wallet
 
