@@ -7,6 +7,7 @@ let db: TestDatabase;
 let handle: (req: Request) => Promise<Response>;
 
 const SERVICE = 'service-secret';
+const JOBS = 'jobs-token-from-vault';
 const tokenFor = (userId: string) => `user:${userId}`;
 
 beforeAll(async () => {
@@ -15,7 +16,8 @@ beforeAll(async () => {
   handle = createHandler({
     sql: db.server,
     authenticate: async (token) => (token.startsWith('user:') ? token.slice(5) : null),
-    isServiceToken: (token) => token === SERVICE,
+    // Async like the Edge Function, which looks the scheduler's token up in Vault.
+    isServiceToken: async (token) => token === SERVICE || token === JOBS,
     allowedOrigins: ['https://club.example'],
   });
 });
@@ -115,6 +117,13 @@ describe('HTTP layer', () => {
     const res = await handle(post('/api/jobs/expire-redemptions', {}, SERVICE));
     expect(res.status).toBe(200);
     expect(await res.json()).toMatchObject({ ok: true, expired: 0, giftsExpired: 0 });
+  });
+
+  it('jobs/*: the scheduler token works like the service key; anything else is refused', async () => {
+    const ok = await handle(post('/api/jobs/expire-redemptions', {}, JOBS));
+    expect(ok.status).toBe(200);
+    expect((await ok.json()).ok).toBe(true);
+    expect((await handle(post('/api/jobs/expire-redemptions', {}, 'jobs-token-guess'))).status).toBe(403);
   });
 
   it('jobs/expire-points: service token only; a bad batchSize falls back to the default', async () => {

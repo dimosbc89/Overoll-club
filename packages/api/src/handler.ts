@@ -25,7 +25,8 @@ export interface HandlerDeps {
   /** Verifies the bearer token and returns the user id (JWT `sub`), or null. */
   authenticate(token: string): Promise<string | null>;
   /** True when the bearer token is the service role secret (scheduled jobs). */
-  isServiceToken(token: string): boolean;
+  /** True for the service key or the scheduler's jobs token (may look it up). */
+  isServiceToken(token: string): boolean | Promise<boolean>;
   /** Origins allowed by CORS; `*` allows any (tokens travel in a header, not cookies). */
   allowedOrigins?: readonly string[];
 }
@@ -145,7 +146,7 @@ export function createHandler(deps: HandlerDeps): (req: Request) => Promise<Resp
     if (!token) return failure('unauthenticated');
     let userId: string | null = null;
     if (route.auth === 'service') {
-      if (!deps.isServiceToken(token)) return failure('forbidden');
+      if (!(await deps.isServiceToken(token))) return failure('forbidden');
     } else {
       userId = await deps.authenticate(token);
       if (!userId) return failure('unauthenticated');

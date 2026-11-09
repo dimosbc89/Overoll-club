@@ -7,6 +7,10 @@
  * Environment (provided by Supabase): SUPABASE_URL, SUPABASE_ANON_KEY,
  * SUPABASE_SERVICE_ROLE_KEY, SUPABASE_DB_URL. Optional: ALLOWED_ORIGINS
  * (comma separated, default *).
+ *
+ * The jobs/* routes accept the service key or the scheduler's token: the
+ * Vault secret `jobs_token`, created inside the database by
+ * scripts/configure-project.ts and sent by pg_cron, so no key leaves Supabase.
  */
 import type { createClient as CreateClient } from '@supabase/supabase-js';
 import type postgresType from 'postgres';
@@ -43,6 +47,18 @@ export function start({ postgres, createClient }: Libraries): void {
   // Transaction-pooler friendly: no prepared statements; a small pool per instance.
   const sql = postgres(required('SUPABASE_DB_URL'), { prepare: false, max: 3, idle_timeout: 20 });
 
+  // Read once per instance; null while the scheduler is not set up.
+  let jobsTokenCache: Promise<string | null> | undefined;
+  const jobsToken = () =>
+    (jobsTokenCache ??= sql<{ decrypted_secret: string }[]>`
+      select decrypted_secret from vault.decrypted_secrets where name = 'jobs_token'
+    `
+      .then((rows) => rows[0]?.decrypted_secret ?? null)
+      .catch(() => {
+        jobsTokenCache = undefined; // try again on the next job call
+        return null;
+      }));
+
   const handler = createHandler({
     sql,
     async authenticate(token) {
@@ -50,7 +66,11 @@ export function start({ postgres, createClient }: Libraries): void {
       if (error || !data?.claims?.sub || data.claims.role !== 'authenticated') return null;
       return data.claims.sub;
     },
-    isServiceToken: (token) => sameSecret(token, serviceKey),
+    async isServiceToken(token) {
+      if (sameSecret(token, serviceKey)) return true;
+      const jobs = await jobsToken();
+      return jobs !== null && sameSecret(token, jobs);
+    },
     allowedOrigins: (Deno.env.get('ALLOWED_ORIGINS') ?? '*')
       .split(',')
       .map((o) => o.trim())

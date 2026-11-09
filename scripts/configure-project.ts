@@ -2,7 +2,7 @@
  * Supabase settings kept as code (supabase/project.config.json):
  * Auth site URL and redirect URLs, the one-time sign-in code (length, expiry, email
  * template with texts from docs/copy-deck.md), custom SMTP via Resend once it is
- * switched on, and the Edge Function's ALLOWED_ORIGINS.
+ * switched on, the Edge Function's ALLOWED_ORIGINS, and the scheduled jobs (supabase/jobs.sql).
  *
  *   npm run project:check   validates everything offline (part of `npm test`)
  *   npm run project:apply   applies it with the Management API; needs SUPABASE_ACCESS_TOKEN
@@ -78,7 +78,7 @@ function escapeHtml(s: string): string {
   return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 }
 
-export function buildDesired(cfg: ProjectConfig, copy: Copy, template: string) {
+export function buildDesired(cfg: ProjectConfig, copy: Copy, template: string, jobs: string) {
   const fail = (msg: string) => {
     throw new Error(`supabase/project.config.json: ${msg}`);
   };
@@ -101,6 +101,11 @@ export function buildDesired(cfg: ProjectConfig, copy: Copy, template: string) {
   const subject = fillPlaceholders(subjectRow.el, cfg);
   const html = renderTemplate(template, copy, cfg);
   if (!subject.includes(TOKEN) || !html.includes(TOKEN)) throw new Error('the sign-in email must show the code');
+  const jobsSql = jobs.replaceAll('{projectRef}', cfg.projectRef);
+  if (/\{[a-zA-Z]+\}/.test(jobsSql.replace(/\{\}/g, ''))) throw new Error('supabase/jobs.sql: unknown placeholder');
+  if (!/cron\.schedule\('overoll-expire-redemptions'/.test(jobsSql) || !/cron\.schedule\('overoll-expire-points'/.test(jobsSql)) {
+    throw new Error('supabase/jobs.sql must schedule both jobs');
+  }
 
   const auth: Record<string, string | number | boolean> = {
     site_url: cfg.siteUrl,
@@ -125,7 +130,7 @@ export function buildDesired(cfg: ProjectConfig, copy: Copy, template: string) {
     });
   }
   const secrets = { ALLOWED_ORIGINS: cfg.allowedOrigins.join(',') };
-  return { auth, secrets, subject, html };
+  return { auth, secrets, subject, html, jobsSql };
 }
 
 async function api(token: string, method: string, path: string, body?: unknown): Promise<unknown> {
@@ -195,12 +200,26 @@ async function apply(cfg: ProjectConfig, desired: ReturnType<typeof buildDesired
   }
 }
 
+async function scheduleJobs(token: string, ref: string, jobsSql: string) {
+  await api(token, 'POST', `/projects/${ref}/database/query`, { query: jobsSql });
+  const rows = (await api(token, 'POST', `/projects/${ref}/database/query`, {
+    query: "select jobname, schedule, active from cron.job where jobname like 'overoll-%' order by jobname",
+  })) as { jobname: string; schedule: string; active: boolean }[];
+  console.log(`jobs: ${rows.map((r) => `${r.jobname} (${r.schedule}${r.active ? '' : ', inactive'})`).join(', ')}`);
+}
+
 async function main() {
   const args = new Set(process.argv.slice(2));
   const cfg = JSON.parse(read('supabase/project.config.json')) as ProjectConfig;
-  const desired = buildDesired(cfg, readCopyDeck(read('docs/copy-deck.md')), read('supabase/templates/sign-in-code.html'));
+  const desired = buildDesired(
+    cfg,
+    readCopyDeck(read('docs/copy-deck.md')),
+    read('supabase/templates/sign-in-code.html'),
+    read('supabase/jobs.sql'),
+  );
   if (args.has('--apply')) {
     await apply(cfg, desired);
+    await scheduleJobs(process.env.SUPABASE_ACCESS_TOKEN!, cfg.projectRef, desired.jobsSql);
     return;
   }
   if (args.has('--print')) console.log(`Subject: ${desired.subject}\n\n${desired.html}`);
