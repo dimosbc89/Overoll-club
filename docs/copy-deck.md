@@ -428,6 +428,68 @@ SMS sign-in code (sender ID "Overoll"). Greek lowercase letters switch the SMS t
 | `console.redeem.why` | Η έκπτωση 100% κρατά σωστή την απόδειξη για το myDATA. | The 100% discount keeps the receipt right for myDATA. |
 | `console.today` | Σημερινές κινήσεις | Today's activity |
 
+#### f1b. Added while building the console (to approve)
+
+Labels the screens needed beyond the table above (device sign-in, PIN pad, late points, errors, today's activity). Same rules: Greek reference, placeholders filled by the app.
+
+| Key | Ελληνικά | English |
+| --- | --- | --- |
+| `console.loading` | Φόρτωση… | Loading… |
+| `console.header` | {store} · Ταμείο | {store} · Till |
+| `console.device.email` | Email συσκευής | Device email |
+| `console.device.send` | Αποστολή κωδικού | Send code |
+| `console.device.codeSent` | Στείλαμε κωδικό μίας χρήσης στο {email}. | We sent a one-time code to {email}. |
+| `console.device.code` | Κωδικός από το email | Code from the email |
+| `console.device.verify` | Σύνδεση συσκευής | Sign this device in |
+| `console.device.otherEmail` | Άλλο email | Use another email |
+| `console.device.badCode` | Ο κωδικός δεν ισχύει ή έληξε. Δοκίμασε ξανά ή ζήτα νέο. | That code is wrong or has expired. Try again or ask for a new one. |
+| `console.device.sendFailed` | Δεν στάλθηκε ο κωδικός. Έλεγξε το email και δοκίμασε ξανά σε ένα λεπτό. | We couldn't send the code. Check the email and try again in a minute. |
+| `console.device.noStore` | Αυτός ο λογαριασμός δεν είναι συσκευή ταμείου κάποιου καταστήματος. Ζήτα από το HQ να τον ορίσει. | This account isn't set up as a till device for a store. Ask HQ to set it up. |
+| `console.device.signOut` | Αποσύνδεση συσκευής | Sign this device out |
+| `console.employee.empty` | Δεν υπάρχει ακόμα προσωπικό σε αυτό το κατάστημα. Ο υπεύθυνος το προσθέτει από τη διαχείριση. | No staff are set up for this store yet. Your store manager adds them in the back office. |
+| `console.employee.locked` | Η κονσόλα κλείδωσε μετά από {minutes} λεπτά χωρίς κίνηση. Γράψε ξανά το PIN σου. | The till locked after {minutes} minutes without use. Type your PIN again. |
+| `console.employee.pickFirst` | Διάλεξε πρώτα το όνομά σου. | Pick your name first. |
+| `console.employee.start` | Έναρξη | Start |
+| `console.employee.pinLength` | {count} ψηφία | {count} digits |
+| `console.pinClear` | Καθαρισμός PIN | Clear PIN |
+| `console.scan.flip` | Αλλαγή κάμερας | Switch camera |
+| `console.scan.noCamera` | Η κάμερα δεν είναι διαθέσιμη. Πληκτρολόγησε τον κωδικό. | The camera isn't available. Type the code instead. |
+| `console.scan.useCamera` | Σάρωση με κάμερα | Scan with the camera |
+| `console.scan.codeLabel` | Κωδικός μέλους ή δώρου | Member or reward code |
+| `console.scan.submit` | Συνέχεια | Continue |
+| `console.scan.checking` | Έλεγχος… | Checking… |
+| `console.member.newScan` | Νέα σάρωση | New scan |
+| `console.late.toggle` | Ξέχασε την κάρτα νωρίτερα; | Forgot the card earlier? |
+| `console.late.receipt` | Αριθμός απόδειξης | Receipt number |
+| `console.late.hint` | Μόνο για σημερινή απόδειξη αυτού του καταστήματος. Κάθε απόδειξη παίρνει πόντους μία φορά. | Only for today's receipt from this store. Each receipt earns points once. |
+| `console.award.sending` | Καταχώριση… | Adding points… |
+| `console.award.balance` | Νέο υπόλοιπο: {points} πόντοι | New balance: {points} points |
+| `console.next` | Επόμενος πελάτης | Next customer |
+| `console.undo.yes` | Ναι, αναίρεση | Yes, undo |
+| `console.undo.sending` | Αναίρεση… | Undoing… |
+| `console.cancel` | Άκυρο | Cancel |
+| `console.error.title` | Οι πόντοι δεν μπήκαν | The points weren't added |
+| `console.retry` | Δοκίμασε ξανά | Try again |
+| `console.back` | Πίσω | Back |
+| `console.redeem.codeLabel` | Κωδικός δώρου | Reward code |
+| `console.redeem.sending` | Εξαργύρωση… | Redeeming… |
+| `console.redeem.member` | Μέλος: {firstName} | Member: {firstName} |
+| `console.today.close` | Κλείσιμο | Close |
+| `console.today.refresh` | Ανανέωση | Refresh |
+| `console.today.empty` | Καμία κίνηση ακόμα σήμερα. | Nothing yet today. |
+| `console.today.colTime` | Ώρα | Time |
+| `console.today.colWhat` | Κίνηση | Activity |
+| `console.today.colAmount` | Ποσό | Amount |
+| `console.today.colPoints` | Πόντοι | Points |
+| `console.today.colCashier` | Ταμίας | Cashier |
+| `console.today.earn` | Πόντοι από αγορά | Points for a purchase |
+| `console.today.other` | Άλλη κίνηση | Other entry |
+| `tier.classic` | Classic | Classic |
+| `tier.gold` | Gold | Gold |
+| `tier.club` | Club | Club |
+| `language.elShort` | ΕΛ | ΕΛ |
+| `language.enShort` | EN | EN |
+
 ### f2. Error messages
 
 One line per code, telling the person what to do next. Source of truth: `data/copy/errors.el.json` and `data/copy/errors.en.json` (this table is generated from them). Covers every code in the `ErrorCode` union in `packages/server/src/result.ts`, including `PurchaseError` and `EarnLimitError` from `packages/core/src/points.ts`, plus two API-level codes from `packages/api/src/handler.ts` (`unauthenticated`, `internal_error`) and two for the apps (`network_error` when offline, `unknown` as the fallback for any other code, e.g. `route_not_found`). After an `internal_error` or `network_error` during an award, retry with the **same** idempotency key so points are never added twice.
@@ -441,6 +503,7 @@ One line per code, telling the person what to do next. Source of truth: `data/co
 | `employee_not_found` | staff | Δεν βρίσκουμε το όνομά σου στο προσωπικό του καταστήματος. Διάλεξέ το ξανά ή ρώτα τον υπεύθυνο. | We can't find you on this store's staff list. Pick your name again or ask your store manager. | – |
 | `employee_required` | staff (undo) | Για την αναίρεση χρειάζεται το PIN σου. Διάλεξε το όνομά σου και πληκτρολόγησέ το. | Undo needs your PIN. Pick your name and type it in. | – |
 | `bad_pin` | staff | Λάθος PIN. Δοκίμασε ξανά. Αν το ξέχασες, ο υπεύθυνος μπορεί να σου ορίσει νέο. | Wrong PIN. Try again. If you've forgotten it, your store manager can set a new one. | – |
+| `pin_locked` | staff (PIN, v0.2) | Πολλά λάθος PIN στη σειρά, οπότε το όνομα κλείδωσε για λίγο. Περίμενε μερικά λεπτά ή ζήτα βοήθεια από τον υπεύθυνο. | Too many wrong PINs, so this name is locked for now. Wait a few minutes or ask your store manager. | – |
 | `brand_not_found` | member (join) | Δεν βρήκαμε το πρόγραμμα. Σκάναρε ξανά το QR στο ταμείο ή άνοιξε το {clubUrl}. | We couldn't find the programme. Scan the QR at the counter again or open {clubUrl}. | `{clubUrl}` = club URL |
 | `store_not_found` | member (join from store QR) | Αυτό το QR καταστήματος δεν δουλεύει. Γίνε μέλος από το {clubUrl} ή ζήτα ένα χεράκι στο ταμείο. | This store QR isn't working. Join at {clubUrl} instead, or ask us at the counter. | `{clubUrl}` = club URL |
 | `referral_not_found` | member (join, v1.1) | Δεν βρίσκουμε αυτόν τον κωδικό πρόσκλησης. Έλεγξέ τον ή σβήσε τον για να συνεχίσεις χωρίς αυτόν. | We can't find that invite code. Check it, or remove it to carry on without one. | – |
@@ -457,6 +520,7 @@ One line per code, telling the person what to do next. Source of truth: `data/co
 | `amount_too_small` | staff | Αυτό το ποσό είναι πολύ μικρό για να δώσει πόντους. Έλεγξε ότι το πληκτρολόγησες σωστά. | That amount is too small to earn points. Check you typed it correctly. | – |
 | `too_soon_after_last_earn` | staff | Σε αυτή την κάρτα μπήκαν πόντοι μόλις τώρα. Περίμενε {minutes} λεπτά ή, αν ήταν λάθος, κάνε αναίρεση και πέρασέ το ξανά. | Points were just added to this card. Wait {minutes} minutes or, if it was a mistake, undo it and enter it again. | `{minutes}` = `limits.minSecondsBetweenEarns` ÷ 60, rounded up (2) |
 | `daily_earn_limit_reached` | staff | Αυτή η κάρτα έφτασε το όριο των {maxEarns} αγορών για σήμερα. Πόντοι μπαίνουν ξανά από αύριο. | This card has reached today's limit of {maxEarns} purchases. Points can be added again tomorrow. | `{maxEarns}` = `limits.maxEarnsPerDay` (5) |
+| `receipt_already_used` | staff (late points, v0.2) | Αυτή η απόδειξη πήρε ήδη πόντους σήμερα σε αυτό το κατάστημα. Έλεγξε τον αριθμό της απόδειξης. | This receipt has already earned points at this store today. Check the receipt number. | – |
 | `not_found` | staff (undo, redeem); member (cancel code) | Δεν το βρίσκουμε. Αν είναι κωδικός δώρου, έλεγξε τους 8 χαρακτήρες και δοκίμασε ξανά. | We can't find that. If it's a reward code, check the 8 characters and try again. | – |
 | `not_undoable` | staff | Αναίρεση γίνεται μόνο σε πόντους από αγορά. Για οτιδήποτε άλλο, ενημέρωσε τον υπεύθυνο. | Only points from a purchase can be undone. For anything else, tell your store manager. | – |
 | `already_undone` | staff | Αυτή η κίνηση έχει ήδη αναιρεθεί. Δεν χρειάζεται να κάνεις κάτι άλλο. | This one has already been undone. Nothing else to do. | – |
