@@ -15,7 +15,9 @@
     "seed:check": "tsx scripts/generate-seed.ts --check",
     "functions:build": "tsx scripts/build-functions.ts",
     "project:check": "tsx scripts/configure-project.ts --check",
-    "project:apply": "tsx scripts/configure-project.ts --apply"
+    "project:apply": "tsx scripts/configure-project.ts --apply",
+    "build:web:mobile": "tsx scripts/build-web.ts mobile",
+    "build:web:admin": "tsx scripts/build-web.ts admin"
   },
   "engines": {
     "node": ">=22"

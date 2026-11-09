@@ -20,7 +20,7 @@ export function apiBaseUrl(supabaseUrl: string): string {
   return `${supabaseUrl.replace(/\/+$/, '')}/functions/v1/api`;
 }
 
-/** The club site and web app (`club.<overoll domain>`, domain not confirmed yet). */
+/** The club site and web app, `https://loyalty.overoll.gr` in production builds (scripts/build-web.ts). */
 export function clubUrlSetting(): string | null {
   return process.env.EXPO_PUBLIC_CLUB_URL?.trim() || null;
 }

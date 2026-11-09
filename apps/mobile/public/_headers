@@ -1,0 +1,7 @@
+# Cloudflare Pages response headers for loyalty.overoll.gr (copied into dist by Expo).
+/*
+  X-Content-Type-Options: nosniff
+  X-Frame-Options: DENY
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: camera=(), microphone=(), geolocation=(self)
+  Strict-Transport-Security: max-age=31536000
