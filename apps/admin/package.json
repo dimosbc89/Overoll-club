@@ -13,6 +13,7 @@
   "dependencies": {
     "@overoll/core": "*",
     "@supabase/supabase-js": "^2.119.0",
+    "jsqr": "^1.4.0",
     "next": "16.4.5",
     "react": "19.3.0",
     "react-dom": "19.3.0",

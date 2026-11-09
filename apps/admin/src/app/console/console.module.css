@@ -1,85 +1,751 @@
-.console {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: var(--space-xl);
-  align-items: start;
-}
+/* Staff console (till), from the design canvas: Console.dc.html and
+   ConsoleDone.dc.html (tablet landscape 1180×820), tokens from theme.css.
+   Scoped to the console so the back office keeps its own palette. */
+.root {
+  --pink: #ebabc5;
+  --plum: #b2688a;
+  --plum-deep: #924b6d;
+  --plum-deeper: #7a3d5b;
+  --cream: #f9f0e9;
+  --white: #ffffff;
+  --page: var(--cream);
+  --surface: var(--white);
+  --line: #e4dbd4;
+  --ink: #48423e;
+  --ink-muted: #6b6560;
+  --tint: #f7e1ea;
+  --radius-md: 16px;
+  --radius-lg: 28px;
+  --radius-full: 9999px;
+  --shadow-card: 0 1px 2px #48423e14, 0 8px 24px #48423e14;
+  --focus-ring: 0 0 0 2px #f9f0e9, 0 0 0 4px #924b6d;
 
-.scan,
-.amount {
+  min-height: 100vh;
+  min-height: 100dvh;
   display: flex;
   flex-direction: column;
-  gap: var(--space-md);
+  background: var(--page);
+  color: var(--ink);
+  font-family: var(--font-manrope), system-ui, sans-serif;
+  font-weight: 500;
+  -webkit-font-smoothing: antialiased;
+  -webkit-tap-highlight-color: transparent;
 }
 
-/* Big pink target with cocoa text (8.5:1). */
-.scanButton {
-  min-height: 200px;
-  border: 0;
-  border-radius: var(--radius-lg);
+.root h1,
+.root h2 {
+  font-family: inherit;
+  color: inherit;
+  font-weight: 800;
+  letter-spacing: -0.015em;
+}
+
+.root :focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
+
+/* ---------------------------------------------------------------- header */
+
+.header {
+  flex: none;
+  height: 72px;
+  padding: 0 28px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--line);
+}
+
+.storeName {
+  font-size: 16px;
+  line-height: 22px;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.spacer {
+  flex: 1;
+}
+
+.cashier {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 14px;
+  line-height: 20px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.avatar {
+  flex: none;
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-full);
   background: var(--pink);
-  color: var(--cocoa);
-  font-family: var(--font-serif);
-  font-size: 3rem;
-  letter-spacing: -0.05em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+}
+
+.avatarLarge {
+  width: 40px;
+  height: 40px;
+  font-size: 18px;
+}
+
+.language {
+  display: flex;
+  gap: 4px;
+}
+
+.languageButton {
+  min-width: 40px;
+  min-height: 40px;
+  border: 0;
+  border-radius: var(--radius-full);
+  background: transparent;
+  color: var(--ink-muted);
+  font: inherit;
+  font-size: 13px;
+  font-weight: 800;
   cursor: pointer;
 }
 
-.scanButton:active {
-  background: var(--pink-light);
+.languageButton[aria-pressed='true'] {
+  background: var(--cream);
+  color: var(--ink);
 }
 
-.status {
-  min-height: 1.5em;
-  font-weight: 600;
+/* ---------------------------------------------------------------- layout */
+
+.main {
+  flex: 1;
+  display: flex;
+  padding: 28px;
+  min-height: 0;
+}
+
+.split {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 440px minmax(0, 1fr);
+  gap: 28px;
+  min-height: 0;
+}
+
+.column {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-width: 0;
+}
+
+.bottom {
+  margin-top: auto;
+}
+
+.pair {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  width: 100%;
+}
+
+.center {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@media (max-width: 1000px) {
+  .split {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .header {
+    padding: 0 16px;
+    gap: 12px;
+  }
+}
+
+/* ---------------------------------------------------------------- cards */
+
+.card {
+  background: var(--surface);
+  border-radius: var(--radius-lg);
+  padding: 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  box-shadow: var(--shadow-card);
+}
+
+.narrow {
+  width: min(560px, 100%);
+}
+
+.resultCard {
+  width: min(640px, 100%);
+  padding: 40px 48px;
+  align-items: center;
+  gap: 18px;
+  text-align: center;
+}
+
+.eyebrow {
+  font-size: 13px;
+  line-height: 18px;
+  font-weight: 700;
+  color: var(--ink-muted);
+  letter-spacing: 0.02em;
+}
+
+.title {
+  font-size: 32px;
+  line-height: 38px;
+}
+
+.memberName {
+  font-size: 40px;
+  line-height: 44px;
+  overflow-wrap: anywhere;
+}
+
+.resultTitle {
+  font-size: 44px;
+  line-height: 48px;
+  overflow-wrap: anywhere;
+}
+
+.body {
+  font-size: 16px;
+  line-height: 24px;
+}
+
+.strong {
+  font-size: 18px;
+  line-height: 26px;
+  font-weight: 700;
+}
+
+.balance {
+  margin-top: 4px;
+  font-size: 20px;
+  line-height: 28px;
+  font-weight: 700;
+}
+
+.muted {
+  font-size: 13px;
+  line-height: 18px;
+  font-weight: 500;
+  color: var(--ink-muted);
+}
+
+.tags {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.tag {
+  display: inline-flex;
+  align-items: center;
+  min-height: 28px;
+  padding: 3px 12px;
+  border-radius: var(--radius-full);
+  font-size: 13px;
+  line-height: 18px;
+  font-weight: 700;
+}
+
+.tagOutline {
+  border: 1.5px solid var(--plum);
+  color: var(--plum-deep);
+}
+
+.tagPaper {
+  background: var(--surface);
+  color: var(--ink);
+}
+
+/* Cream note inside a white card ("check the name matches"). */
+.note {
+  padding: 12px 14px;
+  border-radius: var(--radius-md);
+  background: var(--cream);
+  font-size: 14px;
+  line-height: 21px;
+  font-weight: 500;
+}
+
+/* Pink callout with an icon (first purchase, tier up, redeem reminder). */
+.callout {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+  width: 100%;
+  padding: 16px 20px;
+  border-radius: var(--radius-md);
+  background: var(--pink);
+  text-align: left;
+  font-size: 16px;
+  line-height: 23px;
+  font-weight: 700;
+}
+
+.callout svg {
+  flex: none;
+}
+
+.alert {
+  padding: 12px 16px;
+  border-radius: var(--radius-md);
+  border: 1.5px solid var(--plum);
+  background: var(--tint);
+  font-size: 15px;
+  line-height: 22px;
+  font-weight: 700;
+  text-align: left;
+}
+
+.resultIcon {
+  width: 88px;
+  height: 88px;
+  border-radius: var(--radius-full);
+  background: var(--pink);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.resultIconAlert {
+  background: var(--tint);
+  color: var(--plum-deep);
+}
+
+/* ---------------------------------------------------------------- buttons */
+
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 48px;
+  padding: 0 24px;
+  border: 2px solid transparent;
+  border-radius: var(--radius-full);
+  font: inherit;
+  font-size: 16px;
+  line-height: 20px;
+  font-weight: 700;
+  text-align: center;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+.button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.filled {
+  background: var(--plum-deep);
+  color: var(--white);
+}
+
+.filled:not(:disabled):active {
+  background: var(--plum-deeper);
+}
+
+.outline {
+  background: var(--surface);
+  border-color: var(--plum);
+  color: var(--plum-deep);
+}
+
+.outline:not(:disabled):active,
+.outline[aria-pressed='true'] {
+  background: var(--cream);
+}
+
+.small {
+  min-height: 40px;
+  padding: 0 16px;
+  font-size: 14px;
+  white-space: nowrap;
+}
+
+.tall {
+  min-height: 64px;
+}
+
+.huge {
+  width: 100%;
+  min-height: 72px;
+  font-size: 20px;
+}
+
+.link {
+  align-self: flex-start;
+  min-height: 44px;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--plum-deep);
+  font: inherit;
+  font-size: 15px;
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+
+/* ---------------------------------------------------------------- amount */
+
+.amountPanel {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 20px 28px;
+  background: var(--pink);
+  border-radius: var(--radius-lg);
+}
+
+.amountText {
+  display: flex;
+  flex-direction: column;
 }
 
 .amountLabel {
+  font-size: 14px;
+  line-height: 20px;
   font-weight: 700;
-  color: var(--cocoa);
 }
 
-.display {
-  display: block;
-  padding: var(--space-md) var(--space-lg);
-  border: 1px solid var(--butter);
-  border-radius: var(--radius-md);
-  background: var(--white);
-  font-family: var(--font-serif);
-  font-size: 3.5rem;
-  line-height: 1.1;
-  letter-spacing: -0.04em;
+.amountValue {
+  font-size: 64px;
+  line-height: 68px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
   font-variant-numeric: tabular-nums;
-  text-align: right;
-  color: var(--cocoa);
+  white-space: nowrap;
 }
 
-.hint {
-  font-size: 0.875rem;
+.amountSide {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 6px;
+  text-align: right;
+}
+
+.limit {
+  font-size: 13px;
+  line-height: 18px;
+  font-weight: 500;
+  max-width: 280px;
 }
 
 .keypad {
+  flex: 1;
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: var(--space-sm);
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-auto-rows: minmax(64px, 1fr);
+  gap: 12px;
 }
 
 .key {
   min-height: 64px;
-  border: 1px solid var(--butter);
+  border: 0;
   border-radius: var(--radius-md);
-  background: var(--white);
-  color: var(--cocoa);
-  font-family: var(--font-sans);
-  font-size: 1.5rem;
-  font-weight: 600;
+  background: var(--surface);
+  color: var(--ink);
+  font: inherit;
+  font-size: 28px;
+  line-height: 32px;
+  font-weight: 700;
+  box-shadow: var(--shadow-card);
   cursor: pointer;
+  touch-action: manipulation;
+  user-select: none;
 }
 
-.key:active {
-  background: var(--pink-light);
+.key:not(:disabled):active {
+  background: var(--cream);
 }
 
-.wide {
-  grid-column: 1 / -1;
+.key:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ---------------------------------------------------------------- forms */
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.label {
+  font-size: 14px;
+  line-height: 20px;
+  font-weight: 700;
+}
+
+.input {
+  width: 100%;
+  min-height: 56px;
+  padding: 0 16px;
+  border: 2px solid var(--line);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+  color: var(--ink);
+  font: inherit;
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.input:focus {
+  border-color: var(--plum);
+}
+
+.codeInput {
+  min-height: 72px;
+  font-size: 30px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.row {
+  display: flex;
+  gap: 12px;
+  align-items: stretch;
+}
+
+.row > .input {
+  flex: 1;
+}
+
+/* ---------------------------------------------------------------- camera */
+
+.camera {
+  position: relative;
+  aspect-ratio: 4 / 3;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  background: var(--ink);
+}
+
+.camera video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.mirror {
+  transform: scaleX(-1);
+}
+
+.frame {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 56%;
+  aspect-ratio: 1;
+  transform: translate(-50%, -50%);
+  border: 3px solid #ffffffd9;
+  border-radius: 24px;
+  pointer-events: none;
+}
+
+.cameraMessage {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  color: var(--white);
+  font-size: 16px;
+  line-height: 24px;
+  font-weight: 700;
+  text-align: center;
+}
+
+.cameraBar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+/* ---------------------------------------------------------------- cashier */
+
+.names {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  overflow-y: auto;
+  padding: 4px;
+  margin: -4px;
+}
+
+.name {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 64px;
+  padding: 0 20px 0 12px;
+  border: 2px solid var(--line);
+  border-radius: var(--radius-full);
+  background: var(--surface);
+  color: var(--ink);
+  font: inherit;
+  font-size: 18px;
+  font-weight: 700;
+  text-align: left;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+.name[aria-pressed='true'] {
+  border-color: var(--plum-deep);
+  background: var(--pink);
+}
+
+.name span:last-child {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.pinPanel {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-width: 0;
+}
+
+.pinHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 20px 28px;
+  background: var(--pink);
+  border-radius: var(--radius-lg);
+}
+
+.dots {
+  display: flex;
+  gap: 14px;
+  min-height: 24px;
+  align-items: center;
+}
+
+.dot {
+  width: 18px;
+  height: 18px;
+  border-radius: var(--radius-full);
+  border: 2px solid var(--ink);
+}
+
+.dotOn {
+  background: var(--ink);
+}
+
+/* ---------------------------------------------------------------- today */
+
+.today {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-height: 0;
+}
+
+.todayHead {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.todayHead h1 {
+  flex: 1;
+}
+
+.tableWrap {
+  flex: 1;
+  overflow: auto;
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+  box-shadow: var(--shadow-card);
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.table th,
+.table td {
+  padding: 14px 20px;
+  border-bottom: 1px solid var(--line);
+  text-align: left;
+  font-size: 15px;
+  line-height: 22px;
+  color: var(--ink);
+  font-family: inherit;
+}
+
+.table th {
+  position: sticky;
+  top: 0;
+  background: var(--surface);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--ink-muted);
+}
+
+.table tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+.num {
+  text-align: right !important;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.plus {
+  font-weight: 800;
+}
+
+.minus {
+  font-weight: 800;
+  color: var(--plum-deep);
+}
+
+.visuallyHidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+.nowrap {
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
 }

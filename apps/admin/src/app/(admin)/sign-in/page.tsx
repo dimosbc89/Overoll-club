@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 
-import { getI18n } from '../../i18n/server';
+import { getI18n } from '../../../i18n/server';
 import styles from './sign-in.module.css';
 
 export async function generateMetadata(): Promise<Metadata> {

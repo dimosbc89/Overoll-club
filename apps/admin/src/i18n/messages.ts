@@ -26,13 +26,18 @@ export function isLocale(value: unknown): value is Locale {
   return typeof value === 'string' && (locales as readonly string[]).includes(value);
 }
 
-/** Message for a key, with `{name}` placeholders filled from params. */
-export function translate(locale: Locale, key: MessageKey, params?: MessageParams): string {
-  const template = messages[locale][key] ?? messages[defaultLocale][key] ?? key;
+/** Fill `{name}` placeholders; unknown names stay as they are. */
+export function fillTemplate(template: string, params?: MessageParams): string {
   if (!params) return template;
   return template.replace(/\{(\w+)\}/g, (match, name: string) =>
     name in params ? String(params[name]) : match,
   );
+}
+
+/** Message for a key, with `{name}` placeholders filled from params. */
+export function translate(locale: Locale, key: MessageKey, params?: MessageParams): string {
+  const template = messages[locale][key] ?? messages[defaultLocale][key] ?? key;
+  return fillTemplate(template, params);
 }
 
 export function createTranslate(locale: Locale): Translate {

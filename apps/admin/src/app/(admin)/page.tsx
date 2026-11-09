@@ -1,5 +1,5 @@
-import type { MessageKey } from '../i18n/messages';
-import { getI18n } from '../i18n/server';
+import type { MessageKey } from '../../i18n/messages';
+import { getI18n } from '../../i18n/server';
 import styles from './page.module.css';
 
 const stats: MessageKey[] = ['dashboard.members', 'dashboard.pointsWeek', 'dashboard.redemptionsWeek'];

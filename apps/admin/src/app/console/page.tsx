@@ -1,9 +1,7 @@
-import { defaultConfig } from '@overoll/core';
 import type { Metadata } from 'next';
 
 import { getI18n } from '../../i18n/server';
-import { formatEuroFromCents } from '../../lib/format';
-import { StaffConsole } from './StaffConsole';
+import { ConsoleApp } from './ConsoleApp';
 
 export async function generateMetadata(): Promise<Metadata> {
   const { t } = await getI18n();
@@ -11,21 +9,11 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 /**
- * Staff console (till). Placeholder: no device login, PIN or backend calls
- * yet; scan, award and undo arrive in roadmap week 3.
+ * Staff console (till tablet). Client-side: device sign-in with Supabase Auth,
+ * cashier PIN, scan, award, undo, redeem and today's activity. Writes go
+ * through the API (`lib/api.ts`), reads through the device session.
  */
 export default async function ConsolePage() {
-  const { t, locale } = await getI18n();
-  const maxCents = defaultConfig.limits.maxAmountCents;
-
-  return (
-    <>
-      <h1>{t('console.title')}</h1>
-      <StaffConsole
-        locale={locale}
-        maxCents={maxCents}
-        maxLabel={t('console.maxAmount', { max: formatEuroFromCents(maxCents, locale) })}
-      />
-    </>
-  );
+  const { locale } = await getI18n();
+  return <ConsoleApp locale={locale} />;
 }

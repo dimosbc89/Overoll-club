@@ -1,10 +1,10 @@
 import type { Metadata } from 'next';
 
-import { LoadNotice } from '../../components/Notice';
-import { getI18n } from '../../i18n/server';
-import { loadRewards } from '../../lib/data';
-import { formatEuroFromCents, formatPoints } from '../../lib/format';
-import { rewardCosts } from '../../lib/reward-costs';
+import { LoadNotice } from '../../../components/Notice';
+import { getI18n } from '../../../i18n/server';
+import { loadRewards } from '../../../lib/data';
+import { formatEuroFromCents, formatPoints } from '../../../lib/format';
+import { rewardCosts } from '../../../lib/reward-costs';
 
 export async function generateMetadata(): Promise<Metadata> {
   const { t } = await getI18n();
