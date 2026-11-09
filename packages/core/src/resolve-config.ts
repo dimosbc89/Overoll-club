@@ -38,6 +38,7 @@ function merge(base: unknown, override: unknown): unknown {
 }
 
 const tierIds: readonly TierId[] = ['classic', 'gold', 'club'];
+const uuidPattern = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 class Checker {
   readonly problems: string[] = [];
@@ -58,6 +59,10 @@ class Checker {
       return false;
     }
     return true;
+  }
+
+  uuid(value: unknown, path: string): void {
+    if (typeof value !== 'string' || !uuidPattern.test(value)) this.problems.push(`${path}: must be a UUID`);
   }
 
   object(value: unknown, path: string): value is Obj {
@@ -92,8 +97,10 @@ export function validateConfig(candidate: unknown): string[] {
   c.int(cfg.redemptionValidMinutes, 'redemptionValidMinutes', 1, 1440);
   c.int(cfg.minimumAge, 'minimumAge', 13, 21);
   if (c.object(cfg.welcome, 'welcome')) {
-    c.keys(cfg.welcome, ['validDays'], 'welcome.');
+    c.keys(cfg.welcome, ['validDays', 'rewardId'], 'welcome.');
     c.int(cfg.welcome.validDays, 'welcome.validDays', 1, 365);
+    // Optional: absent means the brand has no welcome gift.
+    if (cfg.welcome.rewardId !== undefined) c.uuid(cfg.welcome.rewardId, 'welcome.rewardId');
   }
 
   if (!Array.isArray(cfg.expiryReminderDays)) {
@@ -138,12 +145,18 @@ export function validateConfig(candidate: unknown): string[] {
 
   if (c.object(cfg.limits, 'limits')) {
     const l = cfg.limits;
-    c.keys(l, ['maxAmountCents', 'maxEarnsPerDay', 'minSecondsBetweenEarns', 'undoWindowMinutes', 'staffPinIdleMinutes'], 'limits.');
+    c.keys(
+      l,
+      ['maxAmountCents', 'maxEarnsPerDay', 'minSecondsBetweenEarns', 'undoWindowMinutes', 'staffPinIdleMinutes', 'pinMaxAttempts', 'pinLockMinutes'],
+      'limits.',
+    );
     c.int(l.maxAmountCents, 'limits.maxAmountCents', 1, 10_000_000);
     c.int(l.maxEarnsPerDay, 'limits.maxEarnsPerDay', 1, 1000);
     c.int(l.minSecondsBetweenEarns, 'limits.minSecondsBetweenEarns', 0, 86_400);
     c.int(l.undoWindowMinutes, 'limits.undoWindowMinutes', 0, 1440);
     c.int(l.staffPinIdleMinutes, 'limits.staffPinIdleMinutes', 1, 720);
+    c.int(l.pinMaxAttempts, 'limits.pinMaxAttempts', 1, 100);
+    c.int(l.pinLockMinutes, 'limits.pinLockMinutes', 1, 1440);
   }
 
   if (c.object(cfg.qr, 'qr')) {

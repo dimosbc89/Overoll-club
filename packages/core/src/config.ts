@@ -42,6 +42,11 @@ export interface ProgramConfig {
   welcome: {
     /** The gift expires this many days after it is unlocked. */
     validDays: number;
+    /**
+     * The brand's reward given as the welcome gift (`rewards.id`, a UUID). No
+     * default: without it the brand has no welcome gift (switched off).
+     */
+    rewardId?: string;
   };
   /** Youngest age allowed to join (GDPR digital consent age in Greece). */
   minimumAge: number;
@@ -56,6 +61,10 @@ export interface ProgramConfig {
     undoWindowMinutes: number;
     /** A cashier enters their PIN once per shift; the console locks after this many idle minutes. */
     staffPinIdleMinutes: number;
+    /** This many wrong PINs for one employee within `pinLockMinutes` lock that employee. */
+    pinMaxAttempts: number;
+    /** How long wrong PINs count, and how long a locked employee stays locked, in minutes. */
+    pinLockMinutes: number;
   };
   qr: {
     /** Rotating member QR changes every this many seconds. */
@@ -91,6 +100,8 @@ export const defaultConfig: ProgramConfig = {
     minSecondsBetweenEarns: 120,
     undoWindowMinutes: 10,
     staffPinIdleMinutes: 5,
+    pinMaxAttempts: 5,
+    pinLockMinutes: 15,
   },
   qr: {
     stepSeconds: 30,

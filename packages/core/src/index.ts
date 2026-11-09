@@ -7,3 +7,5 @@ export * from './redemptions.js';
 export * from './expiry.js';
 export * from './member-token.js';
 export * from './onboarding.js';
+export * from './staff-pin.js';
+export * from './receipts.js';

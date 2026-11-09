@@ -12,6 +12,26 @@ export function isWelcomeGiftValid(unlockedAt: Date, now: Date, config: ProgramC
 }
 
 /**
+ * A member gift (`member_gifts.status`): `available` to redeem, `redeemed`
+ * while it has a code (pending or used), `expired` once past `expires_at`.
+ */
+export type GiftStatus = 'available' | 'redeemed' | 'expired';
+
+/**
+ * What a stored gift is at `now`: an available gift past its expiry is
+ * expired, even before the expiry job has marked it. Apps reading
+ * `member_gifts` directly use this too.
+ */
+export function giftStatusAt(status: GiftStatus, expiresAt: Date, now: Date): GiftStatus {
+  return status === 'available' && now.getTime() >= expiresAt.getTime() ? 'expired' : status;
+}
+
+/** A gift's code was cancelled or expired unused: the gift is available again, unless the gift itself expired. */
+export function giftStatusAfterCodeReturned(expiresAt: Date, now: Date): GiftStatus {
+  return giftStatusAt('available', expiresAt, now);
+}
+
+/**
  * Age in whole years on `today`, both given as calendar dates "YYYY-MM-DD"
  * (no time zones involved). A birthday on 29 February counts from 1 March in
  * non-leap years.
