@@ -3,6 +3,8 @@ import {
   createRotatingToken,
   createWalletToken,
   defaultConfig as config,
+  latinLookalikes,
+  normalizeMemberCode,
   oneTimeCode,
   parseToken,
   verifyToken,
@@ -72,5 +74,32 @@ describe('parseToken', () => {
     expect(parseToken('https://example.com')).toBeNull();
     expect(parseToken('OC1.ab12cd34.12345678')).toBeNull(); // lower-case member code
     expect(parseToken('  OC1.AB12CD34.12345678  ')?.kind).toBe('rotating');
+  });
+});
+
+describe('typed member code', () => {
+  it('reads the code under the QR however it is typed', () => {
+    expect(normalizeMemberCode('ABCD2345')).toBe('ABCD2345');
+    expect(normalizeMemberCode(' abcd 2345 ')).toBe('ABCD2345');
+    expect(normalizeMemberCode('abcd-2345')).toBe('ABCD2345');
+    expect(normalizeMemberCode('ABCD — 2345')).toBe('ABCD2345');
+    expect(normalizeMemberCode('ΑΒCD 2345')).toBe('ABCD2345');
+    expect(normalizeMemberCode('κηmn 2345')).toBe('KHMN2345');
+  });
+
+  it('refuses anything that cannot be a member code', () => {
+    expect(normalizeMemberCode('')).toBeNull();
+    expect(normalizeMemberCode('ABC')).toBeNull();
+    expect(normalizeMemberCode('ABCD 2345 ABCD 23456')).toBeNull();
+    expect(normalizeMemberCode('ΓΔΛΞ2345')).toBeNull();
+    expect(normalizeMemberCode('ABCD/2345')).toBeNull();
+    // A full QR token is not a typed code (the console sends it as a token).
+    expect(normalizeMemberCode('OC1.ABCD2345.12345678')).toBeNull();
+  });
+
+  it('maps only the Greek capitals that look Latin', () => {
+    expect(latinLookalikes('ΑΒΕΖΗΙΚΜΝΟΡΤΥΧ')).toBe('ABEZHIKMNOPTYX');
+    expect(latinLookalikes('άέή')).toBe('AEH');
+    expect(latinLookalikes('ΓΔΘΛΞΠΣΦΨΩ')).toBe('ΓΔΘΛΞΠΣΦΨΩ');
   });
 });

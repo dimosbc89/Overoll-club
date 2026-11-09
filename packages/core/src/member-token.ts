@@ -1,6 +1,7 @@
 import { hmac } from '@noble/hashes/hmac';
 import { sha256 } from '@noble/hashes/sha256';
 import type { ProgramConfig } from './config.js';
+import { cleanTypedCode } from './lookalikes.js';
 
 /**
  * Member QR codes.
@@ -80,6 +81,22 @@ export function createWalletToken(
 export type ParsedToken =
   | { kind: 'rotating'; memberCode: string; otp: string }
   | { kind: 'wallet'; memberCode: string; passVersion: number; sig: string };
+
+/** Member codes as stored (`members.member_code`); new ones are 8 characters of the redemption-code alphabet. */
+const memberCodePattern = /^[A-Z0-9]{6,16}$/;
+
+/**
+ * The member code printed under the QR (shown in groups of 4, "ABCD 2345"),
+ * typed by the cashier when the card won't scan. Case, spaces, dashes and
+ * Greek capitals that look Latin don't matter (core `cleanTypedCode`). Null
+ * if it can't be a member code. The code is public, so a typed code only
+ * identifies the member (to earn points): the cashier checks the first name,
+ * and rewards still need a redemption code from the member's app.
+ */
+export function normalizeMemberCode(raw: string): string | null {
+  const text = cleanTypedCode(raw);
+  return memberCodePattern.test(text) ? text : null;
+}
 
 /** Split a scanned string; null if it isn't an Overoll Club member code. */
 export function parseToken(raw: string): ParsedToken | null {

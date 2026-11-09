@@ -159,6 +159,16 @@ describe('redemption codes', () => {
     expect(normalizeRedemptionCode('ABCDEFGHJ')).toBeNull();
   });
 
+  it('reads a code typed on a Greek keyboard or with other separators the same way', () => {
+    // Α Β Ε Η Κ Μ Ν Ρ Τ Υ Χ Ζ are Greek capitals that look Latin.
+    expect(normalizeRedemptionCode('ΑΒCD ΕFGΗ')).toBe('ABCDEFGH');
+    expect(normalizeRedemptionCode('κμνρ-τυχζ')).toBe('KMNPTYXZ');
+    expect(normalizeRedemptionCode('ABCD–EFGH')).toBe('ABCDEFGH');
+    expect(normalizeRedemptionCode('ABCD.EFGH')).toBe('ABCDEFGH');
+    // Greek letters with no Latin twin (Γ, Δ, Λ…) are never part of a code.
+    expect(normalizeRedemptionCode('ΓΔCDEFGH')).toBeNull();
+  });
+
   it('expires after the configured minutes, exactly at expiry', () => {
     const created = new Date('2027-01-15T10:00:00Z');
     const expires = redemptionExpiresAt(created, defaultConfig);

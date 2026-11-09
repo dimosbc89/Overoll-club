@@ -9,3 +9,4 @@ export * from './member-token.js';
 export * from './onboarding.js';
 export * from './staff-pin.js';
 export * from './receipts.js';
+export * from './lookalikes.js';

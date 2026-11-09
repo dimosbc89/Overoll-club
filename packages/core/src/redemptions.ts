@@ -1,4 +1,5 @@
 import type { ProgramConfig } from './config.js';
+import { cleanTypedCode } from './lookalikes.js';
 
 /**
  * Redemption codes: what the member shows at the till and staff may type in.
@@ -22,9 +23,12 @@ export function redemptionCodeFromBytes(bytes: Uint8Array): string {
   return code;
 }
 
-/** Clean up a scanned or typed code (case, spaces, dashes); null if it can't be a code. */
+/**
+ * Clean up a scanned or typed code (case, spaces, dashes, Greek capitals that
+ * look Latin: core `cleanTypedCode`); null if it can't be a code.
+ */
 export function normalizeRedemptionCode(raw: string): string | null {
-  const text = raw.trim().toUpperCase().replace(/[\s-]+/g, '');
+  const text = cleanTypedCode(raw);
   return codePattern.test(text) ? text : null;
 }
 
