@@ -66,6 +66,24 @@ Sources: `docs/program-spec.md` v0.1, `packages/core/src/config.ts`, `docs/brand
 
 Counter QR → `{clubUrl}/join?store={storeCode}` → email or mobile → one-time code → name → consents → welcome. Existing members use the same code step to sign in.
 
+### a0. Onboarding (v2 draft, not reviewed yet)
+
+Texts the v2 onboarding (Figma page "v2 · Onboarding") needs that §a1–§a6 don't have: splash, intro step titles, progress and navigation. **Dimos to review.** The intro also reuses existing keys: Welcome = `join.hero.title` + `landing.hero.subline`; How it works = `join.hero.step1`, `join.hero.step2`, `landing.tiers.title`; Rewards = `join.hero.gift`. `{gold}`, `{club}` and `{months}` come from the config (`tiers` thresholds, `tierWindowMonths`); the design shows today's values (1.500, 4.000, 12).
+
+| Key | Ελληνικά | English |
+| --- | --- | --- |
+| `onboarding.splash.label` | Club | Club |
+| `onboarding.progress` | {current} από {total} | {current} of {total} |
+| `onboarding.progressA11y` | Βήμα {current} από {total} | Step {current} of {total} |
+| `onboarding.skip` | Παράλειψη | Skip |
+| `onboarding.next` | Επόμενο | Next |
+| `onboarding.welcome.eyebrow` | {programName} | {programName} |
+| `onboarding.how.title` | Δείχνεις την κάρτα, μαζεύεις πόντους. | Show your card, collect points. |
+| `onboarding.how.tiers` | Με {gold} πόντους σε {months} μήνες γίνεσαι Gold και με {club} Club: περισσότεροι πόντοι σε κάθε αγορά. | Reach {gold} points in {months} months for Gold and {club} for Club: more points on every purchase. |
+| `onboarding.rewards.title` | Οι πόντοι σου γίνονται κεράσματα. | Your points turn into treats. |
+
+`onboarding.splash.label` sits under the logo in caps ("CLUB"); change it with the programme name. `onboarding.welcome.eyebrow` is the label above the Welcome title, also in caps. `onboarding.progress` is shown next to the step bars (intro 1–3, sign-up 1–3); `onboarding.progressA11y` is its screen-reader label.
+
 ### a1. Join start (what the counter QR opens)
 
 | Key | Ελληνικά | English |
