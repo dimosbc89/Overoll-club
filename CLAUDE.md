@@ -13,9 +13,10 @@ https://claude.ai/artifact/WaTPFf7zJmC1hqVqioeEDC
 | Path | What |
 | --- | --- |
 | `packages/core` | Program rules as pure TypeScript: points, tiers, rewards, expiry, member QR tokens. No I/O. |
+| `packages/server` | Transactional operations that move points (join, scan, award, undo, redeem, use, expire). Postgres via `postgres`, rules from `packages/core`, integration tests on a throwaway Postgres |
 | `supabase/migrations` | Database schema, row-level security, triggers |
 | `supabase/tests` | `run-local.sh` spins up a throwaway Postgres and runs `rls.sql` |
-| `supabase/functions` | (next) server functions: join, award, redeem, undo, passes. They import `packages/core` |
+| `supabase/functions` | (next) thin Edge Function wrappers around `packages/server`, plus Wallet passes |
 | `apps/mobile` | (next) Expo app: iOS, Android **and** the customer web app (Expo web) |
 | `apps/admin` | (next) Next.js back office: HQ admin, store manager, staff console |
 | `data` | Source data: stores, menu (Wolt prices), reward catalog. Feeds `supabase/seed.sql` |
