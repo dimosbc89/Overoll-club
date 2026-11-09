@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 
 import { formatEuroFromCents, formatPoints } from '../src/lib/format';
 import { todayHours } from '../src/lib/hours';
-import { pressKey, type KeypadKey } from '../src/lib/keypad';
+import { digitKeys, pressKey, pressPinKey, type KeypadKey, type PinKey } from '../src/lib/keypad';
 import { rewardCosts } from '../src/lib/reward-costs';
 
 // Intl uses a no-break space in "2,20 €".
@@ -46,6 +46,26 @@ describe('keypad', () => {
     expect(type(['8', '0', '0', '0'])).toBe(8000);
     expect(type(['8', '0', '0', '0', '1'])).toBe(8000);
     expect(type(['9', '00', '0'])).toBe(900);
+  });
+
+  it('has the 12 keys of the console design: 1–9, 00, 0 and delete', () => {
+    expect([...digitKeys, 'back']).toEqual(['1', '2', '3', '4', '5', '6', '7', '8', '9', '00', '0', 'back']);
+  });
+});
+
+describe('PIN pad', () => {
+  const type = (keys: PinKey[], max?: number) => keys.reduce((pin, key) => pressPinKey(pin, key, max), '');
+
+  it('keeps the PIN as a string, leading zeros included', () => {
+    expect(type(['0', '4', '2', '7'])).toBe('0427');
+    expect(type(['1', '2', 'back'])).toBe('1');
+    expect(type(['1', '2', 'clear', '3'])).toBe('3');
+    expect(type(['back'])).toBe('');
+  });
+
+  it('stops at the maximum length', () => {
+    expect(type(['1', '2', '3', '4', '5'], 4)).toBe('1234');
+    expect(type(Array.from({ length: 20 }, () => '9' as PinKey))).toHaveLength(12);
   });
 });
 

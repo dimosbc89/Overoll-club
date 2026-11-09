@@ -1,7 +1,6 @@
 import type { Metadata, Viewport } from 'next';
 import type { ReactNode } from 'react';
 
-import { Header } from '../components/Header';
 import { getI18n } from '../i18n/server';
 import './globals.css';
 
@@ -15,6 +14,11 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export const viewport: Viewport = { themeColor: '#f5b0b4' };
 
+/**
+ * Root: <html>/<body> only. The back office pages get the cocoa header from
+ * `(admin)/layout.tsx`; the staff console (`/console`) has its own full-screen
+ * till layout.
+ */
 export default async function RootLayout({ children }: { children: ReactNode }) {
   const { locale, t } = await getI18n();
   return (
@@ -23,10 +27,7 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
         <a href="#main" className="skip-link">
           {t('nav.skip')}
         </a>
-        <Header locale={locale} t={t} />
-        <main id="main" className="page">
-          {children}
-        </main>
+        {children}
       </body>
     </html>
   );

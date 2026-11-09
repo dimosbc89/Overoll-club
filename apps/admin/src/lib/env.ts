@@ -17,3 +17,9 @@ export function supabaseEnv(): SupabaseEnv | null {
 
 /** The brand this back office manages (multi-brand database). */
 export const BRAND_SLUG = 'overoll';
+
+/** Program name setting (docs/program-spec.md §1: working name), fills `{programName}`. */
+export const PROGRAM_NAME = 'Overoll Club';
+
+/** Support address for testing (program spec §1), fills `{supportEmail}`. Replace before launch. */
+export const SUPPORT_EMAIL = 'club-support@growagency.online';
