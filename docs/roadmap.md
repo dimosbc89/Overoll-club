@@ -13,7 +13,7 @@ Legend: **D** = Dimos · **C** = Claude · ☐ open · ☑ done
 - ☑ C: points engine with tests (`packages/core`)
 - ☑ C: server operations that move points, with integration tests on a throwaway Postgres (`packages/server`): join, scan, award, undo, redeem, cancel, use, expire codes. Next: wrap them as Supabase Edge Functions
 - ☑ C: Supabase project `overoll-club` (GROW Agency org, Frankfurt, free plan): schema + seed applied, security advisor clean
-- ☐ D: upgrade the GROW Agency Supabase org to Pro (about $25/month) before the pilot on 7 Dec: free projects pause after a week without traffic and have no daily backups
+- ☐ D: upgrade the GROW Agency Supabase org to Pro (about $25/month) **now**: on the free plan Supabase won't take our sign-in email template, so sign-in by code can't be tested until Pro or Resend; free projects also pause after a week without traffic and have no daily backups
 - ☑ C: Apple Developer (GROW AGENCY L.P., team `JUVGRB24Q6`): Pass Type ID `pass.online.growagency.overoll` registered
 - ☐ C + D: Pass Type ID certificate (week 2, with the Wallet card)
 - ☑ D: Google Pay & Wallet Console business profile for GROW Agency (merchant `BCR2DN6DWL3NFGYM`, account ads@growdigital.gr)
@@ -29,7 +29,7 @@ Legend: **D** = Dimos · **C** = Claude · ☐ open · ☑ done
 - ☑ C: authorization letter drafted (Greek + English)
 - ☐ D: Overoll fills in and signs the authorization letter
 - ☑ D: reward catalog, welcome croissant and Club tier approved; launch with Wolt prices and the 10 stores found
-- ☐ C: design drafts: join flow, member card, rewards, staff console, HQ dashboard
+- ☑ C: design drafts: join flow, member card, rewards, staff console (HQ dashboard in week 4)
 - ☑ C: points engine (`packages/server`: join, scan, award, undo, redeem, use, expire) with 61 database tests
 - ☑ C: HTTP API (`packages/api`) + Edge Function `api` bundle; CI on GitHub Actions (typecheck, tests, DB tests, build)
 - ☑ D: Supabase access token as GitHub secret: CI deploys the `api` Edge Function from `main` (live since 9 Nov)
@@ -45,9 +45,10 @@ Legend: **D** = Dimos · **C** = Claude · ☐ open · ☑ done
 - ☐ D: review the copy deck text itself; Overoll answers the rest (legal name)
 - ☑ C: welcome gift in the database and `awardPoints` (unlock on first purchase, redeem with a code, expire after 30 days)
 - ☑ C: late points for a forgotten card (same day, same store, receipt number used once)
-- ☑ C: API v0.2 server side (`docs/api-contract.md`): staff PIN check (`staff/verify-pin`) with lockout after 5 wrong PINs in every PIN check, points expiry job (`jobs/expire-points`); 4 migrations, not yet applied to Supabase
-- ☐ C + D: apply the 4 v0.2 migrations and the seed (sets the welcome reward) to Supabase; schedule `jobs/expire-redemptions` (every minute) and `jobs/expire-points` (daily)
-- ☐ D: approve the new error texts (`pin_locked`, `receipt_already_used`, `gift_*`) in the copy deck §f2
+- ☑ C: API v0.2 server side (`docs/api-contract.md`): staff PIN check (`staff/verify-pin`) with lockout after 5 wrong PINs in every PIN check, points expiry job (`jobs/expire-points`)
+- ☑ C: v0.2 + v0.3 live on Supabase (9 Nov): 5 migrations, welcome reward set, API deployed; pg_cron runs `jobs/expire-redemptions` every minute and `jobs/expire-points` daily (`supabase/jobs.sql`, token kept in Vault)
+- ☑ C: API v0.3: `join` stores the 15+ box (`minimum_age_confirmed_at`), gift codes return `giftId`
+- ☐ D: approve the new texts: error messages (`pin_locked`, `receipt_already_used`, `gift_*`, §f2), console labels (§f1b, 55), member app additions (§b7, 31), sign-in code email (§e2)
 - ☐ D: the Overoll design system mentions stores at the airport and in Nicosia: confirm with Overoll and add them to `data/stores.json`
 - ☑ C: screen designs v0.1 (member app, till console, landing page, Wallet passes) on the design canvas; Figma copy for the designer
 
@@ -61,8 +62,12 @@ Legend: **D** = Dimos · **C** = Claude · ☐ open · ☑ done
 
 ## Week 3 · 23–29 Nov · Staff console + rewards
 
-- ☐ C: staff console: device login, employee PIN, scan, award by amount, undo
-- ☐ C: rewards catalog, redemption codes, scan to redeem
+- ☑ C: staff console (`apps/admin` `/console`, built 9 Nov): device sign-in, cashier PIN with idle lock, camera/typed scan, amount keypad with points preview, late points by receipt, undo, redeem by code, today's activity
+- ☑ C: rewards catalog, redemption codes (member app) and scan to redeem (console)
+- ☐ C: short member code the cashier can type (today a typed scan needs the full QR token)
+- ☐ C: account deletion (server route + app screen): Apple requires it before the app submission on 14 Dec
+- ☐ C: English store names (`stores.name_en`), so the English console and app don't show Greek names
+- ☐ C: keep the member's QR secret in the phone's secure storage in the native apps
 - ☐ C: tiers (annual review), fraud alerts (expiry job and PIN lockout done in week 1)
 - ☐ D: test the full loop: join → scan → points → reward → redeem
 
