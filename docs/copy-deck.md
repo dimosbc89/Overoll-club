@@ -277,6 +277,44 @@ Matches the schema: personal fields are wiped, the points ledger stays without t
 | `delete.cancel` | Άκυρο, μένω | Cancel, I'm staying |
 | `delete.done` | Ο λογαριασμός σου διαγράφηκε. Ήταν χαρά μας. Αν σου λείψουν τα κρουασάν, ξέρεις πού θα μας βρεις. | Your account has been deleted. It was a pleasure. If you miss the croissants, you know where to find us. |
 
+### b7. Added with the member app (draft, not reviewed yet)
+
+Texts the screens needed that §a–§b6 don't have: the welcome-gift variants of the redeem texts, the age checkbox, labels from the approved designs and screen-reader labels. Same rules as the rest of the deck; **Dimos to review** with the others.
+
+| Key | Ελληνικά | English | Where |
+| --- | --- | --- | --- |
+| `join.hero.intro` | Μάζευε πόντους σε κάθε αγορά και εξαργύρωσέ τους σε καφέ και κρουασάν. | Collect points every time you buy and swap them for coffee and croissants. | first sentence of `join.hero.body`: the design puts the gift sentence in its own card |
+| `join.hero.gift` | Με την πρώτη σου αγορά, ένα κρουασάν βουτύρου είναι κερασμένο. | After your first purchase, a butter croissant is on us. | second sentence of `join.hero.body`, for the gift card in the design |
+| `join.hero.step1` | Δείχνεις την κάρτα σου σε κάθε αγορά | Show your card every time you buy | the three steps in the join design |
+| `join.hero.step2` | {points} πόντοι για κάθε 1 €, σε όλα τα Overoll | {points} points for every €1, at every Overoll | `{points}` = `pointsPerEuro` |
+| `join.hero.step3` | Τους εξαργυρώνεις σε καφέ και κρουασάν | Swap them for coffee and croissants |  |
+| `join.profile.age` | Είμαι τουλάχιστον {age} ετών | I am {age} or older | required checkbox; `{age}` = `minimumAge`. Greek phrased without gender |
+| `join.profile.ageMissing` | Για να γίνεις μέλος πρέπει να είσαι τουλάχιστον {age} ετών. | You need to be {age} or older to join. |  |
+| `join.profile.firstNameMissing` | Γράψε το όνομά σου για να συνεχίσεις. | Enter your first name to carry on. |  |
+| `card.hello` | {firstName} | Hello, {firstName} | top of the card. Greek shows the name alone (no vocative, see the notes above); English greets |
+| `card.memberCode` | Κωδικός μέλους {code} | Member code {code} | screen-reader label of the member code under the QR |
+| `card.qr.a11y` | QR κωδικός μέλους | Member QR code | screen-reader label of the QR |
+| `card.nextReward.a11y` | Πρόοδος για το επόμενο κέρασμα | Progress to your next treat | progress bar label |
+| `card.nextTier.a11y` | Πρόοδος για το επόμενο επίπεδο | Progress to the next tier | progress bar label |
+| `card.offline` | Χωρίς σύνδεση: οι πόντοι μπορεί να μην είναι ενημερωμένοι. Ο κωδικός δουλεύει κανονικά. | You're offline, so your points may not be up to date. The code works as normal. | card opened from the device copy without a connection |
+| `rewards.balance.one` | Έχεις 1 πόντο | You have 1 point | top right of Rewards (design), accusative |
+| `rewards.balance.other` | Έχεις {points} πόντους | You have {points} points |  |
+| `rewards.welcome.validUntil` | Ισχύει μέχρι {date} | Valid until {date} | welcome gift card; `{date}` = gift `expires_at` |
+| `redeem.confirm.bodyGift` | Ο κωδικός ισχύει {minutes} λεπτά, οπότε πάτα όταν είσαι στο ταμείο. Αν τον ακυρώσεις ή αν λήξει, το δώρο σου μένει στη θέση του. | The code works for {minutes} minutes, so tap when you're at the till. If you cancel it or it expires, your gift stays put. | `redeem.confirm.body` for the gift (no points are taken) |
+| `redeem.code.qrA11y` | QR κωδικός εξαργύρωσης | Redemption QR code | screen-reader label of the code QR |
+| `redeem.code.timeA11y` | Χρόνος που απομένει | Time left | countdown bar label |
+| `redeem.code.notePoints` | Αν τον ακυρώσεις ή αν λήξει, οι {points} πόντοι γυρίζουν στην κάρτα σου. | If you cancel it or it expires, your {points} points go back on your card. | under "Cancel code" (design) |
+| `redeem.code.noteGift` | Αν τον ακυρώσεις ή αν λήξει, το δώρο σου μένει στη θέση του. | If you cancel it or it expires, your gift stays put. | the same for the gift (text from the design) |
+| `redeem.cancel.bodyGift` | Το δώρο σου μένει στα Δώρα και μπορείς να φτιάξεις νέο κωδικό όταν είσαι στο ταμείο. | Your gift stays in Rewards, and you can get a new code when you're at the till. | `redeem.cancel.body` for the gift |
+| `redeem.cancelledGift` | Ακυρώθηκε. Το δώρο σου σε περιμένει στα Δώρα. | Cancelled. Your gift is waiting in Rewards. | `redeem.cancelled` for the gift |
+| `redeem.expiredGift` | Ο κωδικός έληξε, αλλά το δώρο σου σε περιμένει ακόμα στα Δώρα. Φτιάξε νέο όταν είσαι στο ταμείο. | The code expired, but your gift is still waiting in Rewards. Get a new one when you're at the till. | `redeem.expired` for the gift |
+| `redeem.backToRewards` | Πίσω στα Δώρα | Back to Rewards | back link and button after a code is finished |
+| `delete.comingSoon` | Η διαγραφή από την εφαρμογή έρχεται σύντομα. Μέχρι τότε, γράψε μας στο {supportEmail} και θα τη φροντίσουμε εμείς. | Deleting your account in the app is coming soon. Until then, email us at {supportEmail} and we'll take care of it. | Profile → Delete account, until deletion is built |
+| `common.close` | Κλείσιμο | Close | closes a sheet |
+| `common.comingSoon` | Έρχεται σύντομα | Coming soon | Wallet button placeholders (screen-reader hint) |
+| `language.elShort` | ΕΛ | ΕΛ | language switch on the pink header (design: "EN") |
+| `language.enShort` | EN | EN |  |
+
 ---
 
 ## c. Tiers

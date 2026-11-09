@@ -1,57 +1,63 @@
 /**
- * Overoll brand tokens from docs/brand.md. Pure data (no react-native import)
- * so tests and both platforms can share it.
+ * Overoll design-system tokens (the design canvas `theme.css`, from the Overoll
+ * design system). Pure data (no react-native import) so tests and every
+ * platform can share it.
  *
- * Contrast rules (WCAG, docs/brand.md):
- * - cocoa on pink 8.5:1 and ink on cream 11.9:1: fine for any text.
- * - mauve on cream ~3.5:1: large text (18 pt+) or icons only.
- * - white on pink 1.9:1: never.
+ * Contrast rules:
+ * - ink on pink, cream or white: fine for any text.
+ * - plum-deep on white or cream (~6:1): links, prices, small bold text.
+ * - pink is a surface colour only: nothing a person must read is pink.
+ * - white text only on plum-deep (pressed buttons, plum tags).
  */
 export const colors = {
-  /** Primary: buttons, member card, progress. Text on it is always cocoa. */
+  /** Primary surface: buttons, the member card, the code panel. */
   pink: '#ebabc5',
-  /** Selected states, chips. */
-  pinkLight: '#f7c7cb',
-  /** App background. */
-  cream: '#f6f1e8',
-  /** Cards, dividers. */
-  butter: '#e7d8bd',
-  /** Card surfaces on cream. */
-  white: '#fffaf2',
-  /** Headings, text on pink, header bar. */
-  cocoa: '#321c1b',
-  /** Body text. */
-  ink: '#402927',
-  /** Links and secondary accent: large text or icons only. */
-  mauve: '#b2688a',
-  /** Success (points added). */
-  green: '#a1ba7f',
+  /** Outlines (outline buttons, number circles). */
+  plum: '#b2688a',
+  /** Links, prices, progress fills, pressed buttons, plum tags. */
+  plumDeep: '#924b6d',
+  /** Page background. */
+  cream: '#f9f0e9',
+  /** Surfaces: cards, sheets, the QR box. */
+  white: '#ffffff',
+  /** Text. */
+  ink: '#48423e',
+  /** Secondary text. */
+  inkMuted: '#6b6560',
+  /** Dividers, empty progress tracks. */
+  line: '#e4dbd4',
+  /** Dimmed backdrop behind sheets. */
+  scrim: 'rgba(72, 66, 62, 0.45)',
 } as const;
 
 export type ColorToken = keyof typeof colors;
 
-/** Font stacks from the website. On native only the first family is used (see fonts.ts). */
-export const fontStacks = {
-  serif: '"Iowan Old Style", Baskerville, "Palatino Linotype", Georgia, serif',
-  sans: '"Avenir Next", Avenir, "Helvetica Neue", Arial, sans-serif',
-} as const;
-
 export const space = {
   xs: 4,
   sm: 8,
+  ms: 12,
   md: 16,
+  mdl: 20,
   lg: 24,
   xl: 32,
+  xxl: 48,
 } as const;
 
 export const radius = {
   sm: 8,
-  md: 14,
-  lg: 24,
+  /** Cards. */
+  md: 16,
+  /** Panels: the member card, the code panel, sheets. */
+  lg: 28,
+  /** Pills: buttons, tags. */
+  full: 9999,
 } as const;
+
+/** Buttons and inputs. */
+export const controlHeight = 48;
 
 /** Smallest touch target (WCAG 2.5.5 / Apple HIG). */
 export const minTouch = 44;
 
-/** Widest content column on the web app. */
-export const maxContentWidth = 640;
+/** Widest content column on the web app (the designs are 390 wide). */
+export const maxContentWidth = 480;

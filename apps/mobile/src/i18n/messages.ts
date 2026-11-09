@@ -35,6 +35,20 @@ export function translate(locale: Locale, key: MessageKey, params?: MessageParam
   );
 }
 
-export function createTranslate(locale: Locale): Translate {
-  return (key, params) => translate(locale, key, params);
+/**
+ * `t()` for one language. `defaults` fill placeholders that are the same
+ * everywhere (`{programName}`, `{clubUrl}`, `{supportEmail}`); params win.
+ */
+export function createTranslate(locale: Locale, defaults?: MessageParams): Translate {
+  return (key, params) => translate(locale, key, defaults ? { ...defaults, ...params } : params);
+}
+
+/** Keys that come as `<base>.one` / `<base>.other` (copy deck: "keys with .one / .other exist where 1 is likely"). */
+export type PluralBase = { [K in MessageKey]: K extends `${infer Base}.other` ? Base : never }[MessageKey];
+
+/** `.one` for exactly 1 when the language file has it, else `.other`. */
+export function pluralKey(base: PluralBase, count: number): MessageKey {
+  const one = `${base}.one`;
+  if (count === 1 && one in messages.el) return one as MessageKey;
+  return `${base}.other` as MessageKey;
 }
