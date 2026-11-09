@@ -1,20 +1,21 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 import { useRouter } from 'expo-router';
-import { useCallback, useState } from 'react';
+import { useCallback } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
 import { LoadError, Loading, NotConfigured } from '../../components/RemoteContent';
-import { Body, Button, Card, LinkButton, Muted, Screen, Sheet, Title } from '../../components/ui';
+import { Body, Button, Card, LinkButton, Muted, Screen, Title } from '../../components/ui';
 import { useI18n } from '../../i18n/I18nProvider';
 import { locales, type Locale, type Translate } from '../../i18n/messages';
 import { fetchHistory, type HistoryItem, type MemberBundle } from '../../lib/data';
 import { formatDateTime, formatDayMonth, formatEuroFromCents, formatSignedPoints } from '../../lib/format';
 import { useSession } from '../../lib/session';
+import { inLocale } from '../../lib/storeNames';
 import { useRemote } from '../../lib/useRemote';
 import { type } from '../../theme/fonts';
 import { colors, space } from '../../theme/tokens';
 
-/** Profile: language, history, sign out, account deletion (placeholder). */
+/** Profile: language, history, sign out, account deletion (`/delete-account`). */
 export default function ProfileTab() {
   const { auth, member, refresh } = useSession();
   const { t } = useI18n();
@@ -62,7 +63,7 @@ function LanguageCard() {
 }
 
 function historyTitle(item: HistoryItem, t: Translate, locale: Locale): string {
-  const store = item.storeName ?? '';
+  const store = item.store ? inLocale(item.store.name, item.store.name_en, locale) : '';
   const reward = item.reward ? (locale === 'el' ? item.reward.name_el : item.reward.name_en) : '';
   switch (item.kind) {
     case 'earn':
@@ -86,7 +87,6 @@ function MemberProfile({ bundle }: { bundle: MemberBundle }) {
   const { t, locale } = useI18n();
   const router = useRouter();
   const { signOut } = useSession();
-  const [deleteOpen, setDeleteOpen] = useState(false);
   const { member, rewards } = bundle;
   const loadHistory = useCallback((client: SupabaseClient) => fetchHistory(client, member.id, rewards), [member.id, rewards]);
   const { state: history, reload } = useRemote(loadHistory);
@@ -149,19 +149,8 @@ function MemberProfile({ bundle }: { bundle: MemberBundle }) {
             router.replace('/');
           }}
         />
-        <LinkButton label={t('profile.delete')} onPress={() => setDeleteOpen(true)} />
+        <LinkButton label={t('profile.delete')} onPress={() => router.push('/delete-account')} />
       </View>
-
-      {/* Placeholder: deletion needs a server route (wipe personal fields, keep the ledger). */}
-      <Sheet visible={deleteOpen} onClose={() => setDeleteOpen(false)} closeLabel={t('common.close')}>
-        <Text accessibilityRole="header" style={type.heading}>
-          {t('delete.title')}
-        </Text>
-        <Body>{t('delete.body')}</Body>
-        <Muted>{t('delete.keep')}</Muted>
-        <Body style={type.bodyStrong}>{t('delete.comingSoon')}</Body>
-        <Button label={t('common.close')} variant="outline" onPress={() => setDeleteOpen(false)} />
-      </Sheet>
     </>
   );
 }

@@ -62,6 +62,7 @@ export type AwardPointsError =
   | EarnLimitError
   | 'receipt_already_used'
   | 'member_not_found'
+  | 'member_deleted'
   | 'invalid_token'
   | 'expired_token'
   | 'old_pass';
@@ -171,7 +172,8 @@ export async function awardPoints(sql: Db, raw: AwardPointsInput): Promise<Award
           memberId = found.memberId;
         }
         const member = await lockMember(tx, memberId);
-        if (!member || member.brand_id !== brand.id || member.deleted_at) return fail('member_not_found');
+        if (!member || member.brand_id !== brand.id) return fail('member_not_found');
+        if (member.deleted_at) return fail('member_deleted');
 
         // Late points: one receipt earns once per store per calendar day. The
         // advisory lock (after the member lock, always in this order) makes two

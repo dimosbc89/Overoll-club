@@ -96,6 +96,7 @@
   "console.scan.noCamera": "Η κάμερα δεν είναι διαθέσιμη. Πληκτρολόγησε τον κωδικό.",
   "console.scan.useCamera": "Σάρωση με κάμερα",
   "console.scan.codeLabel": "Κωδικός μέλους ή δώρου",
+  "console.scan.typeHint": "Ο κωδικός μέλους κάτω από το QR ή ο κωδικός δώρου, με ή χωρίς κενά.",
   "console.scan.submit": "Συνέχεια",
   "console.scan.checking": "Έλεγχος…",
   "console.member.newScan": "Νέα σάρωση",

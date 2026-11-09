@@ -272,6 +272,115 @@ set role anon;
 select tst.refused($$select count(*) from private.employee_pin_failures$$, 'anonymous cannot read wrong PINs');
 reset role;
 
+-- ---------------------------------------------- account deletion (v0.4)
+-- Member 4 (store A) has an earn, a used code at store A, a pending code, a
+-- gift, a QR secret and an audit row of their own; then deletes the account
+-- the way packages/server deleteMember does.
+insert into auth.users (id) values ('00000000-0000-0000-0000-0000000000a4'); -- member 4
+set role service_role;
+insert into public.members (id, brand_id, user_id, first_name, last_name, email, phone, birthday, consent_email, joined_store_id) values
+  ('40000000-0000-0000-0000-000000000004', '10000000-0000-0000-0000-000000000001', '00000000-0000-0000-0000-0000000000a4', 'Maria', 'P.', 'maria@example.com', '+306900000004', '1990-02-03', true, '20000000-0000-0000-0000-00000000000a');
+insert into public.member_secrets (member_id) values ('40000000-0000-0000-0000-000000000004');
+insert into public.ledger_entries (brand_id, member_id, store_id, employee_id, kind, points, amount_cents, multiplier_pct, idempotency_key, created_by) values
+  ('10000000-0000-0000-0000-000000000001', '40000000-0000-0000-0000-000000000004', '20000000-0000-0000-0000-00000000000a', '30000000-0000-0000-0000-00000000000a', 'earn', 700, 7000, 100, 'k-del-earn', '00000000-0000-0000-0000-0000000000c1');
+insert into public.redemptions (id, brand_id, member_id, reward_id, code, points_spent, status, created_at, expires_at, used_at, used_store_id, used_employee_id)
+  select '60000000-0000-0000-0000-000000000041', brand_id, '40000000-0000-0000-0000-000000000004', id, 'DELUSEDA', 300, 'used', now() - interval '1 hour', now() - interval '45 minutes', now() - interval '50 minutes', '20000000-0000-0000-0000-00000000000a', '30000000-0000-0000-0000-00000000000a'
+  from public.rewards where name_en = 'Free espresso';
+insert into public.redemptions (id, brand_id, member_id, reward_id, code, points_spent, created_at, expires_at)
+  select '60000000-0000-0000-0000-000000000042', brand_id, '40000000-0000-0000-0000-000000000004', id, 'DELPENDA', 300, now(), now() + interval '15 minutes'
+  from public.rewards where name_en = 'Free espresso';
+-- The member's own redemptions: created_by is the member's auth user.
+insert into public.ledger_entries (brand_id, member_id, kind, points, redemption_id, idempotency_key, created_by) values
+  ('10000000-0000-0000-0000-000000000001', '40000000-0000-0000-0000-000000000004', 'redeem', -300, '60000000-0000-0000-0000-000000000041', 'k-del-redeem-1', '00000000-0000-0000-0000-0000000000a4'),
+  ('10000000-0000-0000-0000-000000000001', '40000000-0000-0000-0000-000000000004', 'redeem', -300, '60000000-0000-0000-0000-000000000042', 'k-del-redeem-2', '00000000-0000-0000-0000-0000000000a4');
+insert into public.member_gifts (brand_id, member_id, kind, reward_id, unlocked_at, expires_at) values
+  ('10000000-0000-0000-0000-000000000001', '40000000-0000-0000-0000-000000000004', 'welcome', '50000000-0000-0000-0000-0000000000c1', now(), now() + interval '30 days');
+insert into public.audit_log (brand_id, actor_user_id, action, entity, entity_id) values
+  ('10000000-0000-0000-0000-000000000001', '00000000-0000-0000-0000-0000000000a4', 'member.join', 'members', '40000000-0000-0000-0000-000000000004');
+reset role;
+
+select set_config('request.jwt.claim.sub', '00000000-0000-0000-0000-0000000000c1', false);
+set role authenticated;
+select tst.eq((select count(*) from public.ledger_entries where member_id = '40000000-0000-0000-0000-000000000004'), 1, 'store A device sees the member''s earn at its store');
+select tst.eq((select count(*) from public.redemptions where member_id = '40000000-0000-0000-0000-000000000004'), 1, 'store A device sees the code used at its store');
+reset role;
+
+-- Marking a member deleted without wiping the personal fields is refused.
+set role service_role;
+select tst.refused($$update public.members set deleted_at = now() where id = '40000000-0000-0000-0000-000000000004'$$, 'a deleted member keeps no personal data', '23514');
+select tst.refused($$update public.members set deleted_at = now(), user_id = null, first_name = '', last_name = null, email = null, phone = null, birthday = null, referral_code = null where id = '40000000-0000-0000-0000-000000000004'$$, 'a deleted member keeps no consents either', '23514');
+-- deleteMember: cancel the pending code (no refund), close the gift, wipe, drop the QR secret.
+update public.redemptions set status = 'cancelled', cancelled_at = now()
+  where member_id = '40000000-0000-0000-0000-000000000004' and status = 'pending';
+update public.member_gifts set status = 'expired', redemption_id = null
+  where member_id = '40000000-0000-0000-0000-000000000004' and status = 'available';
+update public.members set
+  user_id = null, first_name = '', last_name = null, email = null, phone = null, birthday = null,
+  referral_code = null, consent_email = false, consent_sms = false, consent_push = false, deleted_at = now()
+  where id = '40000000-0000-0000-0000-000000000004';
+delete from public.member_secrets where member_id = '40000000-0000-0000-0000-000000000004';
+reset role;
+-- The auth user can go although the append-only ledger and audit log name it.
+delete from auth.users where id = '00000000-0000-0000-0000-0000000000a4';
+select tst.eq((select count(*) from auth.users where id = '00000000-0000-0000-0000-0000000000a4'), 0, 'an auth user with ledger and audit rows can be deleted');
+select tst.eq((select count(*) from public.ledger_entries where member_id = '40000000-0000-0000-0000-000000000004'), 3, 'the deleted member''s ledger stays');
+select tst.eq((select count(*) from public.ledger_entries where created_by = '00000000-0000-0000-0000-0000000000a4'), 2, 'ledger rows keep the id of who made them');
+
+-- The former member (their access token can live on for up to an hour).
+select set_config('request.jwt.claim.sub', '00000000-0000-0000-0000-0000000000a4', false);
+set role authenticated;
+select tst.eq((select count(*) from public.members), 0, 'a deleted member cannot read their old profile');
+select tst.eq((select count(*) from public.ledger_entries), 0, 'a deleted member cannot read their old ledger');
+select tst.eq((select count(*) from public.redemptions), 0, 'a deleted member cannot read their old codes');
+select tst.eq((select count(*) from public.member_gifts), 0, 'a deleted member cannot read their old gifts');
+select tst.eq((select count(*) from public.member_balances), 0, 'a deleted member has no balance to read');
+reset role;
+select set_config('request.jwt.claim.sub', '00000000-0000-0000-0000-0000000000c1', false);
+set role authenticated;
+select tst.eq((select least(count(*), 1) from public.ledger_entries where member_id = '40000000-0000-0000-0000-000000000004'), 1, 'store device still sees a deleted member''s entries (no personal data in them)');
+select tst.eq((select count(*) from public.members where id = '40000000-0000-0000-0000-000000000004'), 0, 'store device cannot see the deleted member row');
+select tst.eq((select count(*) from public.ledger_entries where member_id = '40000000-0000-0000-0000-000000000001'), 3, 'store device still sees other members'' entries');
+reset role;
+select set_config('request.jwt.claim.sub', '00000000-0000-0000-0000-0000000000b1', false);
+set role authenticated;
+select tst.eq((select count(*) from public.members where id = '40000000-0000-0000-0000-000000000004' and first_name = '' and email is null and deleted_at is not null), 1, 'HQ still sees the wiped member row');
+select tst.eq((select count(*) from public.ledger_entries where member_id = '40000000-0000-0000-0000-000000000004'), 3, 'HQ still sees a deleted member''s ledger');
+select tst.eq((select count(*) from public.redemptions where member_id = '40000000-0000-0000-0000-000000000004'), 2, 'HQ still sees a deleted member''s codes');
+select tst.eq((select balance from public.member_balances where member_id = '40000000-0000-0000-0000-000000000004'), 100, 'the cancelled code''s points were not returned (700 - 300 - 300)');
+reset role;
+select set_config('request.jwt.claim.sub', '00000000-0000-0000-0000-0000000000e1', false);
+set role authenticated;
+select tst.eq((select count(*) from public.members where deleted_at is not null), 1, 'platform admin sees deleted members');
+reset role;
+select tst.eq((select count(*) from public.member_secrets where member_id = '40000000-0000-0000-0000-000000000004'), 0, 'the QR secret is gone');
+
+
+-- ------------------------------------------------ store names in English (v0.4)
+set role service_role;
+update public.stores set name_en = 'Overoll Praxitelous', address_en = 'Praxitelous 27, Athens'
+  where id = '20000000-0000-0000-0000-00000000000a';
+reset role;
+select set_config('request.jwt.claim.sub', '', false);
+set role anon;
+select tst.eq((select count(*) from public.stores where name_en = 'Overoll Praxitelous' and address_en is not null), 1, 'anyone reads the English store name and address');
+reset role;
+select set_config('request.jwt.claim.sub', '00000000-0000-0000-0000-0000000000a1', false);
+set role authenticated;
+update public.stores set name_en = 'Hacked' where id = '20000000-0000-0000-0000-00000000000a';
+select tst.eq((select count(*) from public.stores where name_en = 'Hacked'), 0, 'a member cannot rename a store');
+reset role;
+select set_config('request.jwt.claim.sub', '00000000-0000-0000-0000-0000000000c1', false);
+set role authenticated;
+update public.stores set name_en = 'Hacked' where id = '20000000-0000-0000-0000-00000000000a';
+select tst.eq((select count(*) from public.stores where name_en = 'Hacked'), 0, 'a store device cannot rename its store');
+reset role;
+select set_config('request.jwt.claim.sub', '00000000-0000-0000-0000-0000000000b1', false);
+set role authenticated;
+update public.stores set name_en = 'Overoll Aigaleo' where id = '20000000-0000-0000-0000-00000000000b';
+select tst.eq((select count(*) from public.stores where name_en = 'Overoll Aigaleo'), 1, 'HQ sets the English store name');
+select tst.refused($$update public.stores set name_en = '  ' where id = '20000000-0000-0000-0000-00000000000b'$$, 'an English store name is not blank', '23514');
+reset role;
+
 select tst.eq((select count(*) from pg_class c join pg_namespace n on n.oid = c.relnamespace
                where n.nspname in ('public', 'private') and c.relkind = 'r' and not c.relrowsecurity), 0,
               'every table in public and private has row-level security on');

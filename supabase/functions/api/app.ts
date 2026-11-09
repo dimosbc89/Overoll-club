@@ -11,6 +11,11 @@
  * The jobs/* routes accept the service key or the scheduler's token: the
  * Vault secret `jobs_token`, created inside the database by
  * scripts/configure-project.ts and sent by pg_cron, so no key leaves Supabase.
+ *
+ * `account/delete` deletes the Supabase Auth user inside its database
+ * transaction (SUPABASE_DB_URL connects as `postgres`). If that role may not
+ * delete from `auth.users`, the server says so (`authUserDeleted: false`) and
+ * the user is deleted here with the Auth admin API and the service key.
  */
 import type { createClient as CreateClient } from '@supabase/supabase-js';
 import type postgresType from 'postgres';
@@ -44,6 +49,10 @@ export function start({ postgres, createClient }: Libraries): void {
   const auth = createClient(required('SUPABASE_URL'), required('SUPABASE_ANON_KEY'), {
     auth: { persistSession: false, autoRefreshToken: false },
   });
+  // Auth admin API (service key): only for deleting a member's auth user.
+  const admin = createClient(required('SUPABASE_URL'), serviceKey, {
+    auth: { persistSession: false, autoRefreshToken: false },
+  });
   // Transaction-pooler friendly: no prepared statements; a small pool per instance.
   const sql = postgres(required('SUPABASE_DB_URL'), { prepare: false, max: 3, idle_timeout: 20 });
 
@@ -70,6 +79,11 @@ export function start({ postgres, createClient }: Libraries): void {
       if (sameSecret(token, serviceKey)) return true;
       const jobs = await jobsToken();
       return jobs !== null && sameSecret(token, jobs);
+    },
+    async deleteAuthUser(userId) {
+      const { error } = await admin.auth.admin.deleteUser(userId);
+      // Already gone (an earlier attempt got through): nothing to do.
+      if (error && error.status !== 404) throw error;
     },
     allowedOrigins: (Deno.env.get('ALLOWED_ORIGINS') ?? '*')
       .split(',')

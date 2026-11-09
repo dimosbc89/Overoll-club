@@ -65,9 +65,11 @@ Legend: **D** = Dimos · **C** = Claude · ☐ open · ☑ done
 
 - ☑ C: staff console (`apps/admin` `/console`, built 9 Nov): device sign-in, cashier PIN with idle lock, camera/typed scan, amount keypad with points preview, late points by receipt, undo, redeem by code, today's activity
 - ☑ C: rewards catalog, redemption codes (member app) and scan to redeem (console)
-- ☐ C: short member code the cashier can type (today a typed scan needs the full QR token)
-- ☐ C: account deletion (server route + app screen): Apple requires it before the app submission on 14 Dec
-- ☐ C: English store names (`stores.name_en`), so the English console and app don't show Greek names
+- ☑ C: short member code the cashier can type: `scan` takes `memberCode` (case, spaces, dashes, Greek look-alikes don't matter); the console's typed field takes the token, the member code or a reward code (API v0.4)
+- ☑ C: account deletion (server route `account/delete` + Profile → Delete account screen): pending codes cancelled without refund, personal fields wiped, QR secret and auth user deleted, ledger kept; rejoining with the same email works (API v0.4, migration `account_deletion`)
+- ☑ C: English store names (`stores.name_en`, `address_en`, seeded from `data/stores.json`): console header, back-office stores, member app store list, join greeting and history
+- ☐ D + C: apply the v0.4 migrations (`account_deletion`, `store_names_en`) to Supabase, rename the files to the recorded versions, re-run `supabase/seed.sql` (fills the English names), deploy; then delete a test account in the app and check the auth user is gone (if the `postgres` role may not delete auth users, the Edge Function does it with the Auth admin API)
+- ☐ D: approve the v0.4 texts: `member_deleted` and `member_not_found` (§f2, changed), `console.scan.typeHint` (§f1b); the landing FAQ `landing.faq.delete.a` still mentions downloading a copy of your data first, which isn't built yet
 - ☐ C: keep the member's QR secret in the phone's secure storage in the native apps
 - ☐ C: tiers (annual review), fraud alerts (expiry job and PIN lockout done in week 1)
 - ☐ D: test the full loop: join → scan → points → reward → redeem

@@ -1,6 +1,6 @@
 # @overoll/server
 
-The operations that move points: join, scan, award, undo, redeem, cancel, use and expire codes, check a cashier's PIN, expire points. `packages/api` serves them over HTTP (Supabase Edge Function `api`); this package holds the logic and its tests.
+The operations that move points: join, scan, award, undo, redeem, cancel, use and expire codes, check a cashier's PIN, expire points, delete an account. `packages/api` serves them over HTTP (Supabase Edge Function `api`); this package holds the logic and its tests.
 
 - The operations run with the **service role** (row-level security bypassed), so each one checks the caller's rights itself against `public.staff_roles` and `public.members.user_id`.
 - Every number and calculation comes from `@overoll/core`, using the brand's config (`brands.config` over `defaultConfig`, via core `resolveConfig`).
@@ -26,15 +26,16 @@ Each one is `fn(sql, input)` and returns `{ ok: true, ... }` or `{ ok: false, co
 | Operation | Caller | Input | Success | Error codes |
 | --- | --- | --- | --- | --- |
 | `joinMember` | the signed-in user | `userId, brandSlug, firstName`, optional `lastName, email, phone, birthday, locale, joinedStoreCode, consents {email, sms, push}, referralCode`, `idempotencyKey` | `memberId, memberCode, firstName, tier, locale, created` (false = already a member) | `brand_not_found, store_not_found, referral_not_found, email_taken, phone_taken, member_deleted` |
-| `resolveMemberToken` | device or manager of the store, HQ, platform | `callerUserId, storeId, token` | `memberId, memberCode, firstName, tier, balance` | `forbidden, invalid_token, expired_token, old_pass, member_not_found` |
-| `awardPoints` | device or manager of the store | `callerUserId, storeId, employeeId, pin, member {memberId} or {token}, amountCents`, optional `receiptNumber` (late points), `idempotencyKey` | `entryId, memberId, points, balance, tier, tierChanged, welcomeGiftUnlocked` | `forbidden, store_inactive, employee_not_found, bad_pin, pin_locked, amount_not_integer, amount_not_positive, amount_over_limit, amount_too_small, receipt_already_used, too_soon_after_last_earn, daily_earn_limit_reached`, and the token errors |
+| `resolveMemberToken` | device or manager of the store, HQ, platform | `callerUserId, storeId`, `token` **or** `memberCode` (typed, v0.4) | `memberId, memberCode, firstName, tier, balance` | `forbidden, invalid_token, expired_token, old_pass, member_not_found, member_deleted` |
+| `awardPoints` | device or manager of the store | `callerUserId, storeId, employeeId, pin, member {memberId} or {token}, amountCents`, optional `receiptNumber` (late points), `idempotencyKey` | `entryId, memberId, points, balance, tier, tierChanged, welcomeGiftUnlocked` | `forbidden, store_inactive, employee_not_found, bad_pin, pin_locked, amount_not_integer, amount_not_positive, amount_over_limit, amount_too_small, receipt_already_used, too_soon_after_last_earn, daily_earn_limit_reached`, and the token errors (`member_deleted` included) |
 | `undoEarn` | device of the store (within 10 min, with PIN), store manager, HQ, platform | `callerUserId, entryId, employee? {employeeId, pin}, idempotencyKey` | `entryId, reversedEntryId, memberId, points, balance` | `forbidden, not_found, not_undoable, already_undone, undo_window_passed, employee_required, employee_not_found, bad_pin, pin_locked` |
-| `createRedemption` | the member | `callerUserId, memberId`, `rewardId` **or** `giftId`, `idempotencyKey` | `redemptionId, code, rewardId, pointsSpent` (0 for a gift)`, expiresAt, balance` | `forbidden, member_not_found, reward_not_found, reward_unavailable, tier_too_low, insufficient_points, gift_not_found, gift_used, gift_expired` |
+| `createRedemption` | the member | `callerUserId, memberId`, `rewardId` **or** `giftId`, `idempotencyKey` | `redemptionId, code, rewardId, pointsSpent` (0 for a gift)`, expiresAt, balance` | `forbidden, member_not_found, member_deleted, reward_not_found, reward_unavailable, tier_too_low, insufficient_points, gift_not_found, gift_used, gift_expired` |
 | `cancelRedemption` | the member | `callerUserId, redemptionId, idempotencyKey` | `redemptionId, pointsRefunded` (0 for a gift: the gift comes back)`, balance` | `forbidden, not_found, already_used, cancelled, expired` |
 | `useRedemption` | device or manager of the store | `callerUserId, storeId, employeeId, pin, code, idempotencyKey` | `redemptionId, memberId, memberFirstName, rewardId, rewardNameEl, rewardNameEn, pointsSpent, usedAt` | `forbidden, store_inactive, employee_not_found, bad_pin, pin_locked, not_found, expired, already_used, cancelled` |
 | `verifyEmployeePin` | device or manager of the store | `callerUserId, storeId, employeeId, pin` (no idempotency key: moves nothing) | `employee {id, displayName}` | `forbidden, employee_not_found, bad_pin, pin_locked` |
 | `expireRedemptions` | job, every minute (all brands) | `now?, batchSize?` | `expired, redemptionIds, giftsExpired, giftIds` | none |
 | `expirePoints` | job, daily (all brands) | `now?, batchSize?` | `expired, memberIds, pointsExpired` | none |
+| `deleteMember` | the signed-in user, for their own account (v0.4) | `callerUserId, confirm: true, idempotencyKey` | `memberIds, codesCancelled, authUserDeleted` | `forbidden` (staff accounts) |
 
 `ErrorCode` is the union of every code; each operation also exports its own (`AwardPointsError`, ...).
 
@@ -42,9 +43,9 @@ Each one is `fn(sql, input)` and returns `{ ok: true, ... }` or `{ ok: false, co
 
 - **One transaction** (`sql.begin`). The member row is locked (`select ... for update`) before limits or balances are checked, so concurrent calls for one member run one after the other.
 - **Idempotency.** The key is locked for the transaction, then looked up in `private.idempotency_keys`. A stored result is returned unchanged, even if a fresh call would now fail (for example a retry after the undo window). A successful result is stored with its writes. Failures are not stored: they wrote nothing. Ledger entries get `<operation>:<key>` as their `idempotency_key`.
-- **Audit.** Every successful write adds an `audit_log` row (`member.join`, `points.award`, `points.undo`, `points.expire`, `redemption.create|cancel|use|expire`, `gift.unlock|expire`, `employee.pin_lock`). `resolveMemberToken` only reads and writes nothing.
+- **Audit.** Every successful write adds an `audit_log` row (`member.join`, `member.delete`, `points.award`, `points.undo`, `points.expire`, `redemption.create|cancel|use|expire`, `gift.unlock|expire`, `employee.pin_lock`). `resolveMemberToken` only reads and writes nothing.
 - **Writes on a failure.** Two failures still write, and the transaction commits because the failure is returned, not thrown: a wrong PIN (`bad_pin` / `pin_locked`, stored for the lockout) and a gift found past its expiry (`gift_expired`, marked expired).
-- **Lock order.** Employee PIN lock → idempotency key → member → gift / receipt. Every operation takes them in this order, so concurrent calls never deadlock.
+- **Lock order.** Employee PIN lock → idempotency key → member → gift / receipt. Every operation takes them in this order, so concurrent calls never deadlock. (`deleteMember` takes no idempotency lock: it locks the user's member rows in id order, then their gifts and codes.)
 - **Errors.** Expected business failures are returned. Bugs and infrastructure problems throw, including an invalid `brands.config` (`InvalidConfigError`).
 
 ## Decisions
@@ -82,6 +83,19 @@ Each one is `fn(sql, input)` and returns `{ ok: true, ... }` or `{ ok: false, co
 - Idempotent per member and expiry date: ledger key `expire_points:<member id>:<expiry time>`. Points added afterwards without a purchase (an HQ adjustment) are not expired again until a new purchase has also lapsed.
 - A member with a pending points code is skipped that run (the code resolves within 15 minutes; otherwise a refund after the expiry would bring points back). Gift codes don't block.
 - Deleted members are included: their balance expires like anyone's, which keeps the outstanding-points total honest.
+
+### Account deletion (v0.4)
+
+- **What happens** (`deleteMember`, one transaction, member rows locked): unused gifts (available, or held by a pending code) → `expired`; pending codes → `cancelled` **without** a `refund_redeem` (the account is closing; spec: old points are not restored); personal fields wiped (`first_name` `''`, `last_name`, `email`, `phone`, `birthday`, `referral_code`, `user_id` → null, consents off) and `deleted_at` set; `member_secrets` deleted; `private.idempotency_keys`: the user's own rows deleted (join keeps name, email, phone, birthday in its fingerprint), `firstName` / `memberFirstName` emptied in the till's stored results; `audit_log` `member.delete` (`codesCancelled`, `giftsClosed`, `pointsLeft`); then the auth user.
+- **Kept**: the ledger (append-only), `member_code` (random, lets HQ follow the ledger), tier, locale, stores, timestamps. The balance left expires with `expirePoints` (12 months after the last purchase). The database refuses a deleted member with personal data left (`member_deleted_wiped` check).
+- **Auth user**: `delete from auth.users` inside a savepoint. In production the server connects as `postgres` (SUPABASE_DB_URL), which may do this; `members.user_id` and `idempotency_keys.actor_user_id` go to null with it, and `ledger_entries.created_by` / `audit_log.actor_user_id` keep the id (no longer foreign keys). If the role may not (42501), the result says `authUserDeleted: false` and `packages/api` deletes the user with the Auth admin API. The tests grant the service role delete on `auth.users` to stand in for `postgres`, and also run without it.
+- **Retries**: no stored result. A second call finds no member left and answers `ok` with `memberIds: []` (and deletes the auth user if it is still there), so the app's retry after a network error is safe.
+- **Staff accounts** (any `staff_roles` row) are refused with `forbidden`. A user who signed in but never joined only loses the auth user.
+- **Afterwards**: `scan` / `award` with the old QR, Wallet code, typed code or member id → `member_deleted`; `createRedemption` → `member_deleted`, also when it was waiting for the member lock during the deletion. Joining again with the same email makes a new member (new code, 0 points, a new welcome gift).
+
+### Typed member code (v0.4)
+
+- `resolveMemberToken` takes `memberCode` instead of `token`: core `normalizeMemberCode` (case, spaces, dashes, Greek look-alike capitals), then a lookup by `member_code` in the caller's brand. No secret is checked: the code is printed on the card, the console shows the first name to check, and the result can only lead to points (`awardPoints` with the `memberId`). Something that can't be a member code is `invalid_token`.
 
 ## Tests
 

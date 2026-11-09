@@ -21,6 +21,7 @@ import {
   type TierId,
   canUndo,
   defaultConfig,
+  normalizeMemberCode,
   normalizeRedemptionCode,
   parseToken,
   pointsForPurchase,
@@ -45,7 +46,10 @@ import { type KeypadKey, type PinKey, pressKey, pressPinKey } from '../keypad';
 
 export interface StoreInfo {
   id: string;
+  /** Greek name (`stores.name`). */
   name: string;
+  /** English name (`stores.name_en`, v0.4); the console falls back to `name`. */
+  nameEn?: string | null;
   timeZone: string;
 }
 
@@ -86,6 +90,14 @@ export interface RetryKey {
 
 export type ScanMode = 'camera' | 'type';
 
+/**
+ * What a scan looks up: a token (camera, or the full `OC1.…` text typed), or
+ * the member code typed from under the QR (v0.4). A typed 8-character code
+ * could also be a reward code: `redeemCode` is tried on the redeem screen if
+ * no member has that code.
+ */
+export type ScanLookup = { token: string } | { memberCode: string; redeemCode: string | null };
+
 interface AmountFields {
   member: Member;
   amountCents: number;
@@ -125,7 +137,7 @@ export type Screen =
       requestId: string | null;
       error: string | null;
     }
-  | { name: 'idle'; mode: ScanMode; input: string; requestId: string | null; token: string | null; error: string | null }
+  | { name: 'idle'; mode: ScanMode; input: string; requestId: string | null; lookup: ScanLookup | null; error: string | null }
   | ({ name: 'member' | 'amount' } & AmountFields)
   | ({ name: 'awarding'; requestId: string; retry: RetryKey } & Omit<AmountFields, 'retry'>)
   | ({ name: 'error'; error: string; retryable: boolean; retry: RetryKey } & Omit<AmountFields, 'retry'>)
@@ -188,8 +200,8 @@ export type ConsoleAction =
   // Scan
   | { type: 'scan/mode'; mode: ScanMode }
   | { type: 'scan/input'; value: string }
-  /** Typed or read by the camera. */
-  | { type: 'scan/submit'; requestId: string; text: string }
+  /** Read by the camera, or typed (`typed`: a member code is allowed). */
+  | { type: 'scan/submit'; requestId: string; text: string; typed?: boolean }
   | { type: 'scan/succeeded'; requestId: string; member: ScannedMember }
   | { type: 'scan/failed'; requestId: string; error: string }
   // Amount and award
@@ -249,7 +261,7 @@ export type PendingRequest =
   | { id: string; kind: 'sendCode'; email: string }
   | { id: string; kind: 'verifyCode'; email: string; code: string }
   | { id: string; kind: 'verifyPin'; storeId: string; employeeId: string; pin: string }
-  | { id: string; kind: 'scan'; storeId: string; token: string }
+  | ({ id: string; kind: 'scan'; storeId: string } & ({ token: string } | { memberCode: string }))
   | { id: string; kind: 'award'; input: AwardInput }
   | { id: string; kind: 'undo'; input: UndoInput }
   | { id: string; kind: 'redeem'; input: UseRedemptionInput };
@@ -270,8 +282,10 @@ export function pendingRequest(state: ConsoleState): PendingRequest | null {
       if (!s.requestId || !s.employeeId || !store) return null;
       return { id: s.requestId, kind: 'verifyPin', storeId: store.id, employeeId: s.employeeId, pin: s.pin };
     case 'idle':
-      if (!s.requestId || !s.token || !store) return null;
-      return { id: s.requestId, kind: 'scan', storeId: store.id, token: s.token };
+      if (!s.requestId || !s.lookup || !store) return null;
+      return 'token' in s.lookup
+        ? { id: s.requestId, kind: 'scan', storeId: store.id, token: s.lookup.token }
+        : { id: s.requestId, kind: 'scan', storeId: store.id, memberCode: s.lookup.memberCode };
     case 'awarding':
       if (!store || !cashier) return null;
       return {
@@ -330,7 +344,7 @@ const scanScreen = (error: string | null = null): Screen => ({
   mode: 'camera',
   input: '',
   requestId: null,
-  token: null,
+  lookup: null,
   error,
 });
 
@@ -354,15 +368,24 @@ function keyFor(previous: RetryKey | null, signature: string, freshKey: string, 
   return previous && previous.signature === signature ? previous : { key: freshKey, signature, sentAt: now };
 }
 
-/** Start scanning a member token, or open redeem for something that is a redemption code. */
-function startScan(state: ConsoleState, requestId: string, raw: string): ConsoleState {
+/**
+ * Start a scan. A member token is looked up. From the camera, anything that
+ * is a redemption code opens redeem (a member card's QR is always a token).
+ * Typed by the cashier, a code like "ABCD 2345" is first the member code
+ * under the QR; if no member has it, it is tried as a reward code
+ * (`scan/failed` with `member_not_found`).
+ */
+function startScan(state: ConsoleState, requestId: string, raw: string, typed = false): ConsoleState {
   const text = raw.trim();
   if (!text || !state.store || !state.cashier) return state;
+  let lookup: ScanLookup = { token: text };
   if (!parseToken(text)) {
-    const code = normalizeRedemptionCode(text);
-    if (code) return { ...state, screen: redeemScreen(code) };
+    const redeemCode = normalizeRedemptionCode(text);
+    const memberCode = typed ? normalizeMemberCode(text) : null;
+    if (memberCode) lookup = { memberCode, redeemCode };
+    else if (redeemCode) return { ...state, screen: redeemScreen(redeemCode) };
   }
-  return { ...state, screen: { name: 'idle', mode: 'type', input: text, requestId, token: text, error: null } };
+  return { ...state, screen: { name: 'idle', mode: 'type', input: text, requestId, lookup, error: null } };
 }
 
 function lockTo(state: ConsoleState, reason: 'switch' | 'idle'): ConsoleState {
@@ -480,7 +503,7 @@ export function consoleReducer(state: ConsoleState, action: ConsoleAction): Cons
       return { ...state, screen: { ...s, input: action.value, error: null } };
     case 'scan/submit':
       if (s.name !== 'idle' || s.requestId) return state;
-      return startScan(state, action.requestId, action.text);
+      return startScan(state, action.requestId, action.text, action.typed === true);
     case 'scan/succeeded': {
       if (s.name !== 'idle' || s.requestId !== action.requestId) return state;
       const { memberId, firstName, tier, balance } = action.member;
@@ -488,7 +511,11 @@ export function consoleReducer(state: ConsoleState, action: ConsoleAction): Cons
     }
     case 'scan/failed':
       if (s.name !== 'idle' || s.requestId !== action.requestId) return state;
-      return { ...state, screen: { ...s, requestId: null, token: null, error: action.error } };
+      // A typed code that is no member's may be a reward code: open redeem with it.
+      if (action.error === 'member_not_found' && s.lookup && 'memberCode' in s.lookup && s.lookup.redeemCode) {
+        return { ...state, screen: redeemScreen(s.lookup.redeemCode) };
+      }
+      return { ...state, screen: { ...s, requestId: null, lookup: null, error: action.error } };
 
     // --- Amount ----------------------------------------------------------
     case 'amount/key': {

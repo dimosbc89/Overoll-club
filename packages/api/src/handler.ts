@@ -11,6 +11,7 @@ import {
   awardPoints,
   cancelRedemption,
   createRedemption,
+  deleteMember,
   expirePoints,
   expireRedemptions,
   joinMember,
@@ -29,6 +30,12 @@ export interface HandlerDeps {
   isServiceToken(token: string): boolean | Promise<boolean>;
   /** Origins allowed by CORS; `*` allows any (tokens travel in a header, not cookies). */
   allowedOrigins?: readonly string[];
+  /**
+   * Delete a Supabase Auth user with the Auth admin API (service key). Used by
+   * `account/delete` when the database role could not delete it itself
+   * (`authUserDeleted: false`). A user that is already gone is not an error.
+   */
+  deleteAuthUser?(userId: string): Promise<void>;
 }
 
 type Body = Record<string, unknown>;
@@ -36,7 +43,7 @@ type Outcome = { ok: true } | { ok: false; code: string; message?: string };
 
 interface Route {
   auth: 'user' | 'service';
-  run(sql: Db, userId: string | null, body: Body): Promise<Outcome>;
+  run(sql: Db, userId: string | null, body: Body, deps: HandlerDeps): Promise<Outcome>;
 }
 
 const asUser = (userId: string | null): string => userId ?? '';
@@ -62,6 +69,18 @@ export const routes: Readonly<Record<string, Route>> = {
   'redemptions/use': {
     auth: 'user',
     run: (sql, uid, b) => useRedemption(sql, { ...(b as any), callerUserId: asUser(uid) }),
+  },
+  'account/delete': {
+    auth: 'user',
+    async run(sql, uid, b, deps) {
+      const result = await deleteMember(sql, { ...(b as any), callerUserId: asUser(uid) });
+      if (!result.ok || result.authUserDeleted || !deps.deleteAuthUser) return result;
+      // The database role may not delete auth users: do it with the Auth admin
+      // API. If this throws, the member is already wiped; a retry with the same
+      // body finds nothing left to wipe and tries the auth user again.
+      await deps.deleteAuthUser(asUser(uid));
+      return { ...result, authUserDeleted: true };
+    },
   },
   'staff/verify-pin': {
     auth: 'user',
@@ -168,7 +187,7 @@ export function createHandler(deps: HandlerDeps): (req: Request) => Promise<Resp
     for (const field of SERVER_ONLY_FIELDS) delete body[field];
 
     try {
-      const result = await route.run(deps.sql, userId, body);
+      const result = await route.run(deps.sql, userId, body, deps);
       if (result.ok) return json(200, result, cors);
       return failure(result.code, result.message);
     } catch (error) {

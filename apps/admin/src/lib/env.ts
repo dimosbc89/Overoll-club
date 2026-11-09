@@ -23,3 +23,6 @@ export const PROGRAM_NAME = 'Overoll Club';
 
 /** Support address for testing (program spec §1), fills `{supportEmail}`. Replace before launch. */
 export const SUPPORT_EMAIL = 'club-support@growagency.online';
+
+/** The club site and member web app (program spec §1, web address), fills `{clubUrl}`. */
+export const CLUB_URL = 'loyalty.overoll.gr';

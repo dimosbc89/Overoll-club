@@ -191,3 +191,55 @@ describe('resolveMemberToken', () => {
     expect(await scan(ids.deviceA, '20000000-0000-0000-0000-000000000999')).toMatchObject({ ok: false, code: 'forbidden' });
   });
 });
+
+describe('resolveMemberToken with a typed member code', () => {
+  const byCode = (memberCode: unknown, callerUserId: string = ids.deviceA) =>
+    resolveMemberToken(db.server, { callerUserId, storeId: ids.storeA, memberCode: memberCode as string, now });
+
+  it('finds the member from the code under the QR, however it is typed', async () => {
+    const member = await newMember(db.server, db.admin, { firstName: 'Anna' });
+    await givePoints(db.admin, member.memberId, 120);
+    const c = member.memberCode;
+    const greek = c.replace(/[ABEHKMNPTXYZ]/g, (ch) => 'ΑΒΕΗΚΜΝΡΤΧΥΖ'['ABEHKMNPTXYZ'.indexOf(ch)]!);
+    for (const typed of [c, c.toLowerCase(), `${c.slice(0, 4)} ${c.slice(4)}`, ` ${c.slice(0, 4)}-${c.slice(4)} `, greek]) {
+      expect(await byCode(typed), typed).toEqual({
+        ok: true,
+        memberId: member.memberId,
+        memberCode: c,
+        firstName: 'Anna',
+        tier: 'classic',
+        balance: 120,
+      });
+    }
+  });
+
+  it('tells an unknown code from something that is not a code', async () => {
+    expect(await byCode('ZZZZ2222')).toMatchObject({ ok: false, code: 'member_not_found' });
+    expect(await byCode('hello world!')).toMatchObject({ ok: false, code: 'invalid_token' });
+    expect(await byCode('ΓΔΛΞ2345')).toMatchObject({ ok: false, code: 'invalid_token' });
+  });
+
+  it("does not find another brand's member and keeps the same callers as a scan", async () => {
+    const other = await newMember(db.server, db.admin, { brandSlug: 'other' });
+    expect(await byCode(other.memberCode)).toMatchObject({ ok: false, code: 'member_not_found' });
+    const member = await newMember(db.server, db.admin);
+    expect((await byCode(member.memberCode, ids.managerA)).ok).toBe(true);
+    expect(await byCode(member.memberCode, ids.deviceB)).toMatchObject({ ok: false, code: 'forbidden' });
+    expect(await byCode(member.memberCode, member.userId)).toMatchObject({ ok: false, code: 'forbidden' });
+  });
+
+  it('takes a token or a member code, not both and not neither', async () => {
+    const member = await newMember(db.server, db.admin);
+    const token = await rotatingToken(db.admin, member.memberId, now);
+    const base = { callerUserId: ids.deviceA, storeId: ids.storeA, now };
+    expect(await resolveMemberToken(db.server, { ...base, token, memberCode: member.memberCode })).toMatchObject({
+      ok: false,
+      code: 'invalid_input',
+    });
+    expect(await resolveMemberToken(db.server, base)).toMatchObject({ ok: false, code: 'invalid_input' });
+    expect(await resolveMemberToken(db.server, { ...base, memberCode: 12345678 as unknown as string })).toMatchObject({
+      ok: false,
+      code: 'invalid_input',
+    });
+  });
+});

@@ -78,7 +78,7 @@ describe('error codes and messages', () => {
   it('fills placeholders from the config and settings', () => {
     expect(plain(errorMessage('amount_over_limit', 'el', ctx))).toContain('80,00 €');
     expect(errorMessage('amount_over_limit', 'en', ctx)).toContain('€80.00');
-    expect(errorMessage('member_deleted', 'en', ctx)).toContain('club-support@growagency.online');
+    expect(errorMessage('member_deleted', 'en', ctx)).toContain('club.example.gr');
     expect(errorMessage('store_not_found', 'el', ctx)).toContain('club.example.gr');
     expect(errorMessage('too_soon_after_last_earn', 'en', ctx)).toContain('Wait 2 minutes');
     expect(errorMessage('undo_window_passed', 'en', ctx)).toContain('more than 10 minutes');

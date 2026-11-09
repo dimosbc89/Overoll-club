@@ -140,6 +140,11 @@ describe('error messages (data/copy/errors.*.json)', () => {
     expect(errorMessage('network_error', 'en', defaultConfig)).toBe(errorsEn.network_error);
   });
 
+  it('fills {clubUrl} for a deleted account (v0.4)', () => {
+    expect(errorMessage('member_deleted', 'en', defaultConfig)).toContain('loyalty.overoll.gr');
+    expect(errorMessage('member_deleted', 'el', defaultConfig)).not.toContain('{');
+  });
+
   it('falls back to "unknown" for codes without a message', () => {
     expect(errorMessage('route_not_found', 'el', defaultConfig)).toBe(errorsEl.unknown);
     expect(errorMessage('toString', 'en', defaultConfig)).toBe(errorsEn.unknown);
@@ -148,7 +153,7 @@ describe('error messages (data/copy/errors.*.json)', () => {
   it('has a message for every code the console can show', () => {
     const consoleCodes = [
       'invalid_input', 'idempotency_conflict', 'forbidden', 'store_inactive', 'employee_not_found',
-      'employee_required', 'bad_pin', 'pin_locked', 'member_not_found', 'invalid_token', 'expired_token',
+      'employee_required', 'bad_pin', 'pin_locked', 'member_not_found', 'member_deleted', 'invalid_token', 'expired_token',
       'old_pass', 'amount_not_integer', 'amount_not_positive', 'amount_over_limit', 'amount_too_small',
       'too_soon_after_last_earn', 'daily_earn_limit_reached', 'receipt_already_used', 'not_found',
       'not_undoable', 'already_undone', 'undo_window_passed', 'already_used', 'cancelled', 'expired',
@@ -214,6 +219,26 @@ describe('request loop (reducer → runner → API)', () => {
     expect(calls[0]!.body.idempotencyKey).toBe('key-1');
     expect(calls[1]!.body.idempotencyKey).toBe('key-1');
     expect(calls[1]!.body).toEqual(calls[0]!.body);
+  });
+
+  it('looks a typed member code up with `memberCode` (v0.4)', async () => {
+    const { fetch, calls } = fakeFetch(
+      json(200, { ok: true, memberId: 'mem-1', memberCode: 'ABCD2345', firstName: 'Ελένη', tier: 'classic', balance: 40 }),
+    );
+    const api = createApiClient({ baseUrl: BASE, getAccessToken: async () => 't', fetch });
+    const onTill: ConsoleAction[] = [
+      { type: 'device/loaded', requestId: 'boot', context: { store, employees: [{ id: 'emp-1', displayName: 'Μαρία' }], config: defaultConfig } },
+      { type: 'cashier/select', employeeId: 'emp-1' },
+      { type: 'pin/key', key: '1' },
+      { type: 'pin/submit', requestId: 'p' },
+      { type: 'pin/verified', requestId: 'p', employee: { id: 'emp-1', displayName: 'Μαρία' } },
+      { type: 'scan/submit', requestId: 's', text: 'abcd 2345', typed: true },
+    ];
+    let state = onTill.reduce(consoleReducer, initialState({ configured: true, requestId: 'boot' }));
+    state = consoleReducer(state, await runRequest(pendingRequest(state)!, { api, auth, newId: () => 'id' }));
+    expect(calls[0]!.url).toBe(`${BASE}/scan`);
+    expect(calls[0]!.body).toEqual({ storeId: 'store-1', memberCode: 'ABCD2345' });
+    expect(state.screen).toMatchObject({ name: 'member', member: { memberId: 'mem-1', balance: 40 } });
   });
 
   it('turns a thrown error into a failure action instead of hanging the till', async () => {

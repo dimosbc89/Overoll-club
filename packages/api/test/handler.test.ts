@@ -209,6 +209,82 @@ describe('HTTP layer', () => {
   });
 });
 
+describe('account/delete (v0.4)', () => {
+  const remove = (h: typeof handle, userId: string, body: Record<string, unknown> = { confirm: true, idempotencyKey: key() }) =>
+    h(post('/functions/v1/api/account/delete', body, tokenFor(userId)));
+
+  it('deletes the caller\'s account; the Auth admin API removes the user when the database may not', async () => {
+    const deleted: string[] = [];
+    let failNext = false;
+    const withAdmin = createHandler({
+      sql: db.server,
+      authenticate: async (token) => (token.startsWith('user:') ? token.slice(5) : null),
+      isServiceToken: async () => false,
+      async deleteAuthUser(userId) {
+        if (failNext) {
+          failNext = false;
+          throw new Error('auth admin API down');
+        }
+        deleted.push(userId);
+      },
+    });
+
+    const member = await newMember(db.server, db.admin);
+    const body = { confirm: true, idempotencyKey: key(), userId: ids.hq };
+    const res = await remove(withAdmin, member.userId, body);
+    expect(res.status).toBe(200);
+    expect(await res.json()).toEqual({ ok: true, memberIds: [member.memberId], codesCancelled: 0, authUserDeleted: true });
+    // Identity from the token: the HQ id in the body was dropped.
+    expect(deleted).toEqual([member.userId]);
+    const [row] = await db.admin`select deleted_at is not null as deleted, user_id from public.members where id = ${member.memberId}`;
+    expect(row).toEqual({ deleted: true, user_id: null });
+
+    // The admin API fails: 500, the member is already wiped, and a retry finishes the job.
+    const other = await newMember(db.server, db.admin);
+    failNext = true;
+    const again = { confirm: true, idempotencyKey: key() };
+    const failed = await remove(withAdmin, other.userId, again);
+    expect(failed.status).toBe(500);
+    expect(await failed.json()).toMatchObject({ ok: false, code: 'internal_error' });
+    const retry = await remove(withAdmin, other.userId, again);
+    expect(retry.status).toBe(200);
+    expect(await retry.json()).toEqual({ ok: true, memberIds: [], codesCancelled: 0, authUserDeleted: true });
+    expect(deleted).toEqual([member.userId, other.userId]);
+  });
+
+  it('needs confirm: true and refuses staff accounts', async () => {
+    const member = await newMember(db.server, db.admin);
+    const unconfirmed = await remove(handle, member.userId, { idempotencyKey: key() });
+    expect(unconfirmed.status).toBe(400);
+    expect(await unconfirmed.json()).toMatchObject({ ok: false, code: 'invalid_input' });
+    const staff = await remove(handle, ids.deviceA);
+    expect(staff.status).toBe(403);
+    expect(await staff.json()).toMatchObject({ ok: false, code: 'forbidden' });
+    expect((await handle(post('/api/account/delete', { confirm: true, idempotencyKey: key() }))).status).toBe(401);
+  });
+
+  it('a deleted member scanned at the till is member_deleted (422)', async () => {
+    const member = await newMember(db.server, db.admin);
+    expect((await remove(handle, member.userId)).status).toBe(200);
+    const scan = await handle(post('/api/scan', { storeId: ids.storeA, memberCode: member.memberCode }, tokenFor(ids.deviceA)));
+    expect(scan.status).toBe(422);
+    expect(await scan.json()).toMatchObject({ ok: false, code: 'member_deleted' });
+  });
+});
+
+describe('scan with a typed member code (v0.4)', () => {
+  it('finds the member from the code under the QR', async () => {
+    const member = await newMember(db.server, db.admin, { firstName: 'Anna' });
+    const typed = `${member.memberCode.slice(0, 4).toLowerCase()} ${member.memberCode.slice(4)}`;
+    const res = await handle(post('/api/scan', { storeId: ids.storeA, memberCode: typed }, tokenFor(ids.deviceA)));
+    expect(res.status).toBe(200);
+    expect(await res.json()).toMatchObject({ ok: true, memberId: member.memberId, firstName: 'Anna' });
+    const unknown = await handle(post('/api/scan', { storeId: ids.storeA, memberCode: 'ZZZZ2222' }, tokenFor(ids.deviceA)));
+    expect(unknown.status).toBe(422);
+    expect(await unknown.json()).toMatchObject({ ok: false, code: 'member_not_found' });
+  });
+});
+
 describe('error copy (data/copy/errors.*.json)', () => {
   it('has the same codes in Greek and English, including every v0.2 code', async () => {
     const { readFileSync } = await import('node:fs');

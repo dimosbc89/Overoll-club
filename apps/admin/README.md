@@ -34,7 +34,7 @@ Next.js bakes `NEXT_PUBLIC_*` in at **build** time, so set them before `npm run 
 | `src/app/(admin)` | Back office with the cocoa header: `/` dashboard, `/stores`, `/rewards`, `/sign-in` |
 | `src/app/console` | Staff console (till), full screen, client-side; own layout with Manrope and the design-canvas tokens |
 | `src/i18n` | `el.json` (reference) and `en.json` with the same keys, typed `t()`; language in the `overoll_locale` cookie, set by a server action |
-| `src/lib` | Supabase reads (server only), € formatting, opening hours, keypads, tier costs via `@overoll/core`, the API client (`api.ts`) |
+| `src/lib` | Supabase reads (server only), € formatting, opening hours, keypads, tier costs via `@overoll/core`, the API client (`api.ts`), store names per language (`store-names.ts`) |
 | `src/lib/console` | Till logic without React: state machine, request runner, idle lock, QR frame reader, device reads |
 | `src/app/globals.css` | Back-office brand tokens from `docs/brand.md` as CSS variables |
 
@@ -46,9 +46,10 @@ Designs: `Console.dc.html` and `ConsoleDone.dc.html` on the design canvas (table
 
 | Step | How |
 | --- | --- |
+| Header | Store name in the current language (`stores.name_en` in English, else the Greek `name`) |
 | Device sign-in | The store manager types the till's email once → Supabase Auth `signInWithOtp` (`shouldCreateUser: false`, HQ creates device users) → `verifyOtp`. The session stays in localStorage. The store comes from `staff_roles` (`store_device`), the program config from `brands.config` via core `resolveConfig`, the cashiers from `employees` |
 | Cashier | Pick a name, type the PIN → `POST staff/verify-pin`. The PIN stays in memory only. The till locks after `limits.staffPinIdleMinutes` without a tap or key (core `staffPinSessionExpired`) and on "Switch cashier" |
-| Scan | Camera (BarcodeDetector, else jsQR) or "Type a code" → `POST scan` → member panel. A redemption code scanned here opens Redeem |
+| Scan | Camera (BarcodeDetector, else jsQR) or "Type a code" → `POST scan` → member panel. Typed: the full `OC1.…` token, or the member code under the QR ("ABCD 2345", case, spaces, dashes and Greek look-alike capitals don't matter) → `POST scan` with `memberCode`; if no member has that code and it can be a reward code, Redeem opens with it. A redemption code read by the camera opens Redeem directly |
 | Award | Integer-cents keypad (max `limits.maxAmountCents`), live preview with core `pointsForPurchase` for the member's tier, optional receipt number for late points → `POST award` with `member: { memberId }` |
 | Done | +points, new balance, welcome-croissant and tier-up messages; Undo while core `canUndo` → confirm → `POST undo` with the cashier PIN |
 | Redeem | Scan or type the 8-character code → `POST redemptions/use` → reward name in the current language and the 100% discount reminder |
@@ -65,4 +66,4 @@ How it is built:
 - **Dashboard**: three empty stat tiles. Numbers come with the back office (roadmap week 4).
 - **Stores / Rewards**: read-only tables with the publishable key. Editing needs staff sign-in.
 - **Sign in** (`/sign-in`): disabled form for HQ and store managers. The till has its own device sign-in in `/console`.
-- **Console**: works against the v0.2 API contract; `staff/verify-pin`, `receiptNumber`, `welcomeGiftUnlocked` and `pin_locked` need the server v0.2 deploy. Typing a member code by hand needs the full token text (`OC1.…`) until the card shows a typeable form. Today's activity shows no member names (the device can't read `members`).
+- **Console**: works against the v0.2 API contract; `staff/verify-pin`, `receiptNumber`, `welcomeGiftUnlocked` and `pin_locked` need the server v0.2 deploy. Typing the member code under the QR needs the v0.4 API (`scan` with `memberCode`). Today's activity shows no member names (the device can't read `members`).

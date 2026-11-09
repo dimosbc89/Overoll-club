@@ -182,7 +182,7 @@ export function ScanScreen({ ctx, screen }: { ctx: ScreenContext; screen: Of<'id
 
   const submit = (event: FormEvent) => {
     event.preventDefault();
-    dispatch({ type: 'scan/submit', requestId: newId(), text: screen.input });
+    dispatch({ type: 'scan/submit', requestId: newId(), text: screen.input, typed: true });
   };
 
   return (
@@ -211,9 +211,13 @@ export function ScanScreen({ ctx, screen }: { ctx: ScreenContext; screen: Of<'id
             <label htmlFor="scan-code" className={styles.label}>
               {t('console.scan.codeLabel')}
             </label>
+            <p id="scan-code-hint" className={styles.muted}>
+              {t('console.scan.typeHint')}
+            </p>
             <div className={styles.row}>
               <input
                 id="scan-code"
+                aria-describedby="scan-code-hint"
                 className={styles.input}
                 autoComplete="off"
                 autoCapitalize="characters"
