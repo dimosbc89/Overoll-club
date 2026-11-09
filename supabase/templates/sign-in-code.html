@@ -1,0 +1,60 @@
+<!doctype html>
+<!--
+  Supabase Auth email: one-time sign-in code (used for both "Magic link" and "Confirm signup").
+  Filled by scripts/configure-project.ts before it is sent to Supabase:
+    [[key|el]] / [[key|en]]  text from docs/copy-deck.md
+    {programName} {minutes} {supportEmail}  from supabase/project.config.json
+    {code}  becomes the Supabase variable for the code
+  Greek first, English below: the email goes out before we know the member's language.
+-->
+<html lang="el">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light">
+<title>{programName}</title>
+</head>
+<body style="margin:0;padding:0;background:#f9f0e9;">
+<div style="display:none;max-height:0;overflow:hidden;opacity:0;">[[email.code.preheader|el]]</div>
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#f9f0e9;">
+  <tr>
+    <td align="center" style="padding:32px 16px;">
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="max-width:480px;background:#ffffff;border-radius:28px;">
+        <tr>
+          <td style="padding:32px 32px 8px 32px;font-family:Manrope,Arial,Helvetica,sans-serif;color:#48423e;">
+            <img src="https://lwhxqnmntihmavqngeca.supabase.co/storage/v1/object/public/brand/overoll/wallet-program-logo.png" width="56" height="56" alt="Overoll" style="display:block;border:0;border-radius:14px;">
+            <p style="margin:24px 0 4px 0;font-size:17px;line-height:1.5;font-weight:700;">[[email.code.p1|el]]</p>
+            <p lang="en" style="margin:0;font-size:14px;line-height:1.5;color:#6b6560;">[[email.code.p1|en]]</p>
+          </td>
+        </tr>
+        <tr>
+          <td style="padding:16px 32px;">
+            <div style="background:#f9f0e9;border-radius:16px;padding:20px 12px;text-align:center;font-family:Manrope,Arial,Helvetica,sans-serif;font-size:36px;line-height:1;font-weight:800;letter-spacing:8px;color:#48423e;">{code}</div>
+          </td>
+        </tr>
+        <tr>
+          <td style="padding:8px 32px 0 32px;font-family:Manrope,Arial,Helvetica,sans-serif;color:#48423e;font-size:15px;line-height:1.55;">
+            <p style="margin:0 0 12px 0;">[[email.code.p2|el]]</p>
+            <p style="margin:0 0 20px 0;">[[email.code.p3|el]]</p>
+          </td>
+        </tr>
+        <tr>
+          <td style="padding:0 32px;"><div style="border-top:1px solid #e4dbd4;font-size:0;line-height:0;">&nbsp;</div></td>
+        </tr>
+        <tr>
+          <td lang="en" style="padding:20px 32px 0 32px;font-family:Manrope,Arial,Helvetica,sans-serif;color:#6b6560;font-size:14px;line-height:1.55;">
+            <p style="margin:0 0 12px 0;">[[email.code.p2|en]]</p>
+            <p style="margin:0 0 24px 0;">[[email.code.p3|en]]</p>
+          </td>
+        </tr>
+        <tr>
+          <td style="padding:0 32px 32px 32px;font-family:Manrope,Arial,Helvetica,sans-serif;color:#6b6560;font-size:12px;line-height:1.5;">
+            <p style="margin:0;">[[email.footer.help|el]]<br><span lang="en">[[email.footer.help|en]]</span></p>
+          </td>
+        </tr>
+      </table>
+    </td>
+  </tr>
+</table>
+</body>
+</html>

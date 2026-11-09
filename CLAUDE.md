@@ -46,6 +46,7 @@ npm run typecheck
 npm run test:db        # database schema + access-rule tests on a local throwaway Postgres, plus the seed
 npm run seed:generate  # rebuild supabase/seed.sql after changing data/*.json
 npm run functions:build # bundle Edge Functions (CI deploys them from main)
+npm run project:check  # validate supabase/project.config.json + sign-in email (CI applies it from main)
 ```
 
 ## Workflow

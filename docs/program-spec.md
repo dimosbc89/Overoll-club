@@ -13,7 +13,8 @@ All numbers live in `packages/core/src/config.ts` and can be changed by HQ later
 | POS | Unknown. Version 1 does **not** integrate with the POS: staff type the receipt total on the staff console |
 | Delivery orders | Not decided. Built behind a switch, **off at launch**; decide after the pilot |
 | Existing customers | Overoll's newsletter list is a marketing task for later, not part of the launch |
-| Landing page | Own subdomain `club.<overoll domain>`: the web app's home page is the landing page; the counter QR opens `/join?store=<code>` (domain and DNS from Overoll) |
+| Web address | **`loyalty.overoll.gr`** (decided 9 Nov): landing page + member web app; the logged-out home page is the landing page; the counter QR opens `https://loyalty.overoll.gr/join?store=<code>`. Back office and till console: `admin.loyalty.overoll.gr`. Both on Cloudflare Pages |
+| DNS and email | `overoll.gr` DNS is at Papaki, managed by Overoll's IT; their Microsoft 365 email and the `overoll.gr` SPF stay untouched. Sign-in codes are sent from `no-reply@loyalty.overoll.gr` via Resend (EU region, Ireland), with its own records under `loyalty.overoll.gr` |
 | Minimum age | 15 (GDPR digital consent age in Greece): "I am 15 or older" at sign-up (`minimumAge`) |
 | Support email | `club-support@growagency.online` for testing; replace with Overoll's address before launch |
 | Rejoining | A member who deleted their account can join again as a new member (old points are not restored) |

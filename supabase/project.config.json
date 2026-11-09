@@ -1,0 +1,38 @@
+{
+  "$comment": "Supabase settings kept as code. scripts/configure-project.ts checks them in `npm test` and applies them from CI on main. No secrets here: the SMTP password is the RESEND_API_KEY GitHub secret.",
+  "projectRef": "lwhxqnmntihmavqngeca",
+  "programName": "Overoll Club",
+  "supportEmail": "club-support@growagency.online",
+  "siteUrl": "https://loyalty.overoll.gr",
+  "redirectUrls": [
+    "https://loyalty.overoll.gr/**",
+    "https://admin.loyalty.overoll.gr/**",
+    "https://overoll-loyalty.pages.dev/**",
+    "https://overoll-loyalty-admin.pages.dev/**",
+    "overollclub://**",
+    "http://localhost:8081/**",
+    "http://localhost:3000/**"
+  ],
+  "allowedOrigins": [
+    "https://loyalty.overoll.gr",
+    "https://admin.loyalty.overoll.gr",
+    "https://overoll-loyalty.pages.dev",
+    "https://overoll-loyalty-admin.pages.dev",
+    "http://localhost:8081",
+    "http://localhost:3000"
+  ],
+  "signInCode": {
+    "minutes": 10,
+    "length": 6
+  },
+  "email": {
+    "$comment": "Switch `enabled` to true once Resend shows loyalty.overoll.gr as verified and RESEND_API_KEY is set. Until then Supabase's built-in sender only delivers to members of the Supabase org.",
+    "enabled": false,
+    "senderName": "Overoll Club",
+    "senderEmail": "no-reply@loyalty.overoll.gr",
+    "smtpHost": "smtp.resend.com",
+    "smtpPort": 465,
+    "smtpUser": "resend",
+    "maxPerHour": 300
+  }
+}

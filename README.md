@@ -28,6 +28,8 @@ Week 1 foundation: program rules engine (`packages/core`, 32 tests), database sc
 | Apple | GROW AGENCY L.P., team `JUVGRB24Q6`; Pass Type ID `pass.online.growagency.overoll` |
 | Google Pay & Wallet Console | GROW Agency, merchant `BCR2DN6DWL3NFGYM` (ads@growdigital.gr) |
 | Google Wallet API | issuer `3388000000023239253`, demo mode; loyalty class `3388000000023239253.overoll_club` |
+| Web addresses | `loyalty.overoll.gr`: landing page + member web app · `admin.loyalty.overoll.gr`: back office + till console. Cloudflare Pages projects `overoll-loyalty` and `overoll-loyalty-admin`. DNS for `overoll.gr` is at Papaki, run by Overoll's IT |
+| Sign-in email | `no-reply@loyalty.overoll.gr` via Resend (EU, Ireland). Auth settings, email template and CORS origins in `supabase/project.config.json`, applied by CI (`npm run project:apply`) |
 | Brand images (public) | Supabase Storage bucket `brand`, e.g. `…/storage/v1/object/public/brand/overoll/wallet-program-logo.png` |
 
 Variable names are in `.env.example`; values never go in git.

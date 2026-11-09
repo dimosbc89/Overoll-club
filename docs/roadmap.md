@@ -33,7 +33,13 @@ Legend: **D** = Dimos · **C** = Claude · ☐ open · ☑ done
 - ☑ C: points engine (`packages/server`: join, scan, award, undo, redeem, use, expire) with 61 database tests
 - ☑ C: HTTP API (`packages/api`) + Edge Function `api` bundle; CI on GitHub Actions (typecheck, tests, DB tests, build)
 - ☑ D: Supabase access token as GitHub secret: CI deploys the `api` Edge Function from `main` (live since 9 Nov)
-- ☐ D: from Overoll: their production domain and DNS access for `club.` (landing page + web app); the website itself runs on Cloudflare Pages
+- ☑ D: web address decided: `loyalty.overoll.gr` (landing + web app), `admin.loyalty.overoll.gr` (back office + till console), hosted on Cloudflare Pages; sign-in emails via Resend
+- ☑ C: email to Overoll's IT with the DNS records for Papaki (2 CNAME for the sites, 4 for the sign-in email)
+- ☐ D: Resend account: add the domain `loyalty.overoll.gr` (region Ireland), put the DKIM value in the IT email, API key as GitHub secret `RESEND_API_KEY`; Pro plan ($20/month) before the pilot
+- ☐ D: Overoll's IT adds the DNS records
+- ☐ D: Cloudflare API token (Account · Cloudflare Pages · Edit) and account ID as GitHub secrets `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID`
+- ☑ C: Supabase settings as code (`supabase/project.config.json`): site URL, redirect URLs, 6-digit sign-in code valid 10 minutes, Greek + English code email, API CORS origins; applied by CI
+- ☐ C: switch on SMTP once Resend has verified the domain; deploy the web app and back office to Cloudflare Pages from CI
 - ☑ C: copy deck v0.1 el/en (`docs/copy-deck.md`, `data/copy/errors.*.json`)
 - ☑ D: copy deck questions answered: welcome gift 30 days, PIN once per shift, €80 cap, age 15+ (rules in `packages/core` config)
 - ☐ D: review the copy deck text itself; Overoll answers the rest (legal name)

@@ -16,7 +16,7 @@ Sources: `docs/program-spec.md` v0.1, `packages/core/src/config.ts`, `docs/brand
 | Placeholder | What it is |
 | --- | --- |
 | `{programName}` | Program name setting, default "Overoll Club" |
-| `{clubUrl}` | The club site and web app, `club.<overoll domain>` (domain not confirmed). Logged-out home = landing page (§h) |
+| `{clubUrl}` | The club site and web app, `loyalty.overoll.gr` (written without `https://` in copy). Logged-out home = landing page (§h) |
 | `{storeCode}` | `code` from `data/stores.json`, e.g. `chalandri` |
 | `{firstName}` | Member's first name, as typed |
 | `{points}`, `{balance}` | A number of points / the member's balance, formatted per locale (el-GR "1.250", en-GB "1,250") |
@@ -363,7 +363,7 @@ Shared footer:
 
 ### e2. Sign-in code
 
-For the Supabase Auth email template: `{code}` = `{{ .Token }}`; `{minutes}` must match the project's OTP expiry setting.
+For the Supabase Auth email template: `{code}` = `{{ .Token }}`; `{minutes}` comes from `signInCode.minutes` in `supabase/project.config.json` (10), which also sets the project's code expiry. The template is `supabase/templates/sign-in-code.html`: Greek first, English below, because the email is sent before we know the member's language.
 
 | Key | Ελληνικά | English |
 | --- | --- | --- |
