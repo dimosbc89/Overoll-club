@@ -1,12 +1,15 @@
+'use client';
+
 import Link from 'next/link';
 
-import { setLocale } from '../i18n/actions';
-import { locales, type Locale, type Translate } from '../i18n/messages';
+import { useI18n } from '../i18n/client';
+import { locales } from '../i18n/messages';
 import styles from './Header.module.css';
 import { Nav } from './Nav';
 
 /** Cocoa bar with the pink wordmark (8.5:1), navigation and the language switch. */
-export function Header({ locale, t }: { locale: Locale; t: Translate }) {
+export function Header() {
+  const { locale, t, setLocale } = useI18n();
   const items = [
     { href: '/', label: t('nav.dashboard') },
     { href: '/stores', label: t('nav.stores') },
@@ -22,13 +25,12 @@ export function Header({ locale, t }: { locale: Locale; t: Translate }) {
         <img src="/overoll-wordmark.svg" alt={t('brand.wordmark')} width={104} height={28} />
       </Link>
       <Nav items={items} label={t('nav.label')} />
-      <form action={setLocale} className={styles.language} aria-label={t('language.label')}>
+      <div role="group" className={styles.language} aria-label={t('language.label')}>
         {locales.map((option) => (
           <button
             key={option}
-            type="submit"
-            name="locale"
-            value={option}
+            type="button"
+            onClick={() => setLocale(option)}
             lang={option}
             aria-pressed={option === locale}
             className={styles.languageButton}
@@ -36,7 +38,7 @@ export function Header({ locale, t }: { locale: Locale; t: Translate }) {
             {t(option === 'el' ? 'language.el' : 'language.en')}
           </button>
         ))}
-      </form>
+      </div>
     </header>
   );
 }

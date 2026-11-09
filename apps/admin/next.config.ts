@@ -1,6 +1,10 @@
 import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
+  // Static site for Cloudflare Pages (admin.loyalty.overoll.gr): everything runs in the
+  // browser against Supabase and the API, so there is no Next.js server.
+  output: 'export',
+  images: { unoptimized: true },
   // @overoll/core ships TypeScript source (the program rules); compile it here.
   transpilePackages: ['@overoll/core'],
   experimental: {

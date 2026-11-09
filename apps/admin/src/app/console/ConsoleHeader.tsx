@@ -1,6 +1,6 @@
 'use client';
 
-import { setLocale } from '../../i18n/actions';
+import { useI18n } from '../../i18n/client';
 import { locales } from '../../i18n/messages';
 import { shortStoreName } from '../../lib/console/device';
 import type { Cashier, StoreInfo } from '../../lib/console/machine';
@@ -18,6 +18,7 @@ interface Props {
 /** White bar: wordmark, "Store · Till", the cashier, Switch cashier, Today's activity, language. */
 export function ConsoleHeader({ ctx, store, cashier, todayOpen, busy }: Props) {
   const { t, locale, dispatch } = ctx;
+  const { setLocale } = useI18n();
   return (
     <header className={styles.header}>
       {/* Plain <img>: a static SVG needs no image optimisation. */}
@@ -42,13 +43,12 @@ export function ConsoleHeader({ ctx, store, cashier, todayOpen, busy }: Props) {
           </Button>
         </>
       ) : null}
-      <form action={setLocale} className={styles.language} aria-label={t('language.label')}>
+      <div role="group" className={styles.language} aria-label={t('language.label')}>
         {locales.map((option) => (
           <button
             key={option}
-            type="submit"
-            name="locale"
-            value={option}
+            type="button"
+            onClick={() => setLocale(option)}
             lang={option}
             aria-pressed={option === locale}
             aria-label={t(option === 'el' ? 'language.el' : 'language.en')}
@@ -57,7 +57,7 @@ export function ConsoleHeader({ ctx, store, cashier, todayOpen, busy }: Props) {
             {t(option === 'el' ? 'language.elShort' : 'language.enShort')}
           </button>
         ))}
-      </form>
+      </div>
     </header>
   );
 }

@@ -1,16 +1,12 @@
-import type { Metadata } from 'next';
+'use client';
 
-import { getI18n } from '../../../i18n/server';
+import { useDocumentTitle, useI18n } from '../../../i18n/client';
 import styles from './sign-in.module.css';
 
-export async function generateMetadata(): Promise<Metadata> {
-  const { t } = await getI18n();
-  return { title: t('signIn.title') };
-}
-
 /** Sign-in placeholder: staff accounts (Supabase Auth + staff_roles) come next. */
-export default async function SignInPage() {
-  const { t } = await getI18n();
+export default function SignInPage() {
+  const { t } = useI18n();
+  useDocumentTitle(t('signIn.title'));
   return (
     <>
       <h1>{t('signIn.title')}</h1>

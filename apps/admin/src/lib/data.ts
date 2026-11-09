@@ -1,6 +1,5 @@
-import 'server-only';
-
 import { createClient, type SupabaseClient } from '@supabase/supabase-js';
+import { useEffect, useState } from 'react';
 
 import { BRAND_SLUG, supabaseEnv } from './env';
 
@@ -27,10 +26,10 @@ export interface RewardRow {
 export type Loaded<T> = { status: 'not_configured' } | { status: 'error' } | { status: 'ready'; data: T };
 
 /**
- * Server-side client with the publishable key: reads public tables only.
- * Placeholder until sign-in: staff sessions (@supabase/ssr) replace it.
+ * Browser client with the publishable key: reads public tables only.
+ * Placeholder until HQ sign-in (week 4): staff sessions replace it.
  */
-function serverClient(): SupabaseClient | null {
+function publicClient(): SupabaseClient | null {
   const env = supabaseEnv();
   if (!env) return null;
   return createClient(env.url, env.publishableKey, {
@@ -39,7 +38,7 @@ function serverClient(): SupabaseClient | null {
 }
 
 async function load<T>(query: (client: SupabaseClient) => Promise<T>): Promise<Loaded<T>> {
-  const client = serverClient();
+  const client = publicClient();
   if (!client) return { status: 'not_configured' };
   try {
     return { status: 'ready', data: await query(client) };
@@ -89,4 +88,19 @@ export function loadRewards(): Promise<Loaded<RewardRow[]>> {
       base_cost: row.base_cost,
     }));
   });
+}
+
+/** Runs a loader once in the browser; `loading` until it settles. */
+export function useLoaded<T>(loader: () => Promise<Loaded<T>>): Loaded<T> | { status: 'loading' } {
+  const [state, setState] = useState<Loaded<T> | { status: 'loading' }>({ status: 'loading' });
+  useEffect(() => {
+    let live = true;
+    void loader().then((result) => {
+      if (live) setState(result);
+    });
+    return () => {
+      live = false;
+    };
+  }, [loader]);
+  return state;
 }

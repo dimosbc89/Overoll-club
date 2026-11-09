@@ -1,16 +1,17 @@
 import type { Metadata, Viewport } from 'next';
 import type { ReactNode } from 'react';
 
-import { getI18n } from '../i18n/server';
+import { SkipLink } from '../components/SkipLink';
+import { I18nProvider } from '../i18n/client';
+import { translate } from '../i18n/messages';
 import './globals.css';
 
-export async function generateMetadata(): Promise<Metadata> {
-  const { t } = await getI18n();
-  return {
-    title: { default: t('meta.appTitle'), template: t('meta.pageTitle', { page: '%s' }) },
-    robots: { index: false, follow: false },
-  };
-}
+// Static site (Cloudflare Pages): metadata in Greek, the default language; pages set
+// the tab title in the chosen language on the client (useDocumentTitle).
+export const metadata: Metadata = {
+  title: { default: translate('el', 'meta.appTitle'), template: translate('el', 'meta.pageTitle', { page: '%s' }) },
+  robots: { index: false, follow: false },
+};
 
 export const viewport: Viewport = { themeColor: '#f5b0b4' };
 
@@ -19,15 +20,14 @@ export const viewport: Viewport = { themeColor: '#f5b0b4' };
  * `(admin)/layout.tsx`; the staff console (`/console`) has its own full-screen
  * till layout.
  */
-export default async function RootLayout({ children }: { children: ReactNode }) {
-  const { locale, t } = await getI18n();
+export default function RootLayout({ children }: { children: ReactNode }) {
   return (
-    <html lang={locale}>
+    <html lang="el">
       <body>
-        <a href="#main" className="skip-link">
-          {t('nav.skip')}
-        </a>
-        {children}
+        <I18nProvider>
+          <SkipLink />
+          {children}
+        </I18nProvider>
       </body>
     </html>
   );

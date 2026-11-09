@@ -1,12 +1,14 @@
+'use client';
+
+import { useI18n } from '../../i18n/client';
 import type { MessageKey } from '../../i18n/messages';
-import { getI18n } from '../../i18n/server';
 import styles from './page.module.css';
 
 const stats: MessageKey[] = ['dashboard.members', 'dashboard.pointsWeek', 'dashboard.redemptionsWeek'];
 
 /** HQ dashboard. Placeholder: numbers come with the back office (roadmap week 4). */
-export default async function DashboardPage() {
-  const { t } = await getI18n();
+export default function DashboardPage() {
+  const { t } = useI18n();
   return (
     <>
       <div>

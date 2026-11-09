@@ -1,19 +1,15 @@
-import type { Metadata } from 'next';
+'use client';
 
-import { getI18n } from '../../i18n/server';
+import { useDocumentTitle, useI18n } from '../../i18n/client';
 import { ConsoleApp } from './ConsoleApp';
-
-export async function generateMetadata(): Promise<Metadata> {
-  const { t } = await getI18n();
-  return { title: t('console.title') };
-}
 
 /**
  * Staff console (till tablet). Client-side: device sign-in with Supabase Auth,
  * cashier PIN, scan, award, undo, redeem and today's activity. Writes go
  * through the API (`lib/api.ts`), reads through the device session.
  */
-export default async function ConsolePage() {
-  const { locale } = await getI18n();
+export default function ConsolePage() {
+  const { locale, t } = useI18n();
+  useDocumentTitle(t('console.title'));
   return <ConsoleApp locale={locale} />;
 }

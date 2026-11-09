@@ -1,20 +1,16 @@
-import type { Metadata } from 'next';
+'use client';
 
 import { LoadNotice } from '../../../components/Notice';
-import { getI18n } from '../../../i18n/server';
-import { loadRewards } from '../../../lib/data';
+import { useDocumentTitle, useI18n } from '../../../i18n/client';
+import { loadRewards, useLoaded } from '../../../lib/data';
 import { formatEuroFromCents, formatPoints } from '../../../lib/format';
 import { rewardCosts } from '../../../lib/reward-costs';
 
-export async function generateMetadata(): Promise<Metadata> {
-  const { t } = await getI18n();
-  return { title: t('rewards.title') };
-}
-
 /** Reward catalog with the point cost per tier, computed by @overoll/core. */
-export default async function RewardsPage() {
-  const { t, locale } = await getI18n();
-  const rewards = await loadRewards();
+export default function RewardsPage() {
+  const { t, locale } = useI18n();
+  useDocumentTitle(t('rewards.title'));
+  const rewards = useLoaded(loadRewards);
 
   return (
     <>
@@ -22,7 +18,9 @@ export default async function RewardsPage() {
         <h1>{t('rewards.title')}</h1>
         <p className="intro">{t('rewards.intro')}</p>
       </div>
-      {rewards.status !== 'ready' ? (
+      {rewards.status === 'loading' ? (
+        <p role="status">{t('state.loading')}</p>
+      ) : rewards.status !== 'ready' ? (
         <LoadNotice state={rewards} t={t} />
       ) : rewards.data.length === 0 ? (
         <p>{t('rewards.empty')}</p>

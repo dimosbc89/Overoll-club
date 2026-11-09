@@ -128,6 +128,7 @@
   "signIn.body": "Η σύνδεση για HQ, υπεύθυνους καταστημάτων και συσκευές ταμείου έρχεται σύντομα.",
   "signIn.email": "Email",
   "signIn.submit": "Σύνδεση · Έρχεται σύντομα",
+  "state.loading": "Φόρτωση…",
   "state.notConfiguredTitle": "Το Supabase δεν έχει ρυθμιστεί",
   "state.notConfiguredBody": "Όρισε τα NEXT_PUBLIC_SUPABASE_URL και NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY (δες το README).",
   "state.errorTitle": "Κάτι πήγε στραβά",

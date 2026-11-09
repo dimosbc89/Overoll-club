@@ -1,15 +1,10 @@
-import type { Metadata } from 'next';
+'use client';
 
 import { LoadNotice } from '../../../components/Notice';
+import { useDocumentTitle, useI18n } from '../../../i18n/client';
 import type { Translate } from '../../../i18n/messages';
-import { getI18n } from '../../../i18n/server';
-import { loadStores, type StoreRow } from '../../../lib/data';
+import { loadStores, useLoaded, type StoreRow } from '../../../lib/data';
 import { todayHours } from '../../../lib/hours';
-
-export async function generateMetadata(): Promise<Metadata> {
-  const { t } = await getI18n();
-  return { title: t('stores.title') };
-}
 
 function todayLabel(store: StoreRow, t: Translate, now: Date): string {
   const today = todayHours(store.opening_hours, now, store.time_zone);
@@ -18,9 +13,10 @@ function todayLabel(store: StoreRow, t: Translate, now: Date): string {
 }
 
 /** Store list from Supabase (active stores, readable with the publishable key). */
-export default async function StoresPage() {
-  const { t } = await getI18n();
-  const stores = await loadStores();
+export default function StoresPage() {
+  const { t } = useI18n();
+  useDocumentTitle(t('stores.title'));
+  const stores = useLoaded(loadStores);
   const now = new Date();
 
   return (
@@ -29,7 +25,9 @@ export default async function StoresPage() {
         <h1>{t('stores.title')}</h1>
         <p className="intro">{t('stores.intro')}</p>
       </div>
-      {stores.status !== 'ready' ? (
+      {stores.status === 'loading' ? (
+        <p role="status">{t('state.loading')}</p>
+      ) : stores.status !== 'ready' ? (
         <LoadNotice state={stores} t={t} />
       ) : stores.data.length === 0 ? (
         <p>{t('stores.empty')}</p>
