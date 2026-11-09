@@ -42,18 +42,12 @@ create index idempotency_keys_member_names on private.idempotency_keys ((result 
 grant update (result) on private.idempotency_keys to service_role;
 
 -- ---------------------------------------------------------------------------
--- 3. Row-level security: a deleted member's rows are readable by HQ (and
---    platform admins) only. The member no longer matches (user_id is null),
---    and store devices and managers no longer see that member's ledger
---    entries and codes in their store's activity. A security-definer check,
---    because store users can't read `members` themselves.
+-- 3. Row-level security: a deleted member's personal rows (profile, QR
+--    secret, gifts) are readable by HQ (and platform admins) only; the member
+--    no longer matches (user_id is null). Their ledger entries and used codes
+--    carry no personal data, so the store keeps seeing them in its activity
+--    and reports, as before.
 -- ---------------------------------------------------------------------------
-create function private.is_active_member(p_member_id uuid) returns boolean
-language sql stable security definer set search_path = '' as $$
-  select exists (select 1 from public.members where id = p_member_id and deleted_at is null);
-$$;
-revoke execute on function private.is_active_member(uuid) from public;
-grant execute on function private.is_active_member(uuid) to authenticated, service_role;
 
 drop policy members_read on public.members;
 create policy members_read on public.members for select to authenticated
@@ -78,8 +72,7 @@ create policy redemptions_read on public.redemptions for select to authenticated
     )
     or private.has_brand_role(brand_id, array['hq_admin']::public.staff_role[])
     or (used_store_id is not null
-        and private.has_store_role(used_store_id, array['store_manager', 'store_device']::public.staff_role[])
-        and private.is_active_member(member_id))
+        and private.has_store_role(used_store_id, array['store_manager', 'store_device']::public.staff_role[]))
   );
 
 drop policy ledger_read on public.ledger_entries;
@@ -91,8 +84,7 @@ create policy ledger_read on public.ledger_entries for select to authenticated
     )
     or private.has_brand_role(brand_id, array['hq_admin']::public.staff_role[])
     or (store_id is not null
-        and private.has_store_role(store_id, array['store_manager', 'store_device']::public.staff_role[])
-        and private.is_active_member(member_id))
+        and private.has_store_role(store_id, array['store_manager', 'store_device']::public.staff_role[]))
   );
 
 drop policy member_gifts_read on public.member_gifts;

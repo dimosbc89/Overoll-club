@@ -337,8 +337,8 @@ select tst.eq((select count(*) from public.member_balances), 0, 'a deleted membe
 reset role;
 select set_config('request.jwt.claim.sub', '00000000-0000-0000-0000-0000000000c1', false);
 set role authenticated;
-select tst.eq((select count(*) from public.ledger_entries where member_id = '40000000-0000-0000-0000-000000000004'), 0, 'store device no longer sees a deleted member''s entries');
-select tst.eq((select count(*) from public.redemptions where member_id = '40000000-0000-0000-0000-000000000004'), 0, 'store device no longer sees a deleted member''s codes');
+select tst.eq((select least(count(*), 1) from public.ledger_entries where member_id = '40000000-0000-0000-0000-000000000004'), 1, 'store device still sees a deleted member''s entries (no personal data in them)');
+select tst.eq((select count(*) from public.members where id = '40000000-0000-0000-0000-000000000004'), 0, 'store device cannot see the deleted member row');
 select tst.eq((select count(*) from public.ledger_entries where member_id = '40000000-0000-0000-0000-000000000001'), 3, 'store device still sees other members'' entries');
 reset role;
 select set_config('request.jwt.claim.sub', '00000000-0000-0000-0000-0000000000b1', false);
@@ -353,10 +353,7 @@ set role authenticated;
 select tst.eq((select count(*) from public.members where deleted_at is not null), 1, 'platform admin sees deleted members');
 reset role;
 select tst.eq((select count(*) from public.member_secrets where member_id = '40000000-0000-0000-0000-000000000004'), 0, 'the QR secret is gone');
-select set_config('request.jwt.claim.sub', '', false);
-set role anon;
-select tst.refused($$select private.is_active_member('40000000-0000-0000-0000-000000000004')$$, 'anonymous cannot call the deleted-member check', '42501');
-reset role;
+
 
 -- ------------------------------------------------ store names in English (v0.4)
 set role service_role;
