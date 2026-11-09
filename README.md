@@ -9,6 +9,9 @@ Built by [GROW Agency](https://growagency.online).
 | Program rules | [docs/program-spec.md](docs/program-spec.md) |
 | Roadmap to launch (Jan 2027) | [docs/roadmap.md](docs/roadmap.md) |
 | How we work in this repo | [CLAUDE.md](CLAUDE.md) |
+| Screen designs v0.1 (canvas) | https://claude.ai/artifact/7qctwteA34EPPEs29QEmPs |
+| Screen designs v0.1 (Figma, for the designer) | https://www.figma.com/design/d7XLjDxLVN9sTfok1UfkIS |
+| Copy deck (el/en) | [docs/copy-deck.md](docs/copy-deck.md) |
 
 ## Status
 
