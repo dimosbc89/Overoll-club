@@ -1,0 +1,30 @@
+.stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: var(--space-md);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.stat {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  padding: var(--space-lg);
+  border: 1px solid var(--butter);
+  border-radius: var(--radius-md);
+  background: var(--white);
+}
+
+.statLabel {
+  font-weight: 600;
+}
+
+.statValue {
+  font-family: var(--font-serif);
+  font-size: 3rem;
+  line-height: 1;
+  letter-spacing: -0.05em;
+  color: var(--cocoa);
+}

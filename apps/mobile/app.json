@@ -1,0 +1,24 @@
+{
+  "expo": {
+    "name": "Overoll Club",
+    "slug": "overoll-club",
+    "version": "0.1.0",
+    "scheme": "overollclub",
+    "orientation": "portrait",
+    "userInterfaceStyle": "light",
+    "backgroundColor": "#f6f1e8",
+    "ios": {
+      "bundleIdentifier": "online.growagency.overoll",
+      "supportsTablet": false
+    },
+    "android": {
+      "package": "online.growagency.overoll",
+      "predictiveBackGestureEnabled": false
+    },
+    "web": {
+      "output": "static",
+      "bundler": "metro"
+    },
+    "plugins": ["expo-router"]
+  }
+}

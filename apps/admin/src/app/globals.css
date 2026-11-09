@@ -1,0 +1,199 @@
+/* Overoll brand tokens (docs/brand.md). Contrast: cocoa on pink 8.5:1, ink on
+   cream 11.9:1; mauve only for large text or icons; never white text on pink. */
+:root {
+  --pink: #ebabc5;
+  --pink-light: #f7c7cb;
+  --cream: #f6f1e8;
+  --butter: #e7d8bd;
+  --white: #fffaf2;
+  --cocoa: #321c1b;
+  --ink: #402927;
+  --mauve: #b2688a;
+  --green: #a1ba7f;
+
+  --font-serif: 'Iowan Old Style', Baskerville, 'Palatino Linotype', Georgia, serif;
+  --font-sans: 'Avenir Next', Avenir, 'Helvetica Neue', Arial, sans-serif;
+
+  --space-xs: 4px;
+  --space-sm: 8px;
+  --space-md: 16px;
+  --space-lg: 24px;
+  --space-xl: 40px;
+  --radius-sm: 8px;
+  --radius-md: 14px;
+  --radius-lg: 24px;
+  --min-touch: 44px;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--cream);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  font-size: 16px;
+  line-height: 1.5;
+}
+
+h1,
+h2,
+h3 {
+  margin: 0;
+  font-family: var(--font-serif);
+  font-weight: 400;
+  letter-spacing: -0.05em;
+  color: var(--cocoa);
+  line-height: 1.15;
+}
+
+h1 {
+  font-size: 2.5rem;
+}
+
+h2 {
+  font-size: 1.5rem;
+  letter-spacing: -0.03em;
+}
+
+p {
+  margin: 0;
+}
+
+/* Cocoa links: mauve is too light for small text (docs/brand.md). */
+a {
+  color: var(--cocoa);
+  text-underline-offset: 3px;
+}
+
+:focus-visible {
+  outline: 3px solid var(--mauve);
+  outline-offset: 2px;
+}
+
+.skip-link {
+  position: absolute;
+  left: var(--space-md);
+  top: -100px;
+  z-index: 10;
+  padding: var(--space-sm) var(--space-md);
+  background: var(--pink);
+  color: var(--cocoa);
+  font-weight: 700;
+}
+
+.skip-link:focus {
+  top: var(--space-sm);
+}
+
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: var(--space-xl) var(--space-lg);
+}
+
+.intro {
+  max-width: 60ch;
+  margin-top: var(--space-sm);
+}
+
+.notice {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+  padding: var(--space-md);
+  border-radius: var(--radius-md);
+  background: var(--butter);
+}
+
+.notice-title {
+  font-weight: 700;
+  color: var(--cocoa);
+}
+
+.table-wrap {
+  overflow-x: auto;
+  border: 1px solid var(--butter);
+  border-radius: var(--radius-md);
+  background: var(--white);
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th,
+td {
+  padding: 12px var(--space-md);
+  border-bottom: 1px solid var(--butter);
+  text-align: left;
+  vertical-align: top;
+}
+
+th {
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: var(--cocoa);
+  white-space: nowrap;
+}
+
+tbody th {
+  font-size: 1rem;
+  font-weight: 600;
+  white-space: normal;
+}
+
+tbody tr:last-child > * {
+  border-bottom: 0;
+}
+
+.nowrap,
+td code {
+  white-space: nowrap;
+}
+
+/* Big numbers in the serif, like the website. */
+.num {
+  font-family: var(--font-serif);
+  font-size: 1.125rem;
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+  white-space: nowrap;
+}
+
+th.num {
+  font-family: var(--font-sans);
+  font-size: 0.875rem;
+}
+
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 48px;
+  padding: 0 var(--space-lg);
+  border: 0;
+  border-radius: var(--radius-lg);
+  background: var(--pink);
+  color: var(--cocoa);
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.button:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}

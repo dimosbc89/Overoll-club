@@ -1,0 +1,85 @@
+.console {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: var(--space-xl);
+  align-items: start;
+}
+
+.scan,
+.amount {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+/* Big pink target with cocoa text (8.5:1). */
+.scanButton {
+  min-height: 200px;
+  border: 0;
+  border-radius: var(--radius-lg);
+  background: var(--pink);
+  color: var(--cocoa);
+  font-family: var(--font-serif);
+  font-size: 3rem;
+  letter-spacing: -0.05em;
+  cursor: pointer;
+}
+
+.scanButton:active {
+  background: var(--pink-light);
+}
+
+.status {
+  min-height: 1.5em;
+  font-weight: 600;
+}
+
+.amountLabel {
+  font-weight: 700;
+  color: var(--cocoa);
+}
+
+.display {
+  display: block;
+  padding: var(--space-md) var(--space-lg);
+  border: 1px solid var(--butter);
+  border-radius: var(--radius-md);
+  background: var(--white);
+  font-family: var(--font-serif);
+  font-size: 3.5rem;
+  line-height: 1.1;
+  letter-spacing: -0.04em;
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+  color: var(--cocoa);
+}
+
+.hint {
+  font-size: 0.875rem;
+}
+
+.keypad {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-sm);
+}
+
+.key {
+  min-height: 64px;
+  border: 1px solid var(--butter);
+  border-radius: var(--radius-md);
+  background: var(--white);
+  color: var(--cocoa);
+  font-family: var(--font-sans);
+  font-size: 1.5rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.key:active {
+  background: var(--pink-light);
+}
+
+.wide {
+  grid-column: 1 / -1;
+}

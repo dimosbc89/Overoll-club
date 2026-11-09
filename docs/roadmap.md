@@ -33,7 +33,7 @@ Legend: **D** = Dimos · **C** = Claude · ☐ open · ☑ done
 
 ## Week 2 · 16–22 Nov · Join flow + card + Wallet
 
-- ☐ C: scaffold `apps/mobile` (Expo: iOS, Android, web) and `apps/admin` (Next.js)
+- ☑ C: scaffold `apps/mobile` (Expo: iOS, Android, web) and `apps/admin` (Next.js)
 - ☐ C: sign-up / login (email or SMS one-time code), Greek + English
 - ☐ C: member card with rotating QR, points, progress to next reward
 - ☐ C: Apple Wallet + Google Wallet passes with live updates

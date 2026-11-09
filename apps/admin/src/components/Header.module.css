@@ -1,0 +1,79 @@
+.header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-md);
+  padding: var(--space-sm) var(--space-lg);
+  background: var(--cocoa);
+}
+
+.header :focus-visible {
+  outline-color: var(--pink);
+}
+
+.brand {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--min-touch);
+  margin-right: var(--space-md);
+}
+
+.nav {
+  flex: 1;
+}
+
+.nav ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-xs);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* Pink on cocoa is 8.5:1. */
+.link {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--min-touch);
+  padding: 0 var(--space-sm);
+  border-radius: var(--radius-sm);
+  color: var(--pink);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.link:hover {
+  text-decoration: underline;
+}
+
+.link[aria-current='page'] {
+  color: var(--cream);
+  text-decoration: underline;
+  text-underline-offset: 6px;
+  text-decoration-thickness: 2px;
+}
+
+.language {
+  display: flex;
+  gap: var(--space-xs);
+}
+
+.languageButton {
+  min-height: var(--min-touch);
+  min-width: var(--min-touch);
+  padding: 0 var(--space-sm);
+  border: 1px solid var(--pink);
+  border-radius: var(--radius-lg);
+  background: transparent;
+  color: var(--pink);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+/* Selected: cocoa text on pink, never white on pink. */
+.languageButton[aria-pressed='true'] {
+  background: var(--pink);
+  color: var(--cocoa);
+}
