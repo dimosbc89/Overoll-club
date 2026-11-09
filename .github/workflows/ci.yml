@@ -4,6 +4,7 @@ on:
   push:
     branches: [main]
   pull_request:
+  workflow_dispatch: # run (and deploy) by hand from the Actions tab
 
 concurrency:
   group: ci-${{ github.ref }}
@@ -13,8 +14,8 @@ jobs:
   test:
     runs-on: ubuntu-24.04 # ships PostgreSQL 16 binaries, used by the database tests
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
         with:
           node-version: 22
           cache: npm
@@ -29,7 +30,7 @@ jobs:
     # (Supabase dashboard → Account → Access tokens; GitHub repo → Settings →
     # Secrets and variables → Actions). Migrations are applied separately.
     needs: test
-    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
     runs-on: ubuntu-24.04
     env:
       SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
@@ -37,9 +38,9 @@ jobs:
       - name: Skip when the deploy token is not set
         if: env.SUPABASE_ACCESS_TOKEN == ''
         run: echo "SUPABASE_ACCESS_TOKEN is not set; skipping the deploy."
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         if: env.SUPABASE_ACCESS_TOKEN != ''
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         if: env.SUPABASE_ACCESS_TOKEN != ''
         with:
           node-version: 22
