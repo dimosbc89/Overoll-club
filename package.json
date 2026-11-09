@@ -17,7 +17,8 @@
     "project:check": "tsx scripts/configure-project.ts --check",
     "project:apply": "tsx scripts/configure-project.ts --apply",
     "build:web:mobile": "tsx scripts/build-web.ts mobile",
-    "build:web:admin": "tsx scripts/build-web.ts admin"
+    "build:web:admin": "tsx scripts/build-web.ts admin",
+    "migrations:apply": "tsx scripts/apply-migrations.ts"
   },
   "engines": {
     "node": ">=22"

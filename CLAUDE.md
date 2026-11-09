@@ -47,12 +47,13 @@ npm run test:db        # database schema + access-rule tests on a local throwawa
 npm run seed:generate  # rebuild supabase/seed.sql after changing data/*.json
 npm run functions:build # bundle Edge Functions (CI deploys them from main)
 npm run project:check  # validate supabase/project.config.json + sign-in email (CI applies it from main)
+npm run migrations:apply # (CI) apply new migrations to the hosted database
 ```
 
 ## Workflow
 
 - Small branches, one feature each; tests must pass before merging to `main` (GitHub Actions runs typecheck, tests, database tests and the function build).
-- New migrations: apply to Supabase, then rename the local file to the version Supabase recorded, so both histories match.
+- New migrations: add `supabase/migrations/<YYYYMMDDHHMMSS>_<name>.sql` (version later than the last one) and merge to `main`; CI applies it after the tests (`scripts/apply-migrations.ts`, recorded under the file's version). Don't apply migrations by hand.
 - When a rule changes, update `docs/program-spec.md`, `packages/core/src/config.ts` and its tests in the same change.
 - Tick items in `docs/roadmap.md` as they're done.
 - Dimos approves anything customer-facing (copy, screens, rewards) before it ships.

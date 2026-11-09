@@ -25,11 +25,34 @@ jobs:
       - run: npm run test:db
       - run: npm run functions:build
 
+  migrate:
+    # Applies new files in supabase/migrations to the hosted database (scripts/apply-migrations.ts),
+    # after every test passed and before the function deploy that may need them.
+    needs: test
+    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+    runs-on: ubuntu-24.04
+    env:
+      SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+    steps:
+      - name: Skip when the token is not set
+        if: env.SUPABASE_ACCESS_TOKEN == ''
+        run: echo "SUPABASE_ACCESS_TOKEN is not set; skipping migrations."
+      - uses: actions/checkout@v5
+        if: env.SUPABASE_ACCESS_TOKEN != ''
+      - uses: actions/setup-node@v5
+        if: env.SUPABASE_ACCESS_TOKEN != ''
+        with:
+          node-version: 22
+          cache: npm
+      - name: Apply new migrations
+        if: env.SUPABASE_ACCESS_TOKEN != ''
+        run: npm ci && npm run migrations:apply
+
   deploy-functions:
     # Runs only on main and only once the SUPABASE_ACCESS_TOKEN secret exists
     # (Supabase dashboard → Account → Access tokens; GitHub repo → Settings →
     # Secrets and variables → Actions). Migrations are applied separately.
-    needs: test
+    needs: [test, migrate]
     if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
     runs-on: ubuntu-24.04
     env:
@@ -58,7 +81,7 @@ jobs:
   configure-project:
     # Applies supabase/project.config.json with the Management API: Auth URLs, the
     # sign-in code email, SMTP via Resend (once switched on) and the API's CORS origins.
-    needs: test
+    needs: [test, migrate]
     if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
     runs-on: ubuntu-24.04
     env:
