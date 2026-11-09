@@ -189,6 +189,89 @@ select set_config('request.jwt.claim.sub', '', false);
 set role anon;
 select tst.refused($$select count(*) from private.idempotency_keys$$, 'anonymous cannot read idempotency keys');
 reset role;
+-- ------------------------------------------------- welcome gifts (v0.2)
+set role service_role;
+insert into public.rewards (id, brand_id, name_el, name_en, shelf_price_cents, base_cost) values
+  ('50000000-0000-0000-0000-0000000000c1', '10000000-0000-0000-0000-000000000001', 'Κρουασάν βουτύρου', 'Butter croissant', 300, 400);
+insert into public.member_gifts (id, brand_id, member_id, kind, reward_id, unlocked_at, expires_at) values
+  ('70000000-0000-0000-0000-000000000001', '10000000-0000-0000-0000-000000000001', '40000000-0000-0000-0000-000000000001', 'welcome', '50000000-0000-0000-0000-0000000000c1', '2027-01-05 09:00+00', '2027-02-04 09:00+00'),
+  ('70000000-0000-0000-0000-000000000002', '10000000-0000-0000-0000-000000000001', '40000000-0000-0000-0000-000000000002', 'welcome', '50000000-0000-0000-0000-0000000000c1', '2027-01-05 09:00+00', '2027-02-04 09:00+00');
+select tst.eq((select count(*) from public.member_gifts), 2, 'service role creates gifts');
+-- A gift code: 0 points, the member's own gift, the gift's reward.
+insert into public.redemptions (id, brand_id, member_id, reward_id, gift_id, code, points_spent, created_at, expires_at) values
+  ('60000000-0000-0000-0000-000000000001', '10000000-0000-0000-0000-000000000001', '40000000-0000-0000-0000-000000000001', '50000000-0000-0000-0000-0000000000c1', '70000000-0000-0000-0000-000000000001', 'GIFTAAAA', 0, '2027-01-06 09:00+00', '2027-01-06 09:15+00');
+update public.member_gifts set status = 'redeemed', redemption_id = '60000000-0000-0000-0000-000000000001'
+  where id = '70000000-0000-0000-0000-000000000001';
+select tst.eq((select count(*) from public.redemptions where points_spent = 0 and gift_id is not null), 1, 'a gift code is stored with 0 points');
+reset role;
+select tst.refused($$insert into public.member_gifts (brand_id, member_id, kind, reward_id, unlocked_at, expires_at) values ('10000000-0000-0000-0000-000000000001', '40000000-0000-0000-0000-000000000001', 'welcome', '50000000-0000-0000-0000-0000000000c1', now(), now() + interval '30 days')$$, 'a member gets one welcome gift, ever', '23505');
+select tst.refused($$insert into public.member_gifts (brand_id, member_id, kind, reward_id, unlocked_at, expires_at) values ('10000000-0000-0000-0000-000000000001', '40000000-0000-0000-0000-000000000001', 'birthday', '50000000-0000-0000-0000-0000000000c1', now(), now() + interval '30 days')$$, 'only known gift kinds', '23514');
+select tst.refused($$insert into public.member_gifts (brand_id, member_id, kind, reward_id, unlocked_at, expires_at) values ('10000000-0000-0000-0000-000000000002', '40000000-0000-0000-0000-000000000003', 'welcome', '50000000-0000-0000-0000-0000000000c1', now(), now() + interval '30 days')$$, 'a gift cannot be another brand''s reward', '23503');
+select tst.refused($$update public.member_gifts set status = 'redeemed' where id = '70000000-0000-0000-0000-000000000002'$$, 'a redeemed gift needs its code', '23514');
+select tst.refused($$update public.member_gifts set expires_at = unlocked_at where id = '70000000-0000-0000-0000-000000000002'$$, 'a gift expires after it unlocks', '23514');
+select tst.refused($$insert into public.redemptions (brand_id, member_id, reward_id, code, points_spent, expires_at) values ('10000000-0000-0000-0000-000000000001', '40000000-0000-0000-0000-000000000001', '50000000-0000-0000-0000-0000000000c1', 'ZEROAAAA', 0, now() + interval '15 minutes')$$, 'a reward code for 0 points needs a gift', '23514');
+select tst.refused($$insert into public.redemptions (brand_id, member_id, reward_id, gift_id, code, points_spent, expires_at) values ('10000000-0000-0000-0000-000000000001', '40000000-0000-0000-0000-000000000002', '50000000-0000-0000-0000-0000000000c1', '70000000-0000-0000-0000-000000000002', 'GIFTBBBB', 400, now() + interval '15 minutes')$$, 'a gift code costs no points', '23514');
+select tst.refused($$insert into public.redemptions (brand_id, member_id, reward_id, gift_id, code, points_spent, expires_at) values ('10000000-0000-0000-0000-000000000001', '40000000-0000-0000-0000-000000000001', '50000000-0000-0000-0000-0000000000c1', '70000000-0000-0000-0000-000000000002', 'GIFTCCCC', 0, now() + interval '15 minutes')$$, 'a member cannot use someone else''s gift', '23503');
+select tst.refused($$insert into public.redemptions (brand_id, member_id, reward_id, gift_id, code, points_spent, expires_at) select brand_id, '40000000-0000-0000-0000-000000000002', id, '70000000-0000-0000-0000-000000000002', 'GIFTDDDD', 0, now() + interval '15 minutes' from public.rewards where name_en = 'Free espresso'$$, 'a gift code is for the gift''s reward only', '23503');
+select tst.refused($$insert into public.redemptions (brand_id, member_id, reward_id, gift_id, code, points_spent, created_at, expires_at) values ('10000000-0000-0000-0000-000000000001', '40000000-0000-0000-0000-000000000001', '50000000-0000-0000-0000-0000000000c1', '70000000-0000-0000-0000-000000000001', 'GIFTEEEE', 0, '2027-01-06 09:01+00', '2027-01-06 09:16+00')$$, 'a gift has one live code at a time', '23505');
+
+select set_config('request.jwt.claim.sub', '00000000-0000-0000-0000-0000000000a1', false);
+set role authenticated;
+select tst.eq((select count(*) from public.member_gifts), 1, 'member sees only own gift');
+select tst.eq((select count(*) from public.redemptions where gift_id is not null), 1, 'member sees own gift code');
+select tst.refused($$insert into public.member_gifts (brand_id, member_id, kind, reward_id, unlocked_at, expires_at) values ('10000000-0000-0000-0000-000000000001', '40000000-0000-0000-0000-000000000001', 'welcome', '50000000-0000-0000-0000-0000000000c1', now(), now() + interval '30 days')$$, 'member cannot create a gift');
+select tst.refused($$update public.member_gifts set status = 'available', redemption_id = null$$, 'member cannot give a used gift back');
+select tst.refused($$delete from public.member_gifts$$, 'member cannot delete gifts');
+reset role;
+select set_config('request.jwt.claim.sub', '00000000-0000-0000-0000-0000000000c1', false);
+set role authenticated;
+select tst.eq((select count(*) from public.member_gifts), 0, 'store device cannot read gifts');
+reset role;
+select set_config('request.jwt.claim.sub', '00000000-0000-0000-0000-0000000000b1', false);
+set role authenticated;
+select tst.eq((select count(*) from public.member_gifts), 2, 'HQ sees its brand gifts');
+select tst.refused($$update public.member_gifts set expires_at = expires_at + interval '1 year'$$, 'even HQ cannot change gifts directly');
+reset role;
+select set_config('request.jwt.claim.sub', '00000000-0000-0000-0000-0000000000e1', false);
+set role authenticated;
+select tst.eq((select count(*) from public.member_gifts), 2, 'platform admin sees gifts');
+reset role;
+select set_config('request.jwt.claim.sub', '', false);
+set role anon;
+select tst.refused($$select count(*) from public.member_gifts$$, 'anonymous cannot read gifts');
+reset role;
+
+-- ------------------------------------------------ late points: receipt numbers
+select tst.refused($$insert into public.ledger_entries (brand_id, member_id, kind, points, reason, receipt_number, idempotency_key) values ('10000000-0000-0000-0000-000000000001', '40000000-0000-0000-0000-000000000001', 'adjust', 10, 'test', 'R-1', 'k-receipt-adjust')$$, 'only an earn carries a receipt number', '23514');
+select tst.refused($$insert into public.ledger_entries (brand_id, member_id, store_id, employee_id, kind, points, amount_cents, receipt_number, idempotency_key) values ('10000000-0000-0000-0000-000000000001', '40000000-0000-0000-0000-000000000001', '20000000-0000-0000-0000-00000000000a', '30000000-0000-0000-0000-00000000000a', 'earn', 10, 100, '', 'k-receipt-empty')$$, 'a receipt number is not empty', '23514');
+set role service_role;
+insert into public.ledger_entries (brand_id, member_id, store_id, employee_id, kind, points, amount_cents, multiplier_pct, receipt_number, idempotency_key) values
+  ('10000000-0000-0000-0000-000000000001', '40000000-0000-0000-0000-000000000001', '20000000-0000-0000-0000-00000000000a', '30000000-0000-0000-0000-00000000000a', 'earn', 64, 640, 100, 'A-1234', 'k-late');
+reset role;
+select tst.eq((select count(*) from public.ledger_entries where receipt_number = 'A-1234'), 1, 'an earn stores its receipt number');
+
+-- --------------------------------------------- server-only: wrong staff PINs
+set role service_role;
+insert into private.employee_pin_failures (brand_id, employee_id, caller_user_id, failed_at) values
+  ('10000000-0000-0000-0000-000000000001', '30000000-0000-0000-0000-00000000000a', '00000000-0000-0000-0000-0000000000c1', now());
+select tst.eq((select count(*) from private.employee_pin_failures), 1, 'service role stores wrong PINs');
+reset role;
+select tst.refused($$insert into private.employee_pin_failures (brand_id, employee_id, failed_at) values ('10000000-0000-0000-0000-000000000002', '30000000-0000-0000-0000-00000000000a', now())$$, 'a wrong PIN belongs to the employee''s brand', '23503');
+select tst.refused($$insert into private.employee_pin_failures (brand_id, employee_id, failed_at, locked_until) values ('10000000-0000-0000-0000-000000000001', '30000000-0000-0000-0000-00000000000a', now(), now())$$, 'a lock ends after it starts', '23514');
+select set_config('request.jwt.claim.sub', '00000000-0000-0000-0000-0000000000c1', false);
+set role authenticated;
+select tst.refused($$select count(*) from private.employee_pin_failures$$, 'store device cannot read wrong PINs');
+select tst.refused($$delete from private.employee_pin_failures$$, 'store device cannot clear a PIN lock');
+reset role;
+select set_config('request.jwt.claim.sub', '00000000-0000-0000-0000-0000000000b1', false);
+set role authenticated;
+select tst.refused($$select count(*) from private.employee_pin_failures$$, 'even HQ cannot read wrong PINs');
+reset role;
+select set_config('request.jwt.claim.sub', '', false);
+set role anon;
+select tst.refused($$select count(*) from private.employee_pin_failures$$, 'anonymous cannot read wrong PINs');
+reset role;
+
 select tst.eq((select count(*) from pg_class c join pg_namespace n on n.oid = c.relnamespace
                where n.nspname in ('public', 'private') and c.relkind = 'r' and not c.relrowsecurity), 0,
               'every table in public and private has row-level security on');

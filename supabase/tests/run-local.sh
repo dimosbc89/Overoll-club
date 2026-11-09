@@ -44,4 +44,10 @@ got=$($seed_cmd -At -c "select (select count(*) from public.brands) || ' ' || (s
 if [ "$got" != "1 $want_stores $want_rewards" ]; then
   echo "SEED CHECK FAILED: brands/stores/rewards = $got, expected 1 $want_stores $want_rewards"; exit 1
 fi
-echo "SEED OK: 1 brand, $want_stores stores, $want_rewards rewards"
+welcome_reward=$(node -e "console.log(require('$root/data/rewards.json').welcome_reward.reward)")
+want_welcome=$(node -e "const r=require('$root/data/rewards.json'); console.log(r.rewards.find(x => x.id === r.welcome_reward.reward).name_en)")
+got_welcome=$($seed_cmd -At -c "select r.name_en from public.brands b join public.rewards r on r.id = (b.config #>> '{welcome,rewardId}')::uuid and r.brand_id = b.id where b.slug = 'overoll'")
+if [ "$got_welcome" != "$want_welcome" ]; then
+  echo "SEED CHECK FAILED: welcome reward = '$got_welcome', expected '$want_welcome' ($welcome_reward)"; exit 1
+fi
+echo "SEED OK: 1 brand, $want_stores stores, $want_rewards rewards, welcome gift: $want_welcome"

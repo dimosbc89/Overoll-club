@@ -4,9 +4,14 @@
 
 -- Reward ids are md5 of a stable name, so re-running updates instead of duplicating.
 
-insert into public.brands (slug, name, default_locale, time_zone)
-values ('overoll', 'Overoll Croissanterie', 'el', 'Europe/Athens')
-on conflict (slug) do update set name = excluded.name;
+-- The welcome gift is the butter-croissant reward (data/rewards.json welcome_reward):
+-- config.welcome.rewardId. Re-running sets it again and keeps every other setting.
+insert into public.brands (slug, name, default_locale, time_zone, config)
+values ('overoll', 'Overoll Croissanterie', 'el', 'Europe/Athens', jsonb_build_object('welcome', jsonb_build_object('rewardId', md5('overoll:reward:butter-croissant')::uuid::text)))
+on conflict (slug) do update set
+  name = excluded.name,
+  config = public.brands.config || jsonb_build_object(
+    'welcome', coalesce(public.brands.config -> 'welcome', '{}'::jsonb) || jsonb_build_object('rewardId', md5('overoll:reward:butter-croissant')::uuid::text));
 
 insert into public.stores (brand_id, code, name, address, city, country, latitude, longitude, phone, opening_hours)
 values
