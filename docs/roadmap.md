@@ -13,7 +13,7 @@ Legend: **D** = Dimos · **C** = Claude · ☐ open · ☑ done
 - ☑ C: points engine with tests (`packages/core`)
 - ☑ C: server operations that move points, with integration tests on a throwaway Postgres (`packages/server`): join, scan, award, undo, redeem, cancel, use, expire codes. Next: wrap them as Supabase Edge Functions
 - ☑ C: Supabase project `overoll-club` (GROW Agency org, Frankfurt, free plan): schema + seed applied, security advisor clean
-- ☐ D: upgrade the GROW Agency Supabase org to Pro (about $25/month) **now**: on the free plan Supabase won't take our sign-in email template, so sign-in by code can't be tested until Pro or Resend; free projects also pause after a week without traffic and have no daily backups
+- ☑ D: GROW Agency Supabase org on Pro (9 Nov): sign-in code email template applied, daily backups, no pausing
 - ☑ C: Apple Developer (GROW AGENCY L.P., team `JUVGRB24Q6`): Pass Type ID `pass.online.growagency.overoll` registered
 - ☐ C + D: Pass Type ID certificate (week 2, with the Wallet card)
 - ☑ D: Google Pay & Wallet Console business profile for GROW Agency (merchant `BCR2DN6DWL3NFGYM`, account ads@growdigital.gr)
@@ -37,9 +37,9 @@ Legend: **D** = Dimos · **C** = Claude · ☐ open · ☑ done
 - ☑ C: email to Overoll's IT with the DNS records for Papaki (2 CNAME for the sites, 4 for the sign-in email)
 - ☐ D: Resend account: add the domain `loyalty.overoll.gr` (region Ireland), put the DKIM value in the IT email, API key as GitHub secret `RESEND_API_KEY`; Pro plan ($20/month) before the pilot
 - ☐ D: Overoll's IT adds the DNS records
-- ☐ D: Cloudflare API token (Account · Cloudflare Pages · Edit) and account ID as GitHub secrets `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID`
+- ☑ C: Cloudflare Pages projects `overoll-loyalty` (member web app → https://overoll-loyalty.pages.dev) and `overoll-loyalty-admin` (back office + till → https://overoll-loyalty-admin.pages.dev), connected to the GitHub repo: every push to `main` builds and deploys (`npm run build:web:mobile|admin`), no token. Custom domains added, waiting for the DNS records
 - ☑ C: Supabase settings as code (`supabase/project.config.json`): site URL, redirect URLs, 6-digit sign-in code valid 10 minutes, Greek + English code email, API CORS origins; applied by CI
-- ☐ C: switch on SMTP once Resend has verified the domain; deploy the web app and back office to Cloudflare Pages from CI
+- ☐ C: switch on SMTP once Resend has verified the domain (until then sign-in emails reach only Supabase org members, a few per hour)
 - ☑ C: copy deck v0.1 el/en (`docs/copy-deck.md`, `data/copy/errors.*.json`)
 - ☑ D: copy deck questions answered: welcome gift 30 days, PIN once per shift, €80 cap, age 15+ (rules in `packages/core` config)
 - ☐ D: review the copy deck text itself; Overoll answers the rest (legal name)
