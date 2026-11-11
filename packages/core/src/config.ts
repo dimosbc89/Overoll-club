@@ -65,6 +65,10 @@ export interface ProgramConfig {
     pinMaxAttempts: number;
     /** How long wrong PINs count, and how long a locked employee stays locked, in minutes. */
     pinLockMinutes: number;
+    /** A cashier PIN has this many digits at least (core `staffPinProblem`)… */
+    staffPinMinDigits: number;
+    /** …and at most this many. */
+    staffPinMaxDigits: number;
   };
   qr: {
     /** Rotating member QR changes every this many seconds. */
@@ -102,6 +106,8 @@ export const defaultConfig: ProgramConfig = {
     staffPinIdleMinutes: 5,
     pinMaxAttempts: 5,
     pinLockMinutes: 15,
+    staffPinMinDigits: 4,
+    staffPinMaxDigits: 6,
   },
   qr: {
     stepSeconds: 30,

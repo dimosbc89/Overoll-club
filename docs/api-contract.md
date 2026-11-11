@@ -1,4 +1,4 @@
-# Contract between the apps and the server (v0.4, 9 Nov 2026)
+# Contract between the apps and the server (v0.5, 11 Nov 2026)
 
 Three workstreams build against this page at the same time: the server (`packages/core`, `packages/server`, `packages/api`, `supabase/`), the member app (`apps/mobile`) and the staff console (`apps/admin` → `/console`). Change it only together with all three.
 
@@ -57,9 +57,34 @@ Base URL: `{SUPABASE_URL}/functions/v1/api`. Every call: `POST`, JSON body, `Aut
 ### Error codes
 - No new code. `member_deleted` (already in the union) is now also returned by `scan`, `award` and `redemptions/create`; its text changed (it is shown at the till) and so did `member_not_found` ("check the code"): copy deck §f2, to approve.
 
+## New in v0.5 (back office for HQ and store managers)
+
+Migration `20261111170000_back_office`. Callers sign in at `/sign-in` of the back office (one-time code to email; a new email gets a bare Auth user with no role, which sees "no access").
+
+| Route | Who | Body | Returns |
+| --- | --- | --- | --- |
+| `staff/employees/create` | HQ of the brand, the store's manager, platform admin | `storeId`, `displayName` (1–40), `pin`, `idempotencyKey` | `employee { id, storeId, displayName, active }` |
+| `staff/employees/update` | same | `employeeId`, any of `displayName`, `active`, `pin` | `employee` (a new PIN also clears the wrong-PIN count and any lock) |
+| `staff/add` | HQ of the brand, platform admin | `role` (`store_device`, `store_manager` + `storeId`; `hq_admin` + `brandId`), `email` | `staff { id, userId, role, brandId, storeId, email }`, `created` (false: it already had the role) |
+| `staff/remove` | HQ of the brand, platform admin | `staffId` | `removed` (the staff view) |
+| `points/adjust` | HQ of the member's brand, platform admin | `memberId`, `points` (whole, not 0, at most ±100 000), `reason` (1–200), `idempotencyKey` | `entryId`, `memberId`, `points`, `balance` (an `adjust` ledger entry; may go negative; never counts for tiers) |
+
+- PINs: core `staffPinProblem` (4–6 digits, not one repeated digit, not a run like 1234 or 9876; `limits.staffPinMinDigits`, `limits.staffPinMaxDigits`). Only the bcrypt hash is stored; no PIN in idempotency fingerprints or the audit log.
+- `staff/add` finds or creates the Supabase Auth user of the email (Edge Function: database lookup, then the Auth admin API, confirmed, no email sent). A till account serves one store (`device_in_other_store`). Platform admins (GROW) are not handed out here.
+- `staff/remove` keeps the Auth user (it may be a member too). A brand keeps at least one HQ admin (`last_hq_admin`).
+- Every write is in the audit log (`employee.create`, `employee.update`, `staff.add`, `staff.remove`, `points.adjust`).
+- New error codes: `pin_format`, `pin_too_simple`, `device_in_other_store` (409), `last_hq_admin` (409), `not_configured` (501, `staff/add` without the Auth admin API). Texts in `data/copy/errors.*.json`, copy deck §f2, to approve.
+
+Reads (row-level security, nothing new to open):
+- `staff_roles.email` (new): the account's email, lower case, set by `staff/add` (copied from Supabase Auth once for older roles). HQ reads its brand's staff; anyone reads their own roles.
+- `public.dashboard_stats(p_since timestamptz)` (new, `SECURITY INVOKER`, `rpc`): per store since `p_since`: `net_points` (earns minus undos), `purchases`, `rewards_used`, `members_joined` (HQ only; `store_id` null = joined without a store). Staff only: members and anonymous callers get nothing.
+- Member search: `members` of the brand by `member_code`, email, phone or name (HQ), balances from `member_balances`, history from `ledger_entries`.
+
 ## What the apps read directly (Supabase client, row-level security)
 
 Member app (signed-in member): `members` (own row, not once deleted), `member_balances` (own), `member_secrets` (own: `qr_secret`, `pass_version` → core `createRotatingToken` for the QR, offline), `rewards` (active), `stores` (active; `name_en` / `address_en` from v0.4), `member_gifts` (own), `redemptions` (own; a `pending` one not past `expires_at` is the active code), `ledger_entries` (own, history). Costs per tier: core `rewardCostForTier`; progress: core `nextRewardProgress`, `tierProgress`.
+
+Back office (signed-in HQ admin or store manager, v0.5): `stores` (the brand's, inactive ones too), `employees` (id, name, active), `staff_roles` (with `email`), `members` and `member_balances` (HQ), `ledger_entries`, `dashboard_stats(p_since)`.
 
 Staff console (signed-in device user with `store_device` for its store): `stores` (its store), `employees` (its store: id, display_name, active), `ledger_entries` and `redemptions` of its store (today's activity; not those of deleted members, from v0.4). Everything that writes goes through the routes above.
 

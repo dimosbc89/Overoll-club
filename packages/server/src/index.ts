@@ -10,3 +10,6 @@ export * from './expire-redemptions.js';
 export * from './verify-employee-pin.js';
 export * from './expire-points.js';
 export * from './delete-member.js';
+export * from './employees.js';
+export * from './store-staff.js';
+export * from './adjust-points.js';

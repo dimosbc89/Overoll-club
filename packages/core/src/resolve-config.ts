@@ -147,7 +147,7 @@ export function validateConfig(candidate: unknown): string[] {
     const l = cfg.limits;
     c.keys(
       l,
-      ['maxAmountCents', 'maxEarnsPerDay', 'minSecondsBetweenEarns', 'undoWindowMinutes', 'staffPinIdleMinutes', 'pinMaxAttempts', 'pinLockMinutes'],
+      ['maxAmountCents', 'maxEarnsPerDay', 'minSecondsBetweenEarns', 'undoWindowMinutes', 'staffPinIdleMinutes', 'pinMaxAttempts', 'pinLockMinutes', 'staffPinMinDigits', 'staffPinMaxDigits'],
       'limits.',
     );
     c.int(l.maxAmountCents, 'limits.maxAmountCents', 1, 10_000_000);
@@ -157,6 +157,15 @@ export function validateConfig(candidate: unknown): string[] {
     c.int(l.staffPinIdleMinutes, 'limits.staffPinIdleMinutes', 1, 720);
     c.int(l.pinMaxAttempts, 'limits.pinMaxAttempts', 1, 100);
     c.int(l.pinLockMinutes, 'limits.pinLockMinutes', 1, 1440);
+    c.int(l.staffPinMinDigits, 'limits.staffPinMinDigits', 4, 12);
+    c.int(l.staffPinMaxDigits, 'limits.staffPinMaxDigits', 4, 12);
+    if (
+      Number.isInteger(l.staffPinMinDigits) &&
+      Number.isInteger(l.staffPinMaxDigits) &&
+      (l.staffPinMinDigits as number) > (l.staffPinMaxDigits as number)
+    ) {
+      c.problems.push('limits: staffPinMinDigits must not exceed staffPinMaxDigits');
+    }
   }
 
   if (c.object(cfg.qr, 'qr')) {

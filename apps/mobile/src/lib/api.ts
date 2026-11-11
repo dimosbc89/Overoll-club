@@ -63,6 +63,9 @@ export function errorParams(code: ErrorCode, locale: Locale, ctx: ErrorContext):
     maxEarns: String(limits.maxEarnsPerDay),
     minutes: String(minutes),
     tier: ctx.tier ?? '',
+    // Back-office codes (shared message file): never shown in the member app, filled anyway.
+    minDigits: String(limits.staffPinMinDigits),
+    maxDigits: String(limits.staffPinMaxDigits),
   };
 }
 

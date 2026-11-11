@@ -144,12 +144,15 @@ function isObject(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null && !Array.isArray(value);
 }
 
-export function createApiClient(options: ApiClientOptions): ApiClient {
+/** A POST to one API route with the signed-in user's token; failures come back as codes. */
+export type Poster = <T>(route: string, body: Record<string, unknown>) => Promise<ApiResponse<T>>;
+
+export function createPoster(options: ApiClientOptions): Poster {
   const doFetch = options.fetch ?? ((input, init) => globalThis.fetch(input, init));
   const timeoutMs = options.timeoutMs ?? 20_000;
   const base = options.baseUrl.replace(/\/+$/, '');
 
-  async function post<T>(route: string, body: Record<string, unknown>): Promise<ApiResponse<T>> {
+  return async function post<T>(route: string, body: Record<string, unknown>): Promise<ApiResponse<T>> {
     let token: string | null;
     try {
       token = await options.getAccessToken();
@@ -189,7 +192,11 @@ export function createApiClient(options: ApiClientOptions): ApiClient {
     if (response.ok && isObject(data) && data.ok === true) return data as { ok: true } & T;
     if (isObject(data) && data.ok === false && typeof data.code === 'string') return { ok: false, code: data.code };
     return { ok: false, code: response.status >= 500 ? 'internal_error' : 'unknown' };
-  }
+  };
+}
+
+export function createApiClient(options: ApiClientOptions): ApiClient {
+  const post = createPoster(options);
 
   return {
     verifyPin: ({ storeId, employeeId, pin }) => post('staff/verify-pin', { storeId, employeeId, pin }),
@@ -243,5 +250,7 @@ export function errorMessage(code: string, locale: Locale, config: ProgramConfig
         : code === 'pin_locked'
           ? limits.pinLockMinutes
           : Math.ceil(limits.minSecondsBetweenEarns / 60),
+    minDigits: limits.staffPinMinDigits,
+    maxDigits: limits.staffPinMaxDigits,
   });
 }

@@ -12,6 +12,9 @@
  * Vault secret `jobs_token`, created inside the database by
  * scripts/configure-project.ts and sent by pg_cron, so no key leaves Supabase.
  *
+ * `staff/add` (back office) finds or creates the Auth user of a staff email
+ * (`ensureAuthUser`): a database lookup first, the Auth admin API otherwise.
+ *
  * `account/delete` deletes the Supabase Auth user inside its database
  * transaction (SUPABASE_DB_URL connects as `postgres`). If that role may not
  * delete from `auth.users`, the server says so (`authUserDeleted: false`) and
@@ -84,6 +87,21 @@ export function start({ postgres, createClient }: Libraries): void {
       const { error } = await admin.auth.admin.deleteUser(userId);
       // Already gone (an earlier attempt got through): nothing to do.
       if (error && error.status !== 404) throw error;
+    },
+    // staff/add (back office): the Auth user with this email, created when missing.
+    // Looked up in the database first (SUPABASE_DB_URL connects as `postgres`);
+    // created with the Auth admin API, confirmed, without sending any email.
+    async ensureAuthUser(email) {
+      const find = async () =>
+        (await sql<{ id: string }[]>`select id from auth.users where lower(email) = ${email} limit 1`)[0]?.id ?? null;
+      const existing = await find();
+      if (existing) return existing;
+      const { data, error } = await admin.auth.admin.createUser({ email, email_confirm: true });
+      if (data?.user?.id) return data.user.id;
+      // Created at the same moment by another request: read it back.
+      const raced = await find();
+      if (raced) return raced;
+      throw error ?? new Error('Auth user not created');
     },
     allowedOrigins: (Deno.env.get('ALLOWED_ORIGINS') ?? '*')
       .split(',')

@@ -381,6 +381,49 @@ select tst.eq((select count(*) from public.stores where name_en = 'Overoll Aigal
 select tst.refused($$update public.stores set name_en = '  ' where id = '20000000-0000-0000-0000-00000000000b'$$, 'an English store name is not blank', '23514');
 reset role;
 
+-- ---------------------------------------------------- back office (v0.5)
+-- Staff emails on their roles: lower case, read by HQ, not by members or devices of other stores.
+set role service_role;
+update public.staff_roles set email = 'till-a@example.com' where user_id = '00000000-0000-0000-0000-0000000000c1';
+reset role;
+select tst.refused($$update public.staff_roles set email = 'Till-A@Example.com' where user_id = '00000000-0000-0000-0000-0000000000c1'$$, 'a staff email is stored in lower case', '23514');
+select set_config('request.jwt.claim.sub', '00000000-0000-0000-0000-0000000000b1', false);
+set role authenticated;
+select tst.eq((select count(*) from public.staff_roles where email = 'till-a@example.com'), 1, 'HQ reads the email of its till devices');
+reset role;
+select set_config('request.jwt.claim.sub', '00000000-0000-0000-0000-0000000000a1', false);
+set role authenticated;
+select tst.eq((select count(*) from public.staff_roles where email is not null), 0, 'a member reads no staff emails');
+reset role;
+
+-- Dashboard numbers: what the caller's row-level security lets them count.
+select set_config('tst.brand_points', (
+  select coalesce(sum(points), 0)::text from public.ledger_entries
+  where brand_id = '10000000-0000-0000-0000-000000000001' and store_id is not null and kind in ('earn', 'reverse')), false);
+select set_config('tst.store_a_points', (
+  select coalesce(sum(points), 0)::text from public.ledger_entries
+  where store_id = '20000000-0000-0000-0000-00000000000a' and kind in ('earn', 'reverse')), false);
+select set_config('request.jwt.claim.sub', '00000000-0000-0000-0000-0000000000b1', false);
+set role authenticated;
+select tst.eq((select sum(net_points)::bigint from public.dashboard_stats('2000-01-01')), current_setting('tst.brand_points')::bigint, 'HQ dashboard counts its brand points');
+select tst.eq((select count(*) from public.dashboard_stats('2000-01-01') where store_id = '20000000-0000-0000-0000-00000000000f'), 0, 'HQ dashboard leaves other brands out');
+select tst.eq((select sum(members_joined)::bigint from public.dashboard_stats('2000-01-01')), (select count(*) from public.members), 'HQ dashboard counts the members who joined');
+select tst.eq((select count(*) from public.dashboard_stats('2999-01-01')), 0, 'nothing since a future date');
+reset role;
+select set_config('request.jwt.claim.sub', '00000000-0000-0000-0000-0000000000c1', false);
+set role authenticated;
+select tst.eq((select count(*) from public.dashboard_stats('2000-01-01') where store_id is distinct from '20000000-0000-0000-0000-00000000000a'), 0, 'a till device counts only its store');
+select tst.eq((select sum(net_points)::bigint from public.dashboard_stats('2000-01-01')), current_setting('tst.store_a_points')::bigint, 'a till device counts its store points');
+reset role;
+select set_config('request.jwt.claim.sub', '00000000-0000-0000-0000-0000000000a1', false);
+set role authenticated;
+select tst.eq((select count(*) from public.dashboard_stats('2000-01-01')), 0, 'a member gets no dashboard (not even their own entries)');
+reset role;
+select set_config('request.jwt.claim.sub', '', false);
+set role anon;
+select tst.refused($$select * from public.dashboard_stats('2000-01-01')$$, 'anonymous cannot call the dashboard');
+reset role;
+
 select tst.eq((select count(*) from pg_class c join pg_namespace n on n.oid = c.relnamespace
                where n.nspname in ('public', 'private') and c.relkind = 'r' and not c.relrowsecurity), 0,
               'every table in public and private has row-level security on');

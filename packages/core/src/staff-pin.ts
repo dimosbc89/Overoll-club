@@ -61,3 +61,20 @@ export function lockAfterWrongPin(previous: readonly WrongPin[], now: Date, conf
   if (countedWrongPins(previous, now, config) + 1 < config.limits.pinMaxAttempts) return null;
   return new Date(now.getTime() + lockMs(config));
 }
+
+export type StaffPinProblem = 'pin_format' | 'pin_too_simple';
+
+/**
+ * Whether HQ or a store manager may give a cashier this PIN: only digits,
+ * `limits.staffPinMinDigits`–`limits.staffPinMaxDigits` long, and not one any
+ * colleague would guess (one repeated digit, or a run up or down such as 1234
+ * or 9876). Null when the PIN is fine.
+ */
+export function staffPinProblem(pin: string, config: ProgramConfig): StaffPinProblem | null {
+  const { staffPinMinDigits: min, staffPinMaxDigits: max } = config.limits;
+  if (!/^[0-9]+$/.test(pin) || pin.length < min || pin.length > max) return 'pin_format';
+  const digits = [...pin].map(Number);
+  const steps = digits.slice(1).map((d, i) => d - digits[i]!);
+  if (steps.every((s) => s === 0) || steps.every((s) => s === 1) || steps.every((s) => s === -1)) return 'pin_too_simple';
+  return null;
+}

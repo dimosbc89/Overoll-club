@@ -8,15 +8,20 @@
  */
 import {
   type Db,
+  addStaff,
+  adjustPoints,
   awardPoints,
   cancelRedemption,
+  createEmployee,
   createRedemption,
   deleteMember,
   expirePoints,
   expireRedemptions,
   joinMember,
+  removeStaff,
   resolveMemberToken,
   undoEarn,
+  updateEmployee,
   useRedemption,
   verifyEmployeePin,
 } from '@overoll/server';
@@ -36,6 +41,12 @@ export interface HandlerDeps {
    * (`authUserDeleted: false`). A user that is already gone is not an error.
    */
   deleteAuthUser?(userId: string): Promise<void>;
+  /**
+   * The Supabase Auth user with this (lower-case) email, created when missing
+   * (Auth admin API, no email sent). Used by `staff/add` after the caller's
+   * rights are checked. Without it, `staff/add` answers `not_configured`.
+   */
+  ensureAuthUser?(email: string): Promise<string>;
 }
 
 type Body = Record<string, unknown>;
@@ -86,6 +97,31 @@ export const routes: Readonly<Record<string, Route>> = {
     auth: 'user',
     run: (sql, uid, b) => verifyEmployeePin(sql, { ...(b as any), callerUserId: asUser(uid) }),
   },
+  // Back office (v0.5): HQ and store managers.
+  'staff/employees/create': {
+    auth: 'user',
+    run: (sql, uid, b) => createEmployee(sql, { ...(b as any), callerUserId: asUser(uid) }),
+  },
+  'staff/employees/update': {
+    auth: 'user',
+    run: (sql, uid, b) => updateEmployee(sql, { ...(b as any), callerUserId: asUser(uid) }),
+  },
+  'staff/add': {
+    auth: 'user',
+    async run(sql, uid, b, deps) {
+      const ensureAuthUser = deps.ensureAuthUser;
+      if (!ensureAuthUser) return { ok: false, code: 'not_configured', message: 'Staff accounts cannot be created here' };
+      return addStaff(sql, { ...(b as any), callerUserId: asUser(uid) }, { ensureAuthUser });
+    },
+  },
+  'staff/remove': {
+    auth: 'user',
+    run: (sql, uid, b) => removeStaff(sql, { ...(b as any), callerUserId: asUser(uid) }),
+  },
+  'points/adjust': {
+    auth: 'user',
+    run: (sql, uid, b) => adjustPoints(sql, { ...(b as any), callerUserId: asUser(uid) }),
+  },
   'jobs/expire-redemptions': {
     auth: 'service',
     run: (sql, _uid, b) => expireRedemptions(sql, batchOption(b)),
@@ -108,6 +144,9 @@ const STATUS: Record<string, number> = {
   route_not_found: 404,
   method_not_allowed: 405,
   idempotency_conflict: 409,
+  device_in_other_store: 409,
+  last_hq_admin: 409,
+  not_configured: 501,
   payload_too_large: 413,
   unsupported_media_type: 415,
 };

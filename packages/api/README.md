@@ -16,12 +16,15 @@ All routes are `POST` with a JSON body and `Authorization: Bearer <token>`:
 | `/api/redemptions/use` | store device / manager | `useRedemption` |
 | `/api/account/delete` | the member (own token) | `deleteMember`: `{ confirm: true, idempotencyKey }` → `{ ok, memberIds, codesCancelled, authUserDeleted }`; deletes the auth user with `deps.deleteAuthUser` (Auth admin API) when the database role could not (v0.4) |
 | `/api/staff/verify-pin` | store device / manager | `verifyEmployeePin`: `{ storeId, employeeId, pin }` → `{ ok, employee: { id, displayName } }` |
+| `/api/staff/employees/create`, `/api/staff/employees/update` | store manager, HQ (v0.5) | `createEmployee`, `updateEmployee` |
+| `/api/staff/add`, `/api/staff/remove` | HQ (v0.5) | `addStaff` (needs the `ensureAuthUser` dependency, else 501 `not_configured`), `removeStaff` |
+| `/api/points/adjust` | HQ (v0.5) | `adjustPoints` |
 | `/api/jobs/expire-redemptions` | service role key only | `expireRedemptions` (every minute; also expires gifts) |
 | `/api/jobs/expire-points` | service role key only | `expirePoints` (daily) |
 
 - Identity comes only from the verified token; `userId`, `callerUserId` and `now` in a body are dropped.
 - Responses: `200 {ok:true,…}`; errors `{ok:false, code, message?}` with 400 `invalid_input`,
-  401 `unauthenticated`, 403 `forbidden`, 404 unknown route, 409 `idempotency_conflict`,
+  401 `unauthenticated`, 403 `forbidden`, 404 unknown route, 409 `idempotency_conflict`, `device_in_other_store`, `last_hq_admin`, 501 `not_configured`,
   422 any other business error (e.g. `amount_over_limit`, `daily_earn_limit_reached`, `receipt_already_used`,
   `pin_locked`, `gift_used`), 500 `internal_error`.
 - Jobs take an optional `batchSize` (a positive whole number; anything else means the default, 100).

@@ -299,3 +299,68 @@ describe('error copy (data/copy/errors.*.json)', () => {
     }
   });
 });
+
+describe('back office routes (v0.5)', () => {
+  const made: string[] = [];
+  let office: typeof handle;
+  beforeAll(() => {
+    office = createHandler({
+      sql: db.server,
+      authenticate: async (token) => (token.startsWith('user:') ? token.slice(5) : null),
+      isServiceToken: async () => false,
+      async ensureAuthUser(email) {
+        made.push(email);
+        return newUser(db.admin);
+      },
+    });
+  });
+
+  it('HQ adds a cashier, gives a new PIN and switches them off; the PIN never comes back', async () => {
+    const created = await office(
+      post('/api/staff/employees/create', { storeId: ids.storeA, displayName: 'Eva', pin: '2580', idempotencyKey: key() }, tokenFor(ids.hq)),
+    );
+    expect(created.status).toBe(200);
+    const body = (await created.json()) as { ok: true; employee: { id: string } };
+    expect(body).toMatchObject({ ok: true, employee: { displayName: 'Eva', active: true } });
+    expect(JSON.stringify(body)).not.toContain('2580');
+
+    const weak = await office(post('/api/staff/employees/update', { employeeId: body.employee.id, pin: '1111' }, tokenFor(ids.hq)));
+    expect(weak.status).toBe(422);
+    expect(await weak.json()).toMatchObject({ ok: false, code: 'pin_too_simple' });
+    const off = await office(post('/api/staff/employees/update', { employeeId: body.employee.id, active: false }, tokenFor(ids.managerA)));
+    expect(await off.json()).toMatchObject({ ok: true, employee: { active: false } });
+    // A till device cannot manage cashiers.
+    const device = await office(post('/api/staff/employees/update', { employeeId: body.employee.id, active: true }, tokenFor(ids.deviceA)));
+    expect(device.status).toBe(403);
+  });
+
+  it('HQ adds and removes a till device by email; the caller comes from the token', async () => {
+    const added = await office(
+      post('/api/staff/add', { role: 'store_device', storeId: ids.storeA, email: 'Till-A9@example.com', callerUserId: ids.platform }, tokenFor(ids.hq)),
+    );
+    expect(added.status).toBe(200);
+    const body = (await added.json()) as { ok: true; staff: { id: string } };
+    expect(body).toMatchObject({ ok: true, created: true, staff: { role: 'store_device', email: 'till-a9@example.com' } });
+    expect(made).toEqual(['till-a9@example.com']);
+    const byManager = await office(post('/api/staff/add', { role: 'store_device', storeId: ids.storeA, email: 'm@example.com' }, tokenFor(ids.managerA)));
+    expect(byManager.status).toBe(403);
+    expect(made).toEqual(['till-a9@example.com']);
+    const removed = await office(post('/api/staff/remove', { staffId: body.staff.id }, tokenFor(ids.hq)));
+    expect(await removed.json()).toMatchObject({ ok: true, removed: { id: body.staff.id } });
+    // Without the Auth admin API, staff/add says so.
+    const plain = await handle(post('/api/staff/add', { role: 'store_device', storeId: ids.storeA, email: 'x@example.com' }, tokenFor(ids.hq)));
+    expect(plain.status).toBe(501);
+    expect(await plain.json()).toMatchObject({ ok: false, code: 'not_configured' });
+  });
+
+  it('HQ corrects points with a reason; others cannot', async () => {
+    const member = await newMember(db.server, db.admin);
+    const adjust = (userId: string, points: number) =>
+      office(post('/api/points/adjust', { memberId: member.memberId, points, reason: 'Missed scan', idempotencyKey: key() }, tokenFor(userId)));
+    const ok = await adjust(ids.hq, 75);
+    expect(await ok.json()).toMatchObject({ ok: true, points: 75, balance: 75 });
+    const member2 = await adjust(member.userId, 1000);
+    expect(member2.status).toBe(422);
+    expect(await member2.json()).toMatchObject({ ok: false, code: 'member_not_found' });
+  });
+});

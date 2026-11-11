@@ -36,6 +36,11 @@ Each one is `fn(sql, input)` and returns `{ ok: true, ... }` or `{ ok: false, co
 | `expireRedemptions` | job, every minute (all brands) | `now?, batchSize?` | `expired, redemptionIds, giftsExpired, giftIds` | none |
 | `expirePoints` | job, daily (all brands) | `now?, batchSize?` | `expired, memberIds, pointsExpired` | none |
 | `deleteMember` | the signed-in user, for their own account (v0.4) | `callerUserId, confirm: true, idempotencyKey` | `memberIds, codesCancelled, authUserDeleted` | `forbidden` (staff accounts) |
+| `createEmployee` | store manager, HQ, platform (v0.5) | `callerUserId, storeId, displayName, pin, idempotencyKey` | `employee {id, storeId, displayName, active}` | `forbidden, store_not_found, pin_format, pin_too_simple` |
+| `updateEmployee` | store manager, HQ, platform (v0.5) | `callerUserId, employeeId`, any of `displayName, active, pin` (no key: setting values again is harmless) | `employee` | `forbidden, not_found, pin_format, pin_too_simple` |
+| `addStaff` | HQ, platform (v0.5) | `callerUserId, role, storeId` (store roles) or `brandId` (`hq_admin`), `email`; deps `ensureAuthUser(email)` | `staff {id, userId, role, brandId, storeId, email}, created` | `forbidden, store_not_found, brand_not_found, device_in_other_store` |
+| `removeStaff` | HQ, platform (v0.5) | `callerUserId, staffId` | `removed` | `forbidden, not_found, last_hq_admin` |
+| `adjustPoints` | HQ, platform (v0.5) | `callerUserId, memberId, points, reason, idempotencyKey` | `entryId, memberId, points, balance` | `member_not_found` (also for callers outside the brand), `member_deleted` |
 
 `ErrorCode` is the union of every code; each operation also exports its own (`AwardPointsError`, ...).
 

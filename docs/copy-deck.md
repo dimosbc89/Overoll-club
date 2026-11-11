@@ -548,6 +548,10 @@ Labels the screens needed beyond the table above (device sign-in, PIN pad, late 
 | `language.elShort` | ΕΛ | ΕΛ |
 | `language.enShort` | EN | EN |
 
+### f1c. Back office (v0.5, draft, for Dimos to approve)
+
+The HQ and store-manager screens (sign-in, dashboard, members, staff) are staff-facing. Their texts live in `apps/admin/src/i18n/el.json` and `en.json` under `nav.*`, `office.*`, `signIn.*`, `dashboard.*`, `staff.*` and `members.*`, Greek first. Not reviewed yet.
+
 ### f2. Error messages
 
 One line per code, telling the person what to do next. Source of truth: `data/copy/errors.el.json` and `data/copy/errors.en.json` (this table is generated from them). Covers every code in the `ErrorCode` union in `packages/server/src/result.ts` (v0.2 added `pin_locked`, `receipt_already_used`, `gift_not_found`, `gift_used`, `gift_expired`: **new, for Dimos to approve**), including `PurchaseError` and `EarnLimitError` from `packages/core/src/points.ts` (v0.4 changed `member_deleted`, now shown at the till too, and `member_not_found`: **for Dimos to approve**), plus two API-level codes from `packages/api/src/handler.ts` (`unauthenticated`, `internal_error`) and two for the apps (`network_error` when offline, `unknown` as the fallback for any other code, e.g. `route_not_found`). After an `internal_error` or `network_error` during an award, retry with the **same** idempotency key so points are never added twice.
@@ -593,6 +597,11 @@ One line per code, telling the person what to do next. Source of truth: `data/co
 | `gift_not_found` | member (welcome gift) | Δεν βρίσκουμε αυτό το δώρο. Ανανέωσε την οθόνη και δοκίμασε ξανά. | We can't find this gift. Refresh the screen and try again. | – |
 | `gift_used` | member (welcome gift) | Για αυτό το δώρο έχεις ήδη κωδικό ή το έχεις ήδη πάρει. Αν ο κωδικός ισχύει ακόμα, θα τον βρεις στα Δώρα. | You already have a code for this gift, or you've already had it. If the code is still valid, you'll find it in Rewards. | – |
 | `gift_expired` | member (welcome gift) | Αυτό το δώρο έληξε, οπότε δεν εξαργυρώνεται πια. Συνέχισε να μαζεύεις πόντους για το επόμενο! | This gift has expired, so it can't be redeemed any more. Keep collecting points for the next one! | – |
+| `pin_format` | HQ, store manager (back office, v0.5) | Το PIN πρέπει να έχει {minDigits}–{maxDigits} ψηφία, μόνο αριθμούς. | The PIN must be {minDigits}–{maxDigits} digits, numbers only. | `{minDigits}`, `{maxDigits}` = `limits.staffPinMinDigits` (4), `limits.staffPinMaxDigits` (6). **v0.5, new: to approve** |
+| `pin_too_simple` | HQ, store manager (back office, v0.5) | Αυτό το PIN μαντεύεται εύκολα (όπως 1111 ή 1234). Διάλεξε κάποιο άλλο. | That PIN is too easy to guess (like 1111 or 1234). Pick another one. | **v0.5, new: to approve** |
+| `device_in_other_store` | HQ (back office, v0.5) | Αυτός ο λογαριασμός ταμείου ανήκει ήδη σε άλλο κατάστημα. Δώσε άλλο email για αυτή τη συσκευή. | This till account already belongs to another store. Use a different email for this device. | **v0.5, new: to approve** |
+| `last_hq_admin` | HQ (back office, v0.5) | Πρέπει να μένει πάντα τουλάχιστον ένας διαχειριστής HQ. Πρόσθεσε πρώτα κάποιον άλλο. | There must always be at least one HQ admin. Add someone else first. | **v0.5, new: to approve** |
+| `not_configured` | HQ (back office, v0.5) | Αυτό δεν είναι διαθέσιμο ακόμα. Ενημέρωσε την ομάδα που στήνει το {programName}. | This isn't available yet. Let the team setting up {programName} know. | `{programName}` = program name. **v0.5, new: to approve** |
 | `unauthenticated` | both (API) | Η σύνδεσή σου έληξε. Συνδέσου ξανά για να συνεχίσεις. | You've been signed out. Sign in again to carry on. | – |
 | `internal_error` | both (API) | Κάτι πήγε στραβά από τη μεριά μας. Δοκίμασε ξανά σε λίγο. | Something went wrong on our side. Try again in a moment. | – |
 | `network_error` | both (app, offline) | Δεν υπάρχει σύνδεση στο ίντερνετ. Έλεγξε το Wi-Fi ή τα δεδομένα και δοκίμασε ξανά. | No internet connection. Check your Wi-Fi or mobile data and try again. | – |

@@ -56,7 +56,12 @@ export type ErrorCode =
   // gifts (welcome croissant)
   | 'gift_not_found'
   | 'gift_used'
-  | 'gift_expired';
+  | 'gift_expired'
+  // back office (v0.5): cashiers, staff accounts, point corrections
+  | 'pin_format'
+  | 'pin_too_simple'
+  | 'device_in_other_store'
+  | 'last_hq_admin';
 
 export interface Failure<C extends ErrorCode = ErrorCode> {
   ok: false;

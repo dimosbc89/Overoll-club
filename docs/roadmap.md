@@ -79,8 +79,9 @@ Legend: **D** = Dimos · **C** = Claude · ☐ open · ☑ done
 
 ## Week 4 · 30 Nov – 6 Dec · Back office + test
 
-- ☐ C: HQ admin: stores, employees, rewards, members (search, adjust with reason), dashboard
-- ☐ C: store manager view: own store numbers and transactions, monthly redemption report
+- ☑ C: back office v0.5 (11 Nov, both brands): HQ and store-manager sign-in, dashboard (today / 7 days, per store), cashiers with PIN, till devices and managers by email, HQ admins, member search with history and points correction with reason (`docs/api-contract.md` v0.5)
+- ☐ C: HQ admin: edit stores and the reward catalog from the back office (today: read-only lists)
+- ☐ C: store manager view: monthly redemption report (own store numbers and cashiers: done in v0.5)
 - ☐ C: send a message to members (push + Wallet), manual for now
 - ☐ C: print files: counter QR stand per store, cup/bag sticker
 - ☐ D: end-to-end test with 5 friends; print the pilot materials for Chalandri
@@ -123,5 +124,5 @@ Legend: **D** = Dimos · **C** = Claude · ☐ open · ☑ done
 - ☑ D: GitHub secret `SUPABASE_ACCESS_TOKEN_KOALA` (11 Nov)
 - ☑ C: CI deploys the API, Auth settings and scheduled jobs to `koala-club`; checked (11 Nov)
 - ☑ C: Cloudflare Pages `koala-club` (https://koala-club.pages.dev) and `koala-club-admin` (https://koala-club-admin.pages.dev), built from `main`
-- ☐ D + C: end-to-end test with a real sign-in: join, points at the till, reward code (needs a staff account and a till device for a Koala store)
+- ☐ D + C: end-to-end test with a real sign-in: Dimos signs in to the Koala back office once, Claude gives that account the platform role, then a till device and a cashier from the Staff page; join, points at the till, reward code
 - ☐ D: answers from Koala (catalog and prices, opening hours, names, domain and sender email, legal entity, wordmark, efood, till device)

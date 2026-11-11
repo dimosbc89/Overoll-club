@@ -106,6 +106,7 @@ Example: €6.40 receipt, Gold member → floor(640 × 10 × 125 / 10 000) = 80 
 | Undo | Last transaction within 10 minutes (store device, with an employee PIN); older needs the store manager or HQ |
 | Staff identity | Every action is tied to an employee. The cashier enters their PIN once per shift; the console locks after 5 idle minutes (`limits.staffPinIdleMinutes`) |
 | PIN guessing | 5 wrong PINs for one employee within 15 minutes lock that employee for 15 minutes on every device (`limits.pinMaxAttempts`, `limits.pinLockMinutes`). The right PIN clears the count. Each lock is logged for HQ |
+| Cashier PINs | HQ or the store manager sets each cashier's PIN in the back office: 4–6 digits (`limits.staffPinMinDigits`, `limits.staffPinMaxDigits`), not one repeated digit and not a run up or down such as 1234 or 9876 (core `staffPinProblem`). A new PIN also clears the cashier's wrong-PIN count |
 | Refunds | Points taken back; balance may go negative |
 | Alerts | Same employee + same member more than 3 times a day; awards above €50 |
 
