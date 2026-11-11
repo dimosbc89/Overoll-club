@@ -1,5 +1,5 @@
 {
-  "$comment": "Koala Coffee's Supabase project (created 11 Nov 2026, eu-central-1, GROW Agency org). Same rules as supabase/projects/overoll.json. Until Koala has its own domain the apps live on pages.dev; replace siteUrl, redirectUrls and allowedOrigins when it does. No secrets here.",
+  "$comment": "Koala Coffee's Supabase project (created 11 Nov 2026, eu-central-1, GROW Agency org). Same rules as supabase/projects/overoll.json. Domain koalacoffee.gr (Cloudflare, GROW's account): club.koalacoffee.gr = member app, admin.koalacoffee.gr = back office + till (docs/koala/dns-records.md). siteUrl moves to club.koalacoffee.gr once that answers over HTTPS; the pages.dev names stay allowed. No secrets here.",
   "brand": "koala",
   "projectRef": "rkyoynrsimtotdirqkns",
   "publishableKey": "sb_publishable_tt5oLd6aU58k3l4xzF8bZA_sqahX_jw",
@@ -10,6 +10,8 @@
   "emailLogoUrl": "https://koala-club.pages.dev/email-logo.png",
   "appScheme": "koalaclub",
   "redirectUrls": [
+    "https://club.koalacoffee.gr/**",
+    "https://admin.koalacoffee.gr/**",
     "https://koala-club.pages.dev/**",
     "https://koala-club-admin.pages.dev/**",
     "koalaclub://**",
@@ -17,6 +19,8 @@
     "http://localhost:3000/**"
   ],
   "allowedOrigins": [
+    "https://club.koalacoffee.gr",
+    "https://admin.koalacoffee.gr",
     "https://koala-club.pages.dev",
     "https://koala-club-admin.pages.dev",
     "http://localhost:8081",
