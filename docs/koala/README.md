@@ -6,7 +6,7 @@ Second brand on the platform. Dimos decided on 11 Nov 2026 to build it for launc
 | --- | --- |
 | Brand slug | `koala` |
 | Supabase project | `rkyoynrsimtotdirqkns` (koala-club, eu-central-1, GROW Agency org), settings in `supabase/projects/koala.json` |
-| Data | `data/koala/` (brand, stores, menu, rewards) → `supabase/seed/koala.sql`, applied once by CI on the first deploy |
+| Data | `data/koala/` (brand, stores, menu, rewards) → `supabase/seed/koala.sql`, applied once (CI applies it to a project whose brand row is missing) |
 | Design | Figma `MHtMmw4vUc80oY5PuaBytx` (Koala Club — loyalty app concept), official logo mark `assets/brand/koala/` |
 | Pitch deck | https://claude.ai/artifact/3rpyBDM6n5R9CPucpx3TWH |
 | Web app / back office | `koala-club.pages.dev` / `koala-club-admin.pages.dev` until Koala has a domain |
@@ -28,6 +28,11 @@ Reward catalog (draft, efood prices of 11 Nov 2026, costs from `packages/core`):
 | Sandwich ή τορτίγια | €5.10 | 700 | 560 | 490 |
 | Κέικ ή yogurt bowl | €5.30 | 750 | 600 | 530 |
 | Καφές + χειροποίητη πίτα | €5.90 | 850 | 680 | 600 |
+
+## Status of the Supabase project
+
+- **Database: done (11 Nov 2026).** All 11 migrations and the seed (2 stores, 9 rewards, cinnamon roll as welcome gift) were applied through the Supabase connection, because CI's token could not reach this project yet. Each file was checked by md5 against the repo before it ran, and recorded in `supabase_migrations.schema_migrations` exactly as `scripts/apply-migrations.ts` records it, so CI continues from here. The schema (tables, columns, policies, functions, indexes, grants) matches Overoll's apart from the jobs function below; security advisor: same two INFO notes as Overoll (server-only tables without policies, by design).
+- **Waiting for CI** (`deploy (koala)` job): the Edge Function `api`, Auth settings (site and redirect URLs, sign-in code), the `ALLOWED_ORIGINS` secret and the scheduled jobs. Needs a token with access to this project: GitHub secret `SUPABASE_ACCESS_TOKEN_KOALA` (or a `SUPABASE_ACCESS_TOKEN` that reaches both projects), then re-run the job.
 
 ## Before launch: needed from Koala
 
