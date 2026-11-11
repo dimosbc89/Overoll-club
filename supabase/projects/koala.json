@@ -1,0 +1,39 @@
+{
+  "$comment": "Koala Coffee's Supabase project (created 11 Nov 2026, eu-central-1, GROW Agency org). Same rules as supabase/projects/overoll.json. Until Koala has its own domain the apps live on pages.dev; replace siteUrl, redirectUrls and allowedOrigins when it does. No secrets here.",
+  "brand": "koala",
+  "projectRef": "rkyoynrsimtotdirqkns",
+  "publishableKey": "sb_publishable_tt5oLd6aU58k3l4xzF8bZA_sqahX_jw",
+  "programName": "Koala Club",
+  "brandName": "Koala",
+  "supportEmail": "club-support@growagency.online",
+  "siteUrl": "https://koala-club.pages.dev",
+  "emailLogoUrl": "https://koala-club.pages.dev/email-logo.png",
+  "appScheme": "koalaclub",
+  "redirectUrls": [
+    "https://koala-club.pages.dev/**",
+    "https://koala-club-admin.pages.dev/**",
+    "koalaclub://**",
+    "http://localhost:8081/**",
+    "http://localhost:3000/**"
+  ],
+  "allowedOrigins": [
+    "https://koala-club.pages.dev",
+    "https://koala-club-admin.pages.dev",
+    "http://localhost:8081",
+    "http://localhost:3000"
+  ],
+  "signInCode": {
+    "minutes": 10,
+    "length": 6
+  },
+  "email": {
+    "$comment": "Off until Koala has a domain verified in Resend. Until then Supabase's built-in sender only delivers to members of the Supabase org, so real customers cannot sign in yet.",
+    "enabled": false,
+    "senderName": "Koala Club",
+    "senderEmail": "app@koalaclub.example",
+    "smtpHost": "smtp.resend.com",
+    "smtpPort": 465,
+    "smtpUser": "resend",
+    "maxPerHour": 300
+  }
+}

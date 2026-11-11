@@ -1,0 +1,167 @@
+{
+  "brand": "koala",
+  "status": "DRAFT for Koala's approval: built from the efood prices on 11 Nov 2026, same rules as Overoll (packages/core). Koala confirms the catalog, the in-store prices and the welcome gift before launch.",
+  "notes": [
+    "Point costs are not written here: scripts/generate-seed.ts computes them with packages/core rewardBaseCost().",
+    "shelf_price_cents comes from data/koala/menu.json (efood prices). A 'choose any' reward is priced at the most expensive item it covers; the coffee + pie combo at the dearest coffee plus the dearest pie.",
+    "The cinnamon roll is listed on efood only for Αργυρούπολη today: Koala confirms both stores have it, since it is the welcome gift."
+  ],
+  "welcome_reward": {
+    "reward": "cinnamon-roll",
+    "unlocks": "after the first purchase",
+    "limit": "once per member",
+    "counts_toward_tier": false
+  },
+  "rewards": [
+    {
+      "id": "espresso",
+      "category": "coffee",
+      "name_el": "Espresso ή ελληνικός",
+      "name_en": "Espresso or Greek coffee",
+      "description_el": "Ένας espresso ή ένας ελληνικός καφές.",
+      "description_en": "One espresso or one Greek coffee.",
+      "covers": [
+        "espresso",
+        "ellinikos"
+      ],
+      "shelf_price_cents": 220
+    },
+    {
+      "id": "any-coffee",
+      "category": "coffee",
+      "name_el": "Καφές της επιλογής σου",
+      "name_en": "Coffee of your choice",
+      "description_el": "Freddo, cappuccino, frappe, φίλτρου ή όποιον καφέ θες από τον βασικό κατάλογο.",
+      "description_en": "Freddo, cappuccino, frappe, filter or any coffee from the main list.",
+      "covers": [
+        "freddo-espresso",
+        "cappuccino",
+        "freddo-cappuccino",
+        "espresso-lungo",
+        "espresso-americano",
+        "espresso-macchiato",
+        "nes",
+        "frappe",
+        "filtrou"
+      ],
+      "shelf_price_cents": 280
+    },
+    {
+      "id": "handmade-pie",
+      "category": "pies",
+      "name_el": "Χειροποίητη πίτα",
+      "name_en": "Handmade pie",
+      "description_el": "Τυρόπιτα, κασερόπιτα, ζαμπονοτυρόπιτα ή κουρού, φρέσκια από τον φούρνο μας.",
+      "description_en": "Cheese, kasseri, ham-and-cheese or kourou pie, fresh from our oven.",
+      "covers": [
+        "tiropita",
+        "tiropita-kourou",
+        "kaseropita",
+        "zambonotiropita",
+        "loukanikopita",
+        "kourou-polyspori"
+      ],
+      "shelf_price_cents": 310
+    },
+    {
+      "id": "cookie-muffin",
+      "category": "sweets",
+      "name_el": "Cookie ή muffin",
+      "name_en": "Cookie or muffin",
+      "description_el": "Ένα cookie 100 g ή ένα muffin, όποια γεύση θες.",
+      "description_en": "One 100 g cookie or one muffin, any flavour.",
+      "covers": [
+        "cookie",
+        "muffin",
+        "babka-chocolate"
+      ],
+      "shelf_price_cents": 330
+    },
+    {
+      "id": "praline-croissant",
+      "category": "sweets",
+      "name_el": "Κρουασάν με πραλίνα",
+      "name_en": "Praline croissant",
+      "description_el": "Κρουασάν με πραλίνα φουντουκιού ή φυστικιού.",
+      "description_en": "Croissant with hazelnut or pistachio praline.",
+      "covers": [
+        "croissant-praline-hazelnut",
+        "croissant-pistachio",
+        "croissant-strawberry-oreo"
+      ],
+      "shelf_price_cents": 340
+    },
+    {
+      "id": "cinnamon-roll",
+      "category": "sweets",
+      "name_el": "Cinnamon roll",
+      "name_en": "Cinnamon roll",
+      "description_el": "Το cinnamon roll μας, φρέσκο κάθε πρωί.",
+      "description_en": "Our cinnamon roll, fresh every morning.",
+      "covers": [
+        "cinnamon-roll"
+      ],
+      "shelf_price_cents": 400
+    },
+    {
+      "id": "sandwich",
+      "category": "food",
+      "name_el": "Sandwich ή τορτίγια",
+      "name_en": "Sandwich or tortilla",
+      "description_el": "Όποιο sandwich ή τορτίγια θες από τη βιτρίνα.",
+      "description_en": "Any sandwich or tortilla from the counter.",
+      "covers": [
+        "ciabatta-caesars",
+        "villagio-graviera",
+        "ciabatta-egg",
+        "carob-tuna",
+        "baguette-chicken",
+        "tortilla-turkey",
+        "tortilla-chicken",
+        "koulouri-turkey",
+        "mini-brioche-turkey"
+      ],
+      "shelf_price_cents": 510
+    },
+    {
+      "id": "cake-bowl",
+      "category": "sweets",
+      "name_el": "Κέικ ή yogurt bowl",
+      "name_en": "Cake or yogurt bowl",
+      "description_el": "Ένα κομμάτι red velvet ή carrot cake, ή ένα yogurt bowl.",
+      "description_en": "A slice of red velvet or carrot cake, or a yogurt bowl.",
+      "covers": [
+        "red-velvet-cake",
+        "carrot-cake",
+        "yogurt-bowl"
+      ],
+      "shelf_price_cents": 530
+    },
+    {
+      "id": "coffee-and-pie",
+      "category": "combos",
+      "name_el": "Καφές + χειροποίητη πίτα",
+      "name_en": "Coffee + handmade pie",
+      "description_el": "Ο καφές της επιλογής σου μαζί με μια χειροποίητη πίτα.",
+      "description_en": "Your coffee of choice with a handmade pie.",
+      "covers": [
+        "freddo-espresso",
+        "cappuccino",
+        "freddo-cappuccino",
+        "espresso-lungo",
+        "espresso-americano",
+        "espresso-macchiato",
+        "nes",
+        "frappe",
+        "filtrou",
+        "tiropita",
+        "tiropita-kourou",
+        "kaseropita",
+        "zambonotiropita",
+        "loukanikopita",
+        "kourou-polyspori"
+      ],
+      "shelf_price_cents": 590
+    }
+  ]
+}

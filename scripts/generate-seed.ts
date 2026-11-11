@@ -1,13 +1,14 @@
 /**
- * Builds supabase/seed.sql from data/stores.json and data/rewards.json.
+ * Builds supabase/seed/<brand>.sql for every brand from data/<brand>/{brand,stores,menu,rewards}.json.
  * Reward point costs come from packages/core, never from the data files.
+ * Each brand's project gets its own seed once (scripts/configure-project.ts, first deploy).
  *
- *   npm run seed:generate            writes supabase/seed.sql and prints the reward table
- *   npm run seed:generate -- --check fails if supabase/seed.sql is out of date
+ *   npm run seed:generate            writes the seeds and prints each reward table
+ *   npm run seed:generate -- --check fails if a seed is out of date
  */
 import { readFileSync, writeFileSync } from 'node:fs';
-import { dirname, join } from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { join } from 'node:path';
+import { projectSlugs, root } from './projects.js';
 import {
   type TierId,
   defaultConfig,
@@ -16,7 +17,6 @@ import {
   tierRule,
 } from '@overoll/core';
 
-const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const readJson = <T>(path: string): T => JSON.parse(readFileSync(join(root, path), 'utf8')) as T;
 
 interface Store {
@@ -27,14 +27,20 @@ interface Store {
   address_en: string;
   city: string;
   country: 'GR' | 'CY';
-  latitude: number;
-  longitude: number;
+  latitude: number | null;
+  longitude: number | null;
   phone: string | null;
   hours: Record<string, string>;
 }
 interface MenuItem {
   id: string;
   price_cents: number;
+}
+interface BrandFile {
+  slug: string;
+  name: string;
+  default_locale: 'el' | 'en';
+  time_zone: string;
 }
 interface Reward {
   id: string;
@@ -48,65 +54,72 @@ interface Reward {
   min_tier?: TierId;
 }
 
-const stores = readJson<{ stores: Store[] }>('data/stores.json').stores;
-const menu = new Map(readJson<{ items: MenuItem[] }>('data/menu.json').items.map((i) => [i.id, i]));
-const { rewards, welcome_reward: welcome } = readJson<{
-  rewards: Reward[];
-  welcome_reward: { reward: string };
-}>('data/rewards.json');
+const check = process.argv.includes('--check');
+for (const brand of projectSlugs()) generate(brand);
 
-// ---- checks ---------------------------------------------------------------
-const problems: string[] = [];
-const codes = new Set<string>();
-for (const s of stores) {
-  if (!/^[a-z0-9-]+$/.test(s.code)) problems.push(`store ${s.code}: bad code`);
-  if (codes.has(s.code)) problems.push(`store ${s.code}: duplicate code`);
-  if (!s.name_en?.trim() || !s.address_en?.trim()) problems.push(`store ${s.code}: name_en and address_en are required`);
-  codes.add(s.code);
-}
-for (const r of rewards) {
-  for (const id of r.covers) {
-    const item = menu.get(id);
-    if (!item) problems.push(`reward ${r.id}: menu item "${id}" not found`);
-    else if (item.price_cents > r.shelf_price_cents)
-      problems.push(`reward ${r.id}: covers ${id} at ${item.price_cents}c, above its shelf price ${r.shelf_price_cents}c`);
+function generate(brand: string): void {
+  const data = `data/${brand}`;
+  const brandFile = readJson<BrandFile>(`${data}/brand.json`);
+  const stores = readJson<{ stores: Store[] }>(`${data}/stores.json`).stores;
+  const menu = new Map(readJson<{ items: MenuItem[] }>(`${data}/menu.json`).items.map((i) => [i.id, i]));
+  const { rewards, welcome_reward: welcome } = readJson<{
+    rewards: Reward[];
+    welcome_reward: { reward: string };
+  }>(`${data}/rewards.json`);
+
+  // ---- checks ---------------------------------------------------------------
+  const problems: string[] = [];
+  const codes = new Set<string>();
+  for (const s of stores) {
+    if (!/^[a-z0-9-]+$/.test(s.code)) problems.push(`store ${s.code}: bad code`);
+    if (codes.has(s.code)) problems.push(`store ${s.code}: duplicate code`);
+    if (!s.name_en?.trim() || !s.address_en?.trim()) problems.push(`store ${s.code}: name_en and address_en are required`);
+    codes.add(s.code);
   }
-}
-if (!rewards.some((r) => r.id === welcome.reward)) problems.push(`welcome reward ${welcome.reward} is not in the catalog`);
-if (problems.length) {
-  console.error(problems.join('\n'));
-  process.exit(1);
-}
+  for (const r of rewards) {
+    for (const id of r.covers) {
+      const item = menu.get(id);
+      if (!item) problems.push(`reward ${r.id}: menu item "${id}" not found`);
+      else if (item.price_cents > r.shelf_price_cents)
+        problems.push(`reward ${r.id}: covers ${id} at ${item.price_cents}c, above its shelf price ${r.shelf_price_cents}c`);
+    }
+  }
+  if (!rewards.some((r) => r.id === welcome.reward)) problems.push(`welcome reward ${welcome.reward} is not in the catalog`);
+  if (brandFile.slug !== brand) problems.push(`${data}/brand.json: slug must be "${brand}"`);
+  if (problems.length) {
+    console.error(problems.map((p) => `${brand}: ${p}`).join('\n'));
+    process.exit(1);
+  }
 
-// ---- SQL ------------------------------------------------------------------
-const q = (v: string | null | undefined): string => (v == null ? 'null' : `'${v.replaceAll("'", "''")}'`);
-const brandId = `(select id from public.brands where slug = 'overoll')`;
-const dayOrder = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'];
-// Same stable id as the reward rows below.
-const rewardIdSql = (id: string): string => `md5(${q(`overoll:reward:${id}`)})::uuid`;
-// brands.config → welcome.rewardId (packages/core config): the welcome gift.
-const welcomeConfig = `jsonb_build_object('rewardId', ${rewardIdSql(welcome.reward)}::text)`;
+  // ---- SQL ------------------------------------------------------------------
+  const q = (v: string | null | undefined): string => (v == null ? 'null' : `'${v.replaceAll("'", "''")}'`);
+  const brandId = `(select id from public.brands where slug = ${q(brand)})`;
+  const dayOrder = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'];
+  // Same stable id as the reward rows below.
+  const rewardIdSql = (id: string): string => `md5(${q(`${brand}:reward:${id}`)})::uuid`;
+  // brands.config → welcome.rewardId (packages/core config): the welcome gift.
+  const welcomeConfig = `jsonb_build_object('rewardId', ${rewardIdSql(welcome.reward)}::text)`;
 
-const storeRows = stores.map((s) => {
-  const hours = Object.fromEntries(dayOrder.filter((d) => s.hours[d]).map((d) => [d, s.hours[d]]));
-  return `  (${brandId}, ${q(s.code)}, ${q(s.name_el)}, ${q(s.name_en)}, ${q(s.address_el)}, ${q(s.address_en)}, ${q(s.city)}, ${q(s.country)}, ${s.latitude}, ${s.longitude}, ${q(s.phone)}, ${q(JSON.stringify(hours))}::jsonb)`;
-});
+  const storeRows = stores.map((s) => {
+    const hours = Object.fromEntries(dayOrder.filter((d) => s.hours[d]).map((d) => [d, s.hours[d]]));
+    return `  (${brandId}, ${q(s.code)}, ${q(s.name_el)}, ${q(s.name_en)}, ${q(s.address_el)}, ${q(s.address_en)}, ${q(s.city)}, ${q(s.country)}, ${s.latitude}, ${s.longitude}, ${q(s.phone)}, ${q(JSON.stringify(hours))}::jsonb)`;
+  });
 
-const rewardRows = rewards.map((r, i) => {
-  const baseCost = rewardBaseCost(r.shelf_price_cents, defaultConfig);
-  return `  (${rewardIdSql(r.id)}, ${brandId}, ${q(r.name_el)}, ${q(r.name_en)}, ${q(r.description_el)}, ${q(r.description_en)}, ${q(r.category)}, ${r.shelf_price_cents}, ${baseCost}, ${r.min_tier ? q(r.min_tier) + '::public.tier_id' : 'null'}, ${(i + 1) * 10})`;
-});
+  const rewardRows = rewards.map((r, i) => {
+    const baseCost = rewardBaseCost(r.shelf_price_cents, defaultConfig);
+    return `  (${rewardIdSql(r.id)}, ${brandId}, ${q(r.name_el)}, ${q(r.name_en)}, ${q(r.description_el)}, ${q(r.description_en)}, ${q(r.category)}, ${r.shelf_price_cents}, ${baseCost}, ${r.min_tier ? q(r.min_tier) + '::public.tier_id' : 'null'}, ${(i + 1) * 10})`;
+  });
 
-const sql = `-- GENERATED by scripts/generate-seed.ts from data/*.json. Do not edit by hand:
+  const sql = `-- GENERATED by scripts/generate-seed.ts from ${data}/*.json. Do not edit by hand:
 -- change the data files and run \`npm run seed:generate\`.
 -- Safe to run more than once.
 
 -- Reward ids are md5 of a stable name, so re-running updates instead of duplicating.
 
--- The welcome gift is the ${welcome.reward} reward (data/rewards.json welcome_reward):
+-- The welcome gift is the ${welcome.reward} reward (${data}/rewards.json welcome_reward):
 -- config.welcome.rewardId. Re-running sets it again and keeps every other setting.
 insert into public.brands (slug, name, default_locale, time_zone, config)
-values ('overoll', 'Overoll Croissanterie', 'el', 'Europe/Athens', jsonb_build_object('welcome', ${welcomeConfig}))
+values (${q(brand)}, ${q(brandFile.name)}, ${q(brandFile.default_locale)}, ${q(brandFile.time_zone)}, jsonb_build_object('welcome', ${welcomeConfig}))
 on conflict (slug) do update set
   name = excluded.name,
   config = public.brands.config || jsonb_build_object(
@@ -132,43 +145,44 @@ on conflict (id) do update set
   base_cost = excluded.base_cost, min_tier = excluded.min_tier, sort_order = excluded.sort_order;
 `;
 
-const target = join(root, 'supabase/seed.sql');
-if (process.argv.includes('--check')) {
-  const current = (() => {
-    try {
-      return readFileSync(target, 'utf8');
-    } catch {
-      return '';
+  const target = join(root, `supabase/seed/${brand}.sql`);
+  if (check) {
+    const current = (() => {
+      try {
+        return readFileSync(target, 'utf8');
+      } catch {
+        return '';
+      }
+    })();
+    if (current !== sql) {
+      console.error(`supabase/seed/${brand}.sql is out of date: run \`npm run seed:generate\``);
+      process.exit(1);
     }
-  })();
-  if (current !== sql) {
-    console.error('supabase/seed.sql is out of date: run `npm run seed:generate`');
-    process.exit(1);
+    console.log(`supabase/seed/${brand}.sql is up to date`);
+    return;
   }
-  console.log('supabase/seed.sql is up to date');
-} else {
   writeFileSync(target, sql);
-  console.log(`wrote supabase/seed.sql: ${stores.length} stores, ${rewards.length} rewards\n`);
-}
+  console.log(`wrote supabase/seed/${brand}.sql: ${stores.length} stores, ${rewards.length} rewards\n`);
 
-// ---- reward table for the docs ---------------------------------------------
-const tiers: TierId[] = ['classic', 'gold', 'club'];
-const euros = (c: number) => `€${(c / 100).toFixed(2)}`;
-console.log('| Reward | Shelf price | Classic | Gold | Club | Spend to earn it (Classic) |');
-console.log('| --- | ---: | ---: | ---: | ---: | ---: |');
-for (const r of rewards) {
-  const base = rewardBaseCost(r.shelf_price_cents, defaultConfig);
-  const costs = tiers.map((t) => rewardCostForTier(base, t, defaultConfig));
-  const spendCents = Math.ceil((base * 100) / defaultConfig.pointsPerEuro);
-  console.log(`| ${r.name_en} | ${euros(r.shelf_price_cents)} | ${costs.join(' | ')} | ${euros(spendCents)} |`);
-}
-console.log('\nValue back on spend (shelf price ÷ spend needed):');
-for (const t of tiers) {
-  const { multiplierPct } = tierRule(defaultConfig, t);
-  const pct = rewards.map((r) => {
-    const cost = rewardCostForTier(rewardBaseCost(r.shelf_price_cents, defaultConfig), t, defaultConfig);
-    const spend = (cost * 100 * 100) / (defaultConfig.pointsPerEuro * multiplierPct);
-    return (r.shelf_price_cents / spend) * 100;
-  });
-  console.log(`  ${t}: ${Math.min(...pct).toFixed(1)}% – ${Math.max(...pct).toFixed(1)}%`);
+  // ---- reward table for the docs ---------------------------------------------
+  const tiers: TierId[] = ['classic', 'gold', 'club'];
+  const euros = (c: number) => `€${(c / 100).toFixed(2)}`;
+  console.log('| Reward | Shelf price | Classic | Gold | Club | Spend to earn it (Classic) |');
+  console.log('| --- | ---: | ---: | ---: | ---: | ---: |');
+  for (const r of rewards) {
+    const base = rewardBaseCost(r.shelf_price_cents, defaultConfig);
+    const costs = tiers.map((t) => rewardCostForTier(base, t, defaultConfig));
+    const spendCents = Math.ceil((base * 100) / defaultConfig.pointsPerEuro);
+    console.log(`| ${r.name_en} | ${euros(r.shelf_price_cents)} | ${costs.join(' | ')} | ${euros(spendCents)} |`);
+  }
+  console.log('\nValue back on spend (shelf price ÷ spend needed):');
+  for (const t of tiers) {
+    const { multiplierPct } = tierRule(defaultConfig, t);
+    const pct = rewards.map((r) => {
+      const cost = rewardCostForTier(rewardBaseCost(r.shelf_price_cents, defaultConfig), t, defaultConfig);
+      const spend = (cost * 100 * 100) / (defaultConfig.pointsPerEuro * multiplierPct);
+      return (r.shelf_price_cents / spend) * 100;
+    });
+    console.log(`  ${t}: ${Math.min(...pct).toFixed(1)}% – ${Math.max(...pct).toFixed(1)}%`);
+  }
 }

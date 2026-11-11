@@ -26,4 +26,4 @@ are not needed and it can be removed from Resend.
 When the records are in:
 - Cloudflare activates both custom domains by itself (an email arrives).
 - Resend: Domains → `overoll.gr` → "I've added the records" (or it checks by itself), then connect SMTP to
-  Supabase and set `email.enabled` to true in `supabase/project.config.json`.
+  Supabase and set `email.enabled` to true in `supabase/projects/overoll.json`.

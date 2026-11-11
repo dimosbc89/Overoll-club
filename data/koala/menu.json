@@ -1,0 +1,656 @@
+{
+  "brand": "koala",
+  "fetched_on": "2026-11-11",
+  "source": "efood menus of both stores (Άγιος Δημήτριος: e-food.gr/delivery/agios-dimitrios/koala-coffee-handcrafted-pleasures, Αργυρούπολη: e-food.gr/delivery/arguroupoli/koala-coffee-6959388). price_cents = the efood price incl. VAT ('Από' = smallest size).",
+  "caveats": [
+    "Delivery-app prices can differ from the shop. Koala confirms in-store prices before launch.",
+    "stores = which store lists the item on efood today; items marked unavailable on efood are not listed. The shop range may be wider.",
+    "Fresh orange juice is 3.10 in Άγιος Δημήτριος and 2.80 in Αργυρούπολη; soft drinks also differ. Not used by any reward.",
+    "Cookies and muffins come in several flavours at the same price; one row each."
+  ],
+  "categories": [
+    {
+      "id": "coffee",
+      "name_el": "Καφέδες",
+      "name_en": "Coffee"
+    },
+    {
+      "id": "drinks",
+      "name_el": "Ροφήματα & χυμοί",
+      "name_en": "Drinks"
+    },
+    {
+      "id": "pies",
+      "name_el": "Χειροποίητες ζύμες",
+      "name_en": "Handmade pies"
+    },
+    {
+      "id": "sweets",
+      "name_el": "Γλυκά",
+      "name_en": "Sweets"
+    },
+    {
+      "id": "food",
+      "name_el": "Sandwiches & bowls",
+      "name_en": "Sandwiches & bowls"
+    }
+  ],
+  "items": [
+    {
+      "id": "espresso",
+      "category": "coffee",
+      "name_el": "Espresso",
+      "name_en": "Espresso",
+      "description_el": null,
+      "price_cents": 220,
+      "stores": [
+        "agios-dimitrios",
+        "argyroupoli"
+      ]
+    },
+    {
+      "id": "ellinikos",
+      "category": "coffee",
+      "name_el": "Ελληνικός",
+      "name_en": "Greek coffee",
+      "description_el": null,
+      "price_cents": 220,
+      "stores": [
+        "agios-dimitrios"
+      ]
+    },
+    {
+      "id": "espresso-macchiato",
+      "category": "coffee",
+      "name_el": "Espresso macchiato",
+      "name_en": "Espresso macchiato",
+      "description_el": null,
+      "price_cents": 230,
+      "stores": [
+        "agios-dimitrios",
+        "argyroupoli"
+      ]
+    },
+    {
+      "id": "espresso-lungo",
+      "category": "coffee",
+      "name_el": "Espresso lungo",
+      "name_en": "Espresso lungo",
+      "description_el": null,
+      "price_cents": 270,
+      "stores": [
+        "agios-dimitrios",
+        "argyroupoli"
+      ]
+    },
+    {
+      "id": "espresso-americano",
+      "category": "coffee",
+      "name_el": "Espresso americano",
+      "name_en": "Espresso americano",
+      "description_el": null,
+      "price_cents": 270,
+      "stores": [
+        "agios-dimitrios",
+        "argyroupoli"
+      ]
+    },
+    {
+      "id": "freddo-espresso",
+      "category": "coffee",
+      "name_el": "Freddo espresso",
+      "name_en": "Freddo espresso",
+      "description_el": null,
+      "price_cents": 270,
+      "stores": [
+        "agios-dimitrios",
+        "argyroupoli"
+      ]
+    },
+    {
+      "id": "cappuccino",
+      "category": "coffee",
+      "name_el": "Cappuccino",
+      "name_en": "Cappuccino",
+      "description_el": null,
+      "price_cents": 260,
+      "stores": [
+        "agios-dimitrios",
+        "argyroupoli"
+      ]
+    },
+    {
+      "id": "freddo-cappuccino",
+      "category": "coffee",
+      "name_el": "Freddo cappuccino",
+      "name_en": "Freddo cappuccino",
+      "description_el": null,
+      "price_cents": 280,
+      "stores": [
+        "agios-dimitrios",
+        "argyroupoli"
+      ]
+    },
+    {
+      "id": "cappuccino-con-panna",
+      "category": "coffee",
+      "name_el": "Cappuccino con panna",
+      "name_en": "Cappuccino con panna",
+      "description_el": null,
+      "price_cents": 280,
+      "stores": [
+        "agios-dimitrios",
+        "argyroupoli"
+      ]
+    },
+    {
+      "id": "espresso-con-panna",
+      "category": "coffee",
+      "name_el": "Espresso con panna",
+      "name_en": "Espresso con panna",
+      "description_el": null,
+      "price_cents": 290,
+      "stores": [
+        "agios-dimitrios",
+        "argyroupoli"
+      ]
+    },
+    {
+      "id": "nes",
+      "category": "coffee",
+      "name_el": "Nes",
+      "name_en": "Instant coffee",
+      "description_el": null,
+      "price_cents": 240,
+      "stores": [
+        "agios-dimitrios",
+        "argyroupoli"
+      ]
+    },
+    {
+      "id": "frappe",
+      "category": "coffee",
+      "name_el": "Frappe",
+      "name_en": "Frappe",
+      "description_el": null,
+      "price_cents": 240,
+      "stores": [
+        "agios-dimitrios",
+        "argyroupoli"
+      ]
+    },
+    {
+      "id": "filtrou",
+      "category": "coffee",
+      "name_el": "Φίλτρου",
+      "name_en": "Filter coffee",
+      "description_el": null,
+      "price_cents": 260,
+      "stores": [
+        "agios-dimitrios",
+        "argyroupoli"
+      ]
+    },
+    {
+      "id": "cappuccino-latte",
+      "category": "coffee",
+      "name_el": "Cappuccino latte",
+      "name_en": "Cappuccino latte",
+      "description_el": null,
+      "price_cents": 310,
+      "stores": [
+        "agios-dimitrios",
+        "argyroupoli"
+      ]
+    },
+    {
+      "id": "ice-latte",
+      "category": "coffee",
+      "name_el": "Ice latte",
+      "name_en": "Iced latte",
+      "description_el": null,
+      "price_cents": 310,
+      "stores": [
+        "agios-dimitrios"
+      ]
+    },
+    {
+      "id": "freddo-cappuccino-latte",
+      "category": "coffee",
+      "name_el": "Freddo cappuccino latte",
+      "name_en": "Freddo cappuccino latte",
+      "description_el": null,
+      "price_cents": 310,
+      "stores": [
+        "argyroupoli"
+      ]
+    },
+    {
+      "id": "freddo-cappuccino-plant",
+      "category": "coffee",
+      "name_el": "Freddo cappuccino με φυτική κρέμα",
+      "name_en": "Freddo cappuccino, plant cream",
+      "description_el": null,
+      "price_cents": 310,
+      "stores": [
+        "agios-dimitrios",
+        "argyroupoli"
+      ]
+    },
+    {
+      "id": "freddo-cappuccino-con-panna",
+      "category": "coffee",
+      "name_el": "Freddo cappuccino con panna",
+      "name_en": "Freddo cappuccino con panna",
+      "description_el": null,
+      "price_cents": 310,
+      "stores": [
+        "agios-dimitrios",
+        "argyroupoli"
+      ]
+    },
+    {
+      "id": "cappuccino-latte-honey-cinnamon",
+      "category": "coffee",
+      "name_el": "Cappuccino latte με μέλι & κανέλα",
+      "name_en": "Cappuccino latte, honey & cinnamon",
+      "description_el": null,
+      "price_cents": 350,
+      "stores": [
+        "agios-dimitrios",
+        "argyroupoli"
+      ]
+    },
+    {
+      "id": "chocolate",
+      "category": "drinks",
+      "name_el": "Σοκολάτα",
+      "name_en": "Hot chocolate",
+      "description_el": null,
+      "price_cents": 310,
+      "stores": [
+        "agios-dimitrios",
+        "argyroupoli"
+      ]
+    },
+    {
+      "id": "tea",
+      "category": "drinks",
+      "name_el": "Τσάι",
+      "name_en": "Tea",
+      "description_el": null,
+      "price_cents": 210,
+      "stores": [
+        "agios-dimitrios",
+        "argyroupoli"
+      ]
+    },
+    {
+      "id": "chamomile",
+      "category": "drinks",
+      "name_el": "Χαμομήλι",
+      "name_en": "Chamomile",
+      "description_el": null,
+      "price_cents": 210,
+      "stores": [
+        "agios-dimitrios",
+        "argyroupoli"
+      ]
+    },
+    {
+      "id": "tiropita",
+      "category": "pies",
+      "name_el": "Τυρόπιτα με φέτα",
+      "name_en": "Feta cheese pie",
+      "description_el": null,
+      "price_cents": 280,
+      "stores": [
+        "agios-dimitrios",
+        "argyroupoli"
+      ]
+    },
+    {
+      "id": "tiropita-kourou",
+      "category": "pies",
+      "name_el": "Τυρόπιτα κουρού με φέτα",
+      "name_en": "Feta pie, kourou pastry",
+      "description_el": null,
+      "price_cents": 310,
+      "stores": [
+        "agios-dimitrios",
+        "argyroupoli"
+      ]
+    },
+    {
+      "id": "kaseropita",
+      "category": "pies",
+      "name_el": "Κασερόπιτα",
+      "name_en": "Kasseri cheese pie",
+      "description_el": null,
+      "price_cents": 310,
+      "stores": [
+        "agios-dimitrios",
+        "argyroupoli"
+      ]
+    },
+    {
+      "id": "zambonotiropita",
+      "category": "pies",
+      "name_el": "Ζαμπονοτυρόπιτα",
+      "name_en": "Ham and cheese pie",
+      "description_el": null,
+      "price_cents": 310,
+      "stores": [
+        "agios-dimitrios",
+        "argyroupoli"
+      ]
+    },
+    {
+      "id": "loukanikopita",
+      "category": "pies",
+      "name_el": "Λουκανικόπιτα",
+      "name_en": "Sausage pie",
+      "description_el": null,
+      "price_cents": 300,
+      "stores": [
+        "argyroupoli"
+      ]
+    },
+    {
+      "id": "kourou-polyspori",
+      "category": "pies",
+      "name_el": "Κουρού πολύσπορη",
+      "name_en": "Multigrain kourou pie",
+      "description_el": null,
+      "price_cents": 310,
+      "stores": [
+        "argyroupoli"
+      ]
+    },
+    {
+      "id": "croissant-savoury",
+      "category": "pies",
+      "name_el": "Κρουασάν αλμυρό",
+      "name_en": "Savoury croissant",
+      "description_el": null,
+      "price_cents": 320,
+      "stores": [
+        "agios-dimitrios",
+        "argyroupoli"
+      ]
+    },
+    {
+      "id": "spanakopita",
+      "category": "pies",
+      "name_el": "Σπανακόπιτα χωριάτικη",
+      "name_en": "Village spinach pie",
+      "description_el": null,
+      "price_cents": 360,
+      "stores": [
+        "argyroupoli"
+      ]
+    },
+    {
+      "id": "bougatsa",
+      "category": "pies",
+      "name_el": "Μπουγάτσα Θεσσαλονίκης με κρέμα",
+      "name_en": "Thessaloniki custard bougatsa",
+      "description_el": null,
+      "price_cents": 310,
+      "stores": [
+        "argyroupoli"
+      ]
+    },
+    {
+      "id": "peinirli",
+      "category": "pies",
+      "name_el": "Παραδοσιακό πεϊνιρλί",
+      "name_en": "Traditional peinirli",
+      "description_el": null,
+      "price_cents": 340,
+      "stores": [
+        "agios-dimitrios",
+        "argyroupoli"
+      ]
+    },
+    {
+      "id": "croissant-praline-hazelnut",
+      "category": "sweets",
+      "name_el": "Κρουασάν με πραλίνα φουντουκιού",
+      "name_en": "Croissant, hazelnut praline",
+      "description_el": null,
+      "price_cents": 340,
+      "stores": [
+        "agios-dimitrios",
+        "argyroupoli"
+      ]
+    },
+    {
+      "id": "croissant-pistachio",
+      "category": "sweets",
+      "name_el": "Κρουασάν με πραλίνα φυστικιού",
+      "name_en": "Croissant, pistachio praline",
+      "description_el": null,
+      "price_cents": 340,
+      "stores": [
+        "agios-dimitrios",
+        "argyroupoli"
+      ]
+    },
+    {
+      "id": "croissant-strawberry-oreo",
+      "category": "sweets",
+      "name_el": "Κρουασάν φράουλα & Oreo",
+      "name_en": "Croissant, strawberry & Oreo",
+      "description_el": null,
+      "price_cents": 320,
+      "stores": [
+        "argyroupoli"
+      ]
+    },
+    {
+      "id": "cinnamon-roll",
+      "category": "sweets",
+      "name_el": "Cinnamon roll",
+      "name_en": "Cinnamon roll",
+      "description_el": null,
+      "price_cents": 400,
+      "stores": [
+        "argyroupoli"
+      ]
+    },
+    {
+      "id": "cookie",
+      "category": "sweets",
+      "name_el": "Cookie 100 g",
+      "name_en": "Cookie 100 g",
+      "description_el": null,
+      "price_cents": 330,
+      "stores": [
+        "agios-dimitrios",
+        "argyroupoli"
+      ]
+    },
+    {
+      "id": "muffin",
+      "category": "sweets",
+      "name_el": "Muffin",
+      "name_en": "Muffin",
+      "description_el": null,
+      "price_cents": 330,
+      "stores": [
+        "argyroupoli"
+      ]
+    },
+    {
+      "id": "babka-chocolate",
+      "category": "sweets",
+      "name_el": "Babka σοκολάτα",
+      "name_en": "Chocolate babka",
+      "description_el": null,
+      "price_cents": 320,
+      "stores": [
+        "argyroupoli"
+      ]
+    },
+    {
+      "id": "red-velvet-cake",
+      "category": "sweets",
+      "name_el": "Red velvet cake",
+      "name_en": "Red velvet cake",
+      "description_el": null,
+      "price_cents": 490,
+      "stores": [
+        "agios-dimitrios",
+        "argyroupoli"
+      ]
+    },
+    {
+      "id": "carrot-cake",
+      "category": "sweets",
+      "name_el": "Carrot cake",
+      "name_en": "Carrot cake",
+      "description_el": null,
+      "price_cents": 490,
+      "stores": [
+        "argyroupoli"
+      ]
+    },
+    {
+      "id": "cereal-bar",
+      "category": "sweets",
+      "name_el": "Χειροποίητη μπάρα δημητριακών",
+      "name_en": "Handmade cereal bar",
+      "description_el": null,
+      "price_cents": 340,
+      "stores": [
+        "agios-dimitrios"
+      ]
+    },
+    {
+      "id": "koulouri-turkey",
+      "category": "food",
+      "name_el": "Κουλούρι Θεσσαλονίκης γαλοπούλα & Philadelphia",
+      "name_en": "Koulouri, turkey & Philadelphia",
+      "description_el": null,
+      "price_cents": 320,
+      "stores": [
+        "agios-dimitrios"
+      ]
+    },
+    {
+      "id": "mini-brioche-turkey",
+      "category": "food",
+      "name_el": "Mini brioche γαλοπούλα",
+      "name_en": "Mini brioche, turkey",
+      "description_el": null,
+      "price_cents": 180,
+      "stores": [
+        "agios-dimitrios"
+      ]
+    },
+    {
+      "id": "ciabatta-caesars",
+      "category": "food",
+      "name_el": "Ciabatta Caesar`s",
+      "name_en": "Ciabatta Caesar’s",
+      "description_el": null,
+      "price_cents": 490,
+      "stores": [
+        "agios-dimitrios",
+        "argyroupoli"
+      ]
+    },
+    {
+      "id": "villagio-graviera",
+      "category": "food",
+      "name_el": "Villagio γραβιέρα",
+      "name_en": "Villagio, graviera",
+      "description_el": null,
+      "price_cents": 480,
+      "stores": [
+        "agios-dimitrios",
+        "argyroupoli"
+      ]
+    },
+    {
+      "id": "ciabatta-egg",
+      "category": "food",
+      "name_el": "Ciabatta ολικής άλεσης αυγό",
+      "name_en": "Wholegrain ciabatta, egg",
+      "description_el": null,
+      "price_cents": 470,
+      "stores": [
+        "argyroupoli"
+      ]
+    },
+    {
+      "id": "carob-tuna",
+      "category": "food",
+      "name_el": "Sandwich χαρουπιού τόνο",
+      "name_en": "Carob bread, tuna",
+      "description_el": null,
+      "price_cents": 490,
+      "stores": [
+        "argyroupoli"
+      ]
+    },
+    {
+      "id": "baguette-chicken",
+      "category": "food",
+      "name_el": "Μπαγκέτα βιεννέζικη κοτόπουλο",
+      "name_en": "Vienna baguette, chicken",
+      "description_el": null,
+      "price_cents": 510,
+      "stores": [
+        "argyroupoli"
+      ]
+    },
+    {
+      "id": "tortilla-turkey",
+      "category": "food",
+      "name_el": "Τορτίγια γαλοπούλα",
+      "name_en": "Tortilla, turkey",
+      "description_el": null,
+      "price_cents": 420,
+      "stores": [
+        "argyroupoli"
+      ]
+    },
+    {
+      "id": "tortilla-chicken",
+      "category": "food",
+      "name_el": "Τορτίγια κοτόπουλο",
+      "name_en": "Tortilla, chicken",
+      "description_el": null,
+      "price_cents": 500,
+      "stores": [
+        "argyroupoli"
+      ]
+    },
+    {
+      "id": "yogurt-bowl",
+      "category": "food",
+      "name_el": "Yogurt bowl",
+      "name_en": "Yogurt bowl",
+      "description_el": null,
+      "price_cents": 530,
+      "stores": [
+        "agios-dimitrios",
+        "argyroupoli"
+      ]
+    },
+    {
+      "id": "orange-juice",
+      "category": "drinks",
+      "name_el": "Φυσικός χυμός πορτοκάλι",
+      "name_en": "Fresh orange juice",
+      "description_el": null,
+      "price_cents": 310,
+      "stores": [
+        "agios-dimitrios",
+        "argyroupoli"
+      ]
+    }
+  ]
+}

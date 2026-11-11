@@ -1,40 +1,21 @@
 /**
- * Supabase settings kept as code (supabase/project.config.json):
+ * Supabase settings kept as code, one file per brand (supabase/projects/<brand>.json):
  * Auth site URL and redirect URLs, the one-time sign-in code (length, expiry, email
  * template with texts from docs/copy-deck.md), custom SMTP via Resend once it is
  * switched on, the Edge Function's ALLOWED_ORIGINS, and the scheduled jobs (supabase/jobs.sql).
  *
- *   npm run project:check   validates everything offline (part of `npm test`)
- *   npm run project:apply   applies it with the Management API; needs SUPABASE_ACCESS_TOKEN
+ *   npm run project:check   validates every project offline (part of `npm test`)
+ *   npm run project:apply   applies them with the Management API; needs SUPABASE_ACCESS_TOKEN
  *                           (and RESEND_API_KEY when email.enabled is true). Runs in CI on main.
+ *   ... -- --project koala  only that brand (repeatable)
  *   ... -- --print          also prints the rendered email (check mode)
  */
 import { createHash } from 'node:crypto';
 import { readFileSync } from 'node:fs';
-import { dirname, join } from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { join } from 'node:path';
+import { type ProjectConfig, root, selectedProjects } from './projects.js';
 
-const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const read = (path: string) => readFileSync(join(root, path), 'utf8');
-
-interface ProjectConfig {
-  projectRef: string;
-  programName: string;
-  supportEmail: string;
-  siteUrl: string;
-  redirectUrls: string[];
-  allowedOrigins: string[];
-  signInCode: { minutes: number; length: number };
-  email: {
-    enabled: boolean;
-    senderName: string;
-    senderEmail: string;
-    smtpHost: string;
-    smtpPort: number;
-    smtpUser: string;
-    maxPerHour: number;
-  };
-}
 
 type Copy = Record<string, { el: string; en: string }>;
 
@@ -63,6 +44,8 @@ export function renderTemplate(template: string, copy: Copy, cfg: ProjectConfig)
 function fillPlaceholders(text: string, cfg: ProjectConfig): string {
   const values: Record<string, string> = {
     programName: cfg.programName,
+    brandName: cfg.brandName,
+    emailLogoUrl: cfg.emailLogoUrl,
     minutes: String(cfg.signInCode.minutes),
     supportEmail: cfg.supportEmail,
     code: TOKEN,
@@ -80,13 +63,18 @@ function escapeHtml(s: string): string {
 
 export function buildDesired(cfg: ProjectConfig, copy: Copy, template: string, jobs: string) {
   const fail = (msg: string) => {
-    throw new Error(`supabase/project.config.json: ${msg}`);
+    throw new Error(`supabase/projects/${cfg.brand}.json: ${msg}`);
   };
   if (!/^[a-z]{20}$/.test(cfg.projectRef)) fail('projectRef looks wrong');
   if (!cfg.siteUrl.startsWith('https://')) fail('siteUrl must be https');
+  if (!/^https:\/\/[^\s"<>]+$/.test(cfg.emailLogoUrl)) fail('emailLogoUrl must be an https URL');
+  if (!cfg.brandName?.trim() || !cfg.programName?.trim()) fail('brandName and programName are required');
+  if (!/^[a-z][a-z0-9]{2,30}$/.test(cfg.appScheme)) fail('appScheme must be lowercase letters and digits');
   for (const u of cfg.redirectUrls) {
-    if (!/^(https:\/\/|overollclub:\/\/|http:\/\/localhost:\d+\/)/.test(u)) fail(`redirect URL not allowed: ${u}`);
+    const ok = u.startsWith('https://') || u.startsWith(`${cfg.appScheme}://`) || /^http:\/\/localhost:\d+\//.test(u);
+    if (!ok) fail(`redirect URL not allowed: ${u}`);
   }
+  if (!cfg.redirectUrls.some((u) => u.startsWith(cfg.siteUrl))) fail('redirectUrls must include the siteUrl');
   for (const o of cfg.allowedOrigins) {
     if (!/^(https:\/\/[a-z0-9.-]+|http:\/\/localhost:\d+)$/.test(o)) fail(`origin must be scheme://host[:port] only: ${o}`);
   }
@@ -94,6 +82,7 @@ export function buildDesired(cfg: ProjectConfig, copy: Copy, template: string, j
   if (!Number.isInteger(minutes) || minutes < 5 || minutes > 60) fail('signInCode.minutes must be 5–60');
   if (!Number.isInteger(length) || length < 6 || length > 10) fail('signInCode.length must be 6–10');
   if (!/^[^@\s]+@[^@\s]+$/.test(cfg.email.senderEmail)) fail('email.senderEmail');
+  if (cfg.email.enabled && /\.example$/i.test(cfg.email.senderEmail)) fail('email.enabled needs a real sender domain');
   if (!Number.isInteger(cfg.email.maxPerHour) || cfg.email.maxPerHour < 30) fail('email.maxPerHour must be ≥ 30');
 
   const subjectRow = copy['email.code.subject'];
@@ -200,6 +189,24 @@ async function apply(cfg: ProjectConfig, desired: ReturnType<typeof buildDesired
   }
 }
 
+/**
+ * A new project gets its brand, stores and rewards from supabase/seed/<brand>.sql once:
+ * only when the brand row does not exist yet, so later edits from the back office are
+ * never overwritten by a deploy.
+ */
+async function seedIfNew(token: string, cfg: ProjectConfig) {
+  if (!/^[a-z0-9-]+$/.test(cfg.brand)) throw new Error(`bad brand slug ${cfg.brand}`);
+  const rows = (await api(token, 'POST', `/projects/${cfg.projectRef}/database/query`, {
+    query: `select count(*)::int as n from public.brands where slug = '${cfg.brand}'`,
+  })) as { n: number }[];
+  if (rows[0]?.n) {
+    console.log(`seed: brand ${cfg.brand} already exists, left as it is`);
+    return;
+  }
+  await api(token, 'POST', `/projects/${cfg.projectRef}/database/query`, { query: read(`supabase/seed/${cfg.brand}.sql`) });
+  console.log(`seed: brand ${cfg.brand} created from supabase/seed/${cfg.brand}.sql`);
+}
+
 async function scheduleJobs(token: string, ref: string, jobsSql: string) {
   await api(token, 'POST', `/projects/${ref}/database/query`, { query: jobsSql });
   const rows = (await api(token, 'POST', `/projects/${ref}/database/query`, {
@@ -210,23 +217,24 @@ async function scheduleJobs(token: string, ref: string, jobsSql: string) {
 
 async function main() {
   const args = new Set(process.argv.slice(2));
-  const cfg = JSON.parse(read('supabase/project.config.json')) as ProjectConfig;
-  const desired = buildDesired(
-    cfg,
-    readCopyDeck(read('docs/copy-deck.md')),
-    read('supabase/templates/sign-in-code.html'),
-    read('supabase/jobs.sql'),
-  );
-  if (args.has('--apply')) {
-    await apply(cfg, desired);
-    await scheduleJobs(process.env.SUPABASE_ACCESS_TOKEN!, cfg.projectRef, desired.jobsSql);
-    return;
+  const copy = readCopyDeck(read('docs/copy-deck.md'));
+  const template = read('supabase/templates/sign-in-code.html');
+  const jobs = read('supabase/jobs.sql');
+  for (const cfg of selectedProjects()) {
+    const desired = buildDesired(cfg, copy, template, jobs);
+    if (args.has('--apply')) {
+      console.log(`== ${cfg.brand} (${cfg.projectRef})`);
+      await apply(cfg, desired);
+      await seedIfNew(process.env.SUPABASE_ACCESS_TOKEN!, cfg);
+      await scheduleJobs(process.env.SUPABASE_ACCESS_TOKEN!, cfg.projectRef, desired.jobsSql);
+      continue;
+    }
+    if (args.has('--print')) console.log(`Subject: ${desired.subject}\n\n${desired.html}`);
+    console.log(
+      `${cfg.brand}: project config OK: site ${cfg.siteUrl}, ${cfg.redirectUrls.length} redirect URLs, ` +
+        `${cfg.signInCode.length}-digit code for ${cfg.signInCode.minutes} min, SMTP ${cfg.email.enabled ? 'on' : 'off'}`,
+    );
   }
-  if (args.has('--print')) console.log(`Subject: ${desired.subject}\n\n${desired.html}`);
-  console.log(
-    `project config OK: site ${cfg.siteUrl}, ${cfg.redirectUrls.length} redirect URLs, ` +
-      `${cfg.signInCode.length}-digit code for ${cfg.signInCode.minutes} min, SMTP ${cfg.email.enabled ? 'on' : 'off'}`,
-  );
 }
 
 main().catch((err: unknown) => {

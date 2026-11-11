@@ -2,7 +2,7 @@
 
 Status: **draft for Dimos's review**, 9 Nov 2026. Nothing here ships until Dimos approves it. The consents (§a), account deletion (§b6), the privacy answer (§h) and the terms summary (§j) also need a lawyer.
 
-Sources: `docs/program-spec.md` v0.1, `packages/core/src/config.ts`, `docs/brand.md`, `docs/menu-and-rewards.md`, `data/rewards.json`, `data/stores.json`, `packages/server/src/result.ts`, `packages/core/src/points.ts`, `packages/api/src/handler.ts`, and the tone of `overoll-croissanterie/public/index.html`.
+Sources: `docs/program-spec.md` v0.1, `packages/core/src/config.ts`, `docs/brand.md`, `docs/menu-and-rewards.md`, `data/overoll/rewards.json`, `data/overoll/stores.json`, `packages/server/src/result.ts`, `packages/core/src/points.ts`, `packages/api/src/handler.ts`, and the tone of `overoll-croissanterie/public/index.html`.
 
 ## How to use this deck
 
@@ -17,11 +17,11 @@ Sources: `docs/program-spec.md` v0.1, `packages/core/src/config.ts`, `docs/brand
 | --- | --- |
 | `{programName}` | Program name setting, default "Overoll Club" |
 | `{clubUrl}` | The club site and web app, `loyalty.overoll.gr` (written without `https://` in copy). Logged-out home = landing page (§h) |
-| `{storeCode}` | `code` from `data/stores.json`, e.g. `chalandri` |
+| `{storeCode}` | `code` from `data/overoll/stores.json`, e.g. `chalandri` |
 | `{firstName}` | Member's first name, as typed |
 | `{points}`, `{balance}` | A number of points / the member's balance, formatted per locale (el-GR "1.250", en-GB "1,250") |
-| `{reward}` | `name_el` / `name_en` from `data/rewards.json` |
-| `{store}` | `name_el` / `name_en` from `data/stores.json`, e.g. "Overoll Χαλάνδρι" |
+| `{reward}` | `name_el` / `name_en` from `data/overoll/rewards.json` |
+| `{store}` | `name_el` / `name_en` from `data/overoll/stores.json`, e.g. "Overoll Χαλάνδρι" |
 | `{tier}` | Classic, Gold or Club (not translated) |
 | `{date}` | Date, Intl `{ day: 'numeric', month: 'long' }`: el "17 Ιανουαρίου", en "17 January" |
 | `{time}` | Countdown, `mm:ss` |
@@ -204,7 +204,7 @@ The Wallet buttons must use Apple's and Google's official badge artwork (Greek a
 
 ### b2. Rewards
 
-Reward names and descriptions come from `data/rewards.json`; `rewards.title`, `rewards.intro`, `rewards.cost`, `rewards.empty` already exist.
+Reward names and descriptions come from `data/overoll/rewards.json`; `rewards.title`, `rewards.intro`, `rewards.cost`, `rewards.empty` already exist.
 
 | Key | Ελληνικά | English |
 | --- | --- | --- |
@@ -420,14 +420,14 @@ Shared footer:
 
 ### e2. Sign-in code
 
-For the Supabase Auth email template: `{code}` = `{{ .Token }}`; `{minutes}` comes from `signInCode.minutes` in `supabase/project.config.json` (10), which also sets the project's code expiry. The template is `supabase/templates/sign-in-code.html`: Greek first, English below, because the email is sent before we know the member's language.
+For the Supabase Auth email template: `{code}` = `{{ .Token }}`; `{minutes}` comes from `signInCode.minutes` in `supabase/projects/<brand>.json` (10), which also sets the project's code expiry. The template is `supabase/templates/sign-in-code.html`: Greek first, English below, because the email is sent before we know the member's language.
 
 | Key | Ελληνικά | English |
 | --- | --- | --- |
 | `email.code.subject` | Ο κωδικός σου: {code} | Your code: {code} |
 | `email.code.preheader` | Ισχύει {minutes} λεπτά. Μην τον δώσεις σε κανέναν. | Valid for {minutes} minutes. Don't share it with anyone. |
 | `email.code.p1` | Ο κωδικός σου για το {programName} είναι: | Your {programName} code is: |
-| `email.code.p2` | Ισχύει για {minutes} λεπτά. Το προσωπικό του Overoll δεν θα σου τον ζητήσει ποτέ. | It's valid for {minutes} minutes. Overoll staff will never ask you for it. |
+| `email.code.p2` | Ισχύει για {minutes} λεπτά. Το προσωπικό του {brandName} δεν θα σου τον ζητήσει ποτέ. | It's valid for {minutes} minutes. {brandName} staff will never ask you for it. |
 | `email.code.p3` | Δεν τον ζήτησες εσύ; Αγνόησε αυτό το email: χωρίς τον κωδικό, κανείς δεν μπαίνει στον λογαριασμό σου. | Didn't ask for it? Ignore this email: without the code, nobody can get into your account. |
 
 SMS sign-in code (sender ID "Overoll"). Greek lowercase letters switch the SMS to Unicode, where one message holds 70 characters, so the Greek text stays under 70 (counted with a 6-digit code). Optionally add a last line `@{clubUrl domain} #{code}` so iPhone and Android offer to autofill the code in the web app.
@@ -602,7 +602,7 @@ One line per code, telling the person what to do next. Source of truth: `data/co
 
 ## g. In-store print
 
-The QR on the counter stand opens `{clubUrl}/join?store={storeCode}`: one stand per store, codes in `data/stores.json`. Greek large, English smaller underneath, as on the website.
+The QR on the counter stand opens `{clubUrl}/join?store={storeCode}`: one stand per store, codes in `data/overoll/stores.json`. Greek large, English smaller underneath, as on the website.
 
 ### g1. Counter QR stand
 
@@ -694,7 +694,7 @@ The web app's home page is the landing page: logged-out visitors see this conten
 | `landing.stores.title` | Βρες το δικό σου Overoll | Find your Overoll |
 | `landing.stores.intro` | Οι πόντοι σου μετράνε σε όλα τα Overoll σε Αττική και Θεσσαλονίκη, με τους ίδιους κανόνες παντού. Μάζευε σε ένα, εξαργύρωσε σε άλλο. | Your points count at every Overoll in Attica and Thessaloniki, with the same rules everywhere. Collect at one, redeem at another. |
 
-The rewards list renders from the catalog (names from `data/rewards.json`, costs from `packages/core`), never hard-coded. Today it reads:
+The rewards list renders from the catalog (names from `data/overoll/rewards.json`, costs from `packages/core`), never hard-coded. Today it reads:
 
 | Reward (el / en) | Classic | Gold | Club |
 | --- | ---: | ---: | ---: |
@@ -706,7 +706,7 @@ The rewards list renders from the catalog (names from `data/rewards.json`, costs
 | Croissant + καφές / Croissant + coffee | 850 | 680 | 600 |
 | Overoll Croissant Box / Overoll Croissant Box | 1950 | 1560 | 1370 |
 
-The tiers block reuses `tiers.*.name` and `tiers.*.benefit` (§c). The store list renders from `data/stores.json` with the existing `stores.*` keys.
+The tiers block reuses `tiers.*.name` and `tiers.*.benefit` (§c). The store list renders from `data/overoll/stores.json` with the existing `stores.*` keys.
 
 ### h3. FAQ
 

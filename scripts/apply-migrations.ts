@@ -1,6 +1,7 @@
 /**
- * Applies new database migrations (supabase/migrations/<version>_<name>.sql) to the hosted
- * project. CI runs it on main after all tests pass, before the Edge Function deploy.
+ * Applies new database migrations (supabase/migrations/<version>_<name>.sql) to every hosted
+ * project (one per brand, supabase/projects/*.json). CI runs it on main after all tests pass,
+ * before the Edge Function deploy.
  *
  * Each pending file runs in one transaction together with its row in
  * supabase_migrations.schema_migrations (the record `supabase db push` and the Supabase MCP
@@ -8,16 +9,20 @@
  *
  *   npm run migrations:apply              needs SUPABASE_ACCESS_TOKEN
  *   npm run migrations:apply -- --dry-run lists what would run
+ *   ... -- --project koala                only that brand's project (repeatable)
  *
  * Refuses to run when Supabase has a migration this repo doesn't (the histories differ).
  */
 import { createHash } from 'node:crypto';
 import { readFileSync, readdirSync } from 'node:fs';
-import { dirname, join } from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { join } from 'node:path';
+import { root, selectedProjects } from './projects.js';
 
-const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const dir = join(root, 'supabase/migrations');
+
+/** A new project has no migration history yet; this is the table the Supabase CLI keeps. */
+const historyTable = `create schema if not exists supabase_migrations;
+create table if not exists supabase_migrations.schema_migrations (version text primary key, statements text[], name text);`;
 
 interface Migration {
   version: string;
@@ -64,11 +69,15 @@ async function main() {
   const dryRun = process.argv.includes('--dry-run');
   const token = process.env.SUPABASE_ACCESS_TOKEN;
   if (!token) throw new Error('SUPABASE_ACCESS_TOKEN is not set');
-  const { projectRef } = JSON.parse(readFileSync(join(root, 'supabase/project.config.json'), 'utf8')) as {
-    projectRef: string;
-  };
-
   const local = localMigrations(readdirSync(dir), (f) => readFileSync(join(dir, f), 'utf8'));
+  for (const { brand, projectRef } of selectedProjects()) {
+    console.log(`== ${brand} (${projectRef})`);
+    await migrate(token, projectRef, local, dryRun);
+  }
+}
+
+async function migrate(token: string, projectRef: string, local: Migration[], dryRun: boolean) {
+  if (!dryRun) await query(token, projectRef, historyTable);
   const remote = (await query(
     token,
     projectRef,

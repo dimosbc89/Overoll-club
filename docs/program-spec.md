@@ -8,7 +8,7 @@ All numbers live in `packages/core/src/config.ts` and can be changed by HQ later
 | Topic | Decision |
 | --- | --- |
 | Name | **Overoll Club** (working name; final name before launch, it is a setting) |
-| Stores | 10 confirmed so far (9 Athens, 1 Thessaloniki, `data/stores.json`); Overoll says 11–20, Nicosia to confirm. One program, same rules everywhere, decided by HQ |
+| Stores | 10 confirmed so far (9 Athens, 1 Thessaloniki, `data/overoll/stores.json`); Overoll says 11–20, Nicosia to confirm. One program, same rules everywhere, decided by HQ |
 | Average spend | €5–8 per visit |
 | POS | Unknown. Version 1 does **not** integrate with the POS: staff type the receipt total on the staff console |
 | Delivery orders | Not decided. Built behind a switch, **off at launch**; decide after the pilot |
@@ -135,7 +135,7 @@ Example: €6.40 receipt, Gold member → floor(640 × 10 × 125 / 10 000) = 80 
 - [x] Welcome reward: free butter croissant, approved
 - [ ] Delivery orders: on or off after the pilot
 - [x] Pilot store: Chalandri
-- [x] Store list: launch with the 10 stores in `data/stores.json`; more stores can be added from the back office
+- [x] Store list: launch with the 10 stores in `data/overoll/stores.json`; more stores can be added from the back office
 - [x] Logo files, colours, fonts from the website project (`docs/brand.md`)
 - [x] Club tier stays as is (×1.50 earn, 30% cheaper rewards), decided 9 Nov
 - Newsletter list: deferred to marketing, not needed for launch

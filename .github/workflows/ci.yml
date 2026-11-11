@@ -26,8 +26,8 @@ jobs:
       - run: npm run functions:build
 
   migrate:
-    # Applies new files in supabase/migrations to the hosted database (scripts/apply-migrations.ts),
-    # after every test passed and before the function deploy that may need them.
+    # Applies new files in supabase/migrations to every brand's hosted database
+    # (scripts/apply-migrations.ts), after every test passed and before the function deploy.
     needs: test
     if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
     runs-on: ubuntu-24.04
@@ -74,13 +74,19 @@ jobs:
         if: env.SUPABASE_ACCESS_TOKEN != ''
         with:
           version: latest
-      - name: Deploy Edge Functions
+      - name: Deploy Edge Functions (every brand's project, supabase/projects/*.json)
         if: env.SUPABASE_ACCESS_TOKEN != ''
-        run: supabase functions deploy api --remote=lwhxqnmntihmavqngeca --use-api --no-verify-jwt --yes
+        run: |
+          for f in supabase/projects/*.json; do
+            ref=$(node -p "require('./$f').projectRef")
+            echo "== $f ($ref)"
+            supabase functions deploy api --remote=$ref --use-api --no-verify-jwt --yes
+          done
 
   configure-project:
-    # Applies supabase/project.config.json with the Management API: Auth URLs, the
-    # sign-in code email, SMTP via Resend (once switched on) and the API's CORS origins.
+    # Applies supabase/projects/<brand>.json to each brand's project with the Management API:
+    # Auth URLs, the sign-in code email, SMTP via Resend (once switched on), the API's CORS
+    # origins, the scheduled jobs, and a new brand's seed (only when its brand row is missing).
     needs: [test, migrate]
     if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
     runs-on: ubuntu-24.04

@@ -23,8 +23,8 @@ Legend: **D** = Dimos · **C** = Claude · ☐ open · ☑ done
 - ☐ C + D: Google Cloud service account with the Wallet API, registered in the console (week 2, for creating passes from our server)
 - ☐ D: complete the Google business profile (legal name, address) so Google can approve it (step 2 of 3), and add a second admin
 - ☑ C: brand (logos, colours, fonts) from the website project → `docs/brand.md`, `assets/brand/`
-- ☑ C: store list (10 stores) from the website + Wolt → `data/stores.json`
-- ☑ C: menu with prices from Wolt + reward catalog proposal → `docs/menu-and-rewards.md`, `supabase/seed.sql`
+- ☑ C: store list (10 stores) from the website + Wolt → `data/overoll/stores.json`
+- ☑ C: menu with prices from Wolt + reward catalog proposal → `docs/menu-and-rewards.md`, `supabase/seed/<brand>.sql`
 - ☑ C: pilot store chosen: **Chalandri** (Κατσουλιέρη 10)
 - ☑ C: authorization letter drafted (Greek + English)
 - ☐ D: Overoll fills in and signs the authorization letter
@@ -39,7 +39,7 @@ Legend: **D** = Dimos · **C** = Claude · ☐ open · ☑ done
 - ☐ C + D: once Resend shows the domain verified, connect SMTP to Supabase (Resend's Supabase integration or an API key as GitHub secret `RESEND_API_KEY`) and set `email.enabled`
 - ☐ D: Overoll's IT adds the DNS records
 - ☑ C: Cloudflare Pages projects `overoll-loyalty` (member web app → https://overoll-loyalty.pages.dev) and `overoll-loyalty-admin` (back office + till → https://overoll-loyalty-admin.pages.dev), connected to the GitHub repo: every push to `main` builds and deploys (`npm run build:web:mobile|admin`), no token. Custom domains added, waiting for the DNS records
-- ☑ C: Supabase settings as code (`supabase/project.config.json`): site URL, redirect URLs, 6-digit sign-in code valid 10 minutes, Greek + English code email, API CORS origins; applied by CI
+- ☑ C: Supabase settings as code (`supabase/projects/overoll.json`): site URL, redirect URLs, 6-digit sign-in code valid 10 minutes, Greek + English code email, API CORS origins; applied by CI
 - ☐ C: switch on SMTP once Resend has verified the domain (until then sign-in emails reach only Supabase org members, a few per hour)
 - ☑ C: copy deck v0.1 el/en (`docs/copy-deck.md`, `data/copy/errors.*.json`)
 - ☑ D: copy deck questions answered: welcome gift 30 days, PIN once per shift, €80 cap, age 15+ (rules in `packages/core` config)
@@ -50,7 +50,7 @@ Legend: **D** = Dimos · **C** = Claude · ☐ open · ☑ done
 - ☑ C: v0.2 + v0.3 live on Supabase (9 Nov): 5 migrations, welcome reward set, API deployed; pg_cron runs `jobs/expire-redemptions` every minute and `jobs/expire-points` daily (`supabase/jobs.sql`, token kept in Vault)
 - ☑ C: API v0.3: `join` stores the 15+ box (`minimum_age_confirmed_at`), gift codes return `giftId`
 - ☐ D: approve the new texts: error messages (`pin_locked`, `receipt_already_used`, `gift_*`, §f2), console labels (§f1b, 55), member app additions (§b7, 31), sign-in code email (§e2)
-- ☐ D: the Overoll design system mentions stores at the airport and in Nicosia: confirm with Overoll and add them to `data/stores.json`
+- ☐ D: the Overoll design system mentions stores at the airport and in Nicosia: confirm with Overoll and add them to `data/overoll/stores.json`
 - ☑ C: screen designs v0.1 (member app, till console, landing page, Wallet passes) on the design canvas; Figma copy for the designer
 
 ## Week 2 · 16–22 Nov · Join flow + card + Wallet
@@ -70,8 +70,8 @@ Legend: **D** = Dimos · **C** = Claude · ☐ open · ☑ done
 - ☑ C: rewards catalog, redemption codes (member app) and scan to redeem (console)
 - ☑ C: short member code the cashier can type: `scan` takes `memberCode` (case, spaces, dashes, Greek look-alikes don't matter); the console's typed field takes the token, the member code or a reward code (API v0.4)
 - ☑ C: account deletion (server route `account/delete` + Profile → Delete account screen): pending codes cancelled without refund, personal fields wiped, QR secret and auth user deleted, ledger kept; rejoining with the same email works (API v0.4, migration `account_deletion`)
-- ☑ C: English store names (`stores.name_en`, `address_en`, seeded from `data/stores.json`): console header, back-office stores, member app store list, join greeting and history
-- ☐ D + C: apply the v0.4 migrations (`account_deletion`, `store_names_en`) to Supabase, rename the files to the recorded versions, re-run `supabase/seed.sql` (fills the English names), deploy; then delete a test account in the app and check the auth user is gone (if the `postgres` role may not delete auth users, the Edge Function does it with the Auth admin API)
+- ☑ C: English store names (`stores.name_en`, `address_en`, seeded from `data/overoll/stores.json`): console header, back-office stores, member app store list, join greeting and history
+- ☐ D + C: apply the v0.4 migrations (`account_deletion`, `store_names_en`) to Supabase, rename the files to the recorded versions, re-run `supabase/seed/<brand>.sql` (fills the English names), deploy; then delete a test account in the app and check the auth user is gone (if the `postgres` role may not delete auth users, the Edge Function does it with the Auth admin API)
 - ☐ D: approve the v0.4 texts: `member_deleted` and `member_not_found` (§f2, changed), `console.scan.typeHint` (§f1b); the landing FAQ `landing.faq.delete.a` still mentions downloading a copy of your data first, which isn't built yet
 - ☐ C: keep the member's QR secret in the phone's secure storage in the native apps
 - ☐ C: tiers (annual review), fraud alerts (expiry job and PIN lockout done in week 1)

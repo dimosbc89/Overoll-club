@@ -1,0 +1,41 @@
+{
+  "brand": "koala",
+  "fetched_on": "2026-11-11",
+  "sources": {
+    "instagram": "@koalacoffeegr profile",
+    "press": "athensvoice.gr (Koala Coffee: Αργυρούπολη Μ. Γερουλάνου 77, 2117508000 · Άγιος Δημήτριος Αγίου Δημητρίου 159, 2109765594)",
+    "efood": "both stores' efood pages"
+  },
+  "notes": [
+    "Opening hours are not published anywhere we found: each store gives them before launch. Until then the app shows no hours.",
+    "Coordinates are left empty until confirmed; the app's directions use the address instead."
+  ],
+  "stores": [
+    {
+      "code": "agios-dimitrios",
+      "name_el": "Koala Άγιος Δημήτριος",
+      "name_en": "Koala Agios Dimitrios",
+      "address_el": "Λεωφ. Αγίου Δημητρίου 159, 173 43 Άγιος Δημήτριος",
+      "address_en": "Agiou Dimitriou Ave 159, 173 43 Agios Dimitrios",
+      "city": "Άγιος Δημήτριος",
+      "country": "GR",
+      "latitude": null,
+      "longitude": null,
+      "phone": "+302109765594",
+      "hours": {}
+    },
+    {
+      "code": "argyroupoli",
+      "name_el": "Koala Αργυρούπολη",
+      "name_en": "Koala Argyroupoli",
+      "address_el": "Μαρίνου Γερουλάνου 77, 164 52 Αργυρούπολη",
+      "address_en": "Marinou Geroulanou 77, 164 52 Argyroupoli",
+      "city": "Αργυρούπολη",
+      "country": "GR",
+      "latitude": null,
+      "longitude": null,
+      "phone": "+302117508000",
+      "hours": {}
+    }
+  ]
+}

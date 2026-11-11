@@ -1,10 +1,14 @@
 {
-  "$comment": "Supabase settings kept as code. scripts/configure-project.ts checks them in `npm test` and applies them from CI on main; scripts/build-web.ts gives the web apps their public settings from here. No secrets here: the publishable key is public by design, the SMTP password is the RESEND_API_KEY GitHub secret.",
+  "$comment": "Overoll's Supabase project, kept as code (one file per brand, scripts/projects.ts). scripts/configure-project.ts checks it in `npm test` and applies it from CI on main; scripts/build-web.ts gives the web apps their public settings from here. No secrets here: the publishable key is public by design, the SMTP password is the RESEND_API_KEY GitHub secret.",
+  "brand": "overoll",
   "projectRef": "lwhxqnmntihmavqngeca",
   "publishableKey": "sb_publishable_VpqvzU1n9j7wAVkILHj06w_Mhp4f4e1",
   "programName": "Overoll Club",
+  "brandName": "Overoll",
   "supportEmail": "club-support@growagency.online",
   "siteUrl": "https://loyalty.overoll.gr",
+  "emailLogoUrl": "https://lwhxqnmntihmavqngeca.supabase.co/storage/v1/object/public/brand/overoll/wallet-program-logo.png",
+  "appScheme": "overollclub",
   "redirectUrls": [
     "https://loyalty.overoll.gr/**",
     "https://admin.loyalty.overoll.gr/**",

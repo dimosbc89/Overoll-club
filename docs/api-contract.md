@@ -52,7 +52,7 @@ Base URL: `{SUPABASE_URL}/functions/v1/api`. Every call: `POST`, JSON body, `Aut
 - Console: the typed field on the scan screen takes the full `OC1.…` token, the member code or a reward code. A typed 8-character code is looked up as a member code first; on `member_not_found`, if it can be a reward code, the console opens Redeem with it. A code read by the camera that is not a member token still opens Redeem directly (a member card's QR is always a token).
 
 ### English store names
-- `stores.name_en`, `stores.address_en` (text, null or not blank), filled by `supabase/seed.sql` from `data/stores.json`. `name` / `address` stay Greek. The apps show the English one in English and fall back to Greek. Same access as the rest of `stores` (anyone reads active stores, HQ edits).
+- `stores.name_en`, `stores.address_en` (text, null or not blank), filled by `supabase/seed/<brand>.sql` from `data/overoll/stores.json`. `name` / `address` stay Greek. The apps show the English one in English and fall back to Greek. Same access as the rest of `stores` (anyone reads active stores, HQ edits).
 
 ### Error codes
 - No new code. `member_deleted` (already in the union) is now also returned by `scan`, `award` and `redemptions/create`; its text changed (it is shown at the till) and so did `member_not_found` ("check the code"): copy deck §f2, to approve.

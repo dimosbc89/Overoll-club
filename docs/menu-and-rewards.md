@@ -4,7 +4,7 @@ Status: **approved by Dimos, 9 Nov 2026.** We launch with the Wolt prices; HQ ca
 
 ## Where the prices come from
 
-The menus of all 10 stores on Wolt, read on 9 Nov 2026 (`data/menu.json`, 78 items). Prices are the same in every store, with four small exceptions in Thessaloniki (savoury croissants €0.10–0.20 cheaper or dearer) and two combo/frappe differences. Delivery-app prices can be higher than in the shop, so **Overoll must confirm the shop prices before we launch**. The reward costs below update by themselves when the shelf prices change (`npm run seed:generate`).
+The menus of all 10 stores on Wolt, read on 9 Nov 2026 (`data/overoll/menu.json`, 78 items). Prices are the same in every store, with four small exceptions in Thessaloniki (savoury croissants €0.10–0.20 cheaper or dearer) and two combo/frappe differences. Delivery-app prices can be higher than in the shop, so **Overoll must confirm the shop prices before we launch**. The reward costs below update by themselves when the shelf prices change (`npm run seed:generate`).
 
 Typical visit: croissant €3.00–4.00 + coffee €2.20–2.70 ≈ **€5.50–6.50**, which matches the €5–8 average spend.
 
@@ -47,6 +47,6 @@ Matcha, smoothies, juices, bottled water, spreads and the 16/24-piece boxes stay
 
 ## Files
 
-- `data/menu.json`: all items with Wolt prices (cents), stores listing each item.
-- `data/rewards.json`: the catalog above, with the menu items each reward covers.
-- `supabase/seed.sql`: generated from both by `npm run seed:generate`; `npm test` fails if it is out of date.
+- `data/overoll/menu.json`: all items with Wolt prices (cents), stores listing each item.
+- `data/overoll/rewards.json`: the catalog above, with the menu items each reward covers.
+- `supabase/seed/<brand>.sql`: generated from both by `npm run seed:generate`; `npm test` fails if it is out of date.
