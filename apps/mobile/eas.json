@@ -1,0 +1,36 @@
+{
+  "cli": {
+    "version": ">= 16.0.0",
+    "appVersionSource": "remote"
+  },
+  "build": {
+    "koala": {
+      "env": {
+        "EXPO_PUBLIC_BRAND": "koala",
+        "EXPO_PUBLIC_SUPABASE_URL": "https://rkyoynrsimtotdirqkns.supabase.co",
+        "EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY": "sb_publishable_tt5oLd6aU58k3l4xzF8bZA_sqahX_jw",
+        "EXPO_PUBLIC_CLUB_URL": "https://koala-club.pages.dev"
+      },
+      "autoIncrement": true
+    },
+    "koala-preview": {
+      "extends": "koala",
+      "distribution": "internal",
+      "autoIncrement": false
+    },
+    "overoll": {
+      "env": {
+        "EXPO_PUBLIC_BRAND": "overoll",
+        "EXPO_PUBLIC_SUPABASE_URL": "https://lwhxqnmntihmavqngeca.supabase.co",
+        "EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY": "sb_publishable_VpqvzU1n9j7wAVkILHj06w_Mhp4f4e1",
+        "EXPO_PUBLIC_CLUB_URL": "https://loyalty.overoll.gr"
+      },
+      "autoIncrement": true
+    },
+    "overoll-preview": {
+      "extends": "overoll",
+      "distribution": "internal",
+      "autoIncrement": false
+    }
+  }
+}

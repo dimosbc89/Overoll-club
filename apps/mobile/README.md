@@ -1,12 +1,26 @@
-# @overoll/mobile — Overoll Club member app
+# @overoll/mobile — member app (Overoll Club, Koala Club)
 
 Expo SDK 58 + expo-router. One codebase for **iOS, Android and the customer web app** (Expo web, static output). Screens follow the approved-for-review designs on the design canvas (`Main`, `Card`, `Rewards`, `Redeem`); texts come from `docs/copy-deck.md`.
 
-| | |
-| --- | --- |
-| App name / slug | Overoll Club / `overoll-club` |
-| Bundle id / package | `online.growagency.overoll` |
-| URL scheme | `overollclub://` (counter QR on native: `overollclub://join?store=<code>`) |
+One app per brand, from the same code. `EXPO_PUBLIC_BRAND` picks the brand at build time (`--brand` in `scripts/build-web.ts`, the profile in `eas.json` for native builds); `app.config.ts` takes the name and URL scheme from `supabase/projects/<brand>.json` and the store identity, icon and splash from `brands/<brand>/`.
+
+| | Overoll | Koala |
+| --- | --- | --- |
+| App name / slug | Overoll Club / `overoll-club` | Koala Club / `koala-club` |
+| Bundle id / package | `online.growagency.overoll` | `online.growagency.koala` |
+| URL scheme | `overollclub://` | `koalaclub://` |
+| Icon, adaptive icon, splash | `brands/overoll/*.png` | `brands/koala/*.png` |
+
+The counter QR on native opens `<scheme>://join?store=<code>`. Bundle ids can still change until the app record exists in App Store Connect / Google Play Console. App Store guideline 4.2.6: apps built from a shared template must be submitted from the brand's own Apple Developer account, so each brand needs its own organisation account (GROW is added to it as developer).
+
+### Native builds (EAS)
+
+`eas.json` has one profile per brand (`overoll`, `koala`, plus `<brand>-preview` for internal test builds) with the same public settings the web build uses (`test/app-config.test.ts` keeps them in step with `supabase/projects/`). Not done yet: an Expo account and `eas init` per app (adds `extra.eas.projectId`), and the brands' Apple and Google accounts.
+
+```bash
+EXPO_PUBLIC_BRAND=koala npx expo config --type public   # see a brand's resolved app config
+eas build --profile koala --platform all                # once the Expo and store accounts exist
+```
 
 ## Run
 
@@ -81,4 +95,4 @@ Rules: no user-facing text in components (add keys to both message files **and**
 - **Terms / privacy links**: the terms line is shown; the links wait for `{termsUrl}` / `{privacyUrl}`.
 - **SMS sign-in**: email only until the SMS provider is chosen.
 - QR secret on native: move from AsyncStorage to the keychain (expo-secure-store) before the native release.
-- No app icon or splash yet (needs 1024×1024 PNG exports of the mark).
+- App icons and splash are drafts made from the brand marks (`brands/<brand>/`); the designer's versions replace them before the store release.
