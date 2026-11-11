@@ -8,13 +8,17 @@ The zone is managed by GROW in Cloudflare, so records are added there directly. 
 | 1 | CNAME | `club` | `koala-club.pages.dev` | proxied | Member web app + landing (Pages project `koala-club`, custom domain added) | added 12 Nov |
 | 2 | CNAME | `admin` | `koala-club-admin.pages.dev` | proxied | Back office + till console (Pages project `koala-club-admin`, custom domain added) | added 12 Nov |
 | 3 | TXT | `_dmarc` | `v=DMARC1; p=none;` | | DMARC, reporting only (helps Gmail and Yahoo accept the sign-in emails) | added 12 Nov |
-| 4–6 | TXT / MX / CNAME | from Resend | DKIM `resend._domainkey`, return path `send` | | Sign-in emails from `app@koalacoffee.gr` | waiting: Resend sign-in |
+| 4 | A | `mail` | `176.119.210.91` | DNS only | GROW's mail server `cloud.growagency.online` (same as cosmostax.gr, marketingagencygreece.online) | added 12 Nov |
+| 5 | MX | `@` | `mail.koalacoffee.gr`, priority 10 | | Mail to `@koalacoffee.gr` goes to GROW's mail server (confirmed by Dimos, 12 Nov) | added 12 Nov |
+| 6 | TXT | `@` | `v=spf1 +a +mx +a:cloud.growagency.online -all` | | SPF for mail sent by GROW's server as `@koalacoffee.gr` | added 12 Nov |
+| 7–9 | TXT / MX / CNAME | from Resend | DKIM `resend._domainkey`, return path `send` | | Sign-in emails from `app@koalacoffee.gr` | waiting: Resend sign-in |
 
 Not set on purpose:
 - Nothing on the root `koalacoffee.gr` or `www`: free for Koala's website later.
-- No MX: nobody receives mail at `@koalacoffee.gr` yet, so replies to a sign-in email bounce. When Koala wants mail
-  there (Google Workspace, or Cloudflare Email Routing to an existing inbox), add its MX and SPF; the Resend records
-  do not get in the way (they live on `send` and `resend._domainkey`).
+- Mail: `koalacoffee.gr` must also be added as a mail domain on GROW's server (`cloud.growagency.online`), with the
+  mailboxes Koala wants, or incoming mail is refused. The server's own DKIM key for `koalacoffee.gr`
+  (`default._domainkey`), once it makes one, goes here too. The Resend records never collide with it: they live on
+  `send` and `resend._domainkey`, and the root SPF does not need Resend (its sending passes DMARC through its own DKIM).
 
 When the registry publishes the domain (new `.gr` domains take a few hours):
 1. Cloudflare marks the zone active; both Pages custom domains turn active and get certificates by themselves.
