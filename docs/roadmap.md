@@ -121,7 +121,7 @@ Legend: **D** = Dimos · **C** = Claude · ☐ open · ☑ done
 - ☑ C: Koala brand layer in the apps (theme, logo, fonts, copy in Greek and English)
 - ☑ C: Supabase project `koala-club`: database (11 migrations, 2 stores, 9 rewards, cinnamon roll welcome gift)
 - ☑ D: GitHub secret `SUPABASE_ACCESS_TOKEN_KOALA` (11 Nov)
-- ☐ C: CI deploys the API, Auth settings and scheduled jobs to `koala-club`; check them
-- ☐ C: Cloudflare Pages `koala-club` (web app) and `koala-club-admin` (back office + till)
-- ☐ C: end-to-end test: join, points at the till, reward code
+- ☑ C: CI deploys the API, Auth settings and scheduled jobs to `koala-club`; checked (11 Nov)
+- ☑ C: Cloudflare Pages `koala-club` (https://koala-club.pages.dev) and `koala-club-admin` (https://koala-club-admin.pages.dev), built from `main`
+- ☐ D + C: end-to-end test with a real sign-in: join, points at the till, reward code (needs a staff account and a till device for a Koala store)
 - ☐ D: answers from Koala (catalog and prices, opening hours, names, domain and sender email, legal entity, wordmark, efood, till device)

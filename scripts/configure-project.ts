@@ -92,7 +92,7 @@ export function buildDesired(cfg: ProjectConfig, copy: Copy, template: string, j
   if (!subject.includes(TOKEN) || !html.includes(TOKEN)) throw new Error('the sign-in email must show the code');
   const jobsSql = jobs.replaceAll('{projectRef}', cfg.projectRef);
   if (/\{[a-zA-Z]+\}/.test(jobsSql.replace(/\{\}/g, ''))) throw new Error('supabase/jobs.sql: unknown placeholder');
-  if (!/cron\.schedule\('overoll-expire-redemptions'/.test(jobsSql) || !/cron\.schedule\('overoll-expire-points'/.test(jobsSql)) {
+  if (!/cron\.schedule\('club-expire-redemptions'/.test(jobsSql) || !/cron\.schedule\('club-expire-points'/.test(jobsSql)) {
     throw new Error('supabase/jobs.sql must schedule both jobs');
   }
 
@@ -210,7 +210,7 @@ async function seedIfNew(token: string, cfg: ProjectConfig) {
 async function scheduleJobs(token: string, ref: string, jobsSql: string) {
   await api(token, 'POST', `/projects/${ref}/database/query`, { query: jobsSql });
   const rows = (await api(token, 'POST', `/projects/${ref}/database/query`, {
-    query: "select jobname, schedule, active from cron.job where jobname like 'overoll-%' order by jobname",
+    query: "select jobname, schedule, active from cron.job where jobname like 'club-%' order by jobname",
   })) as { jobname: string; schedule: string; active: boolean }[];
   console.log(`jobs: ${rows.map((r) => `${r.jobname} (${r.schedule}${r.active ? '' : ', inactive'})`).join(', ')}`);
 }

@@ -46,8 +46,13 @@ as $fn$
 $fn$;
 revoke all on function private.call_api_job(text) from public, anon, authenticated;
 
+-- Job names are brand-neutral (every brand's project runs the same file). The first setup
+-- named them overoll-*: remove those once, the club-* ones below replace them.
+select cron.unschedule(jobname) from cron.job
+where jobname in ('overoll-expire-redemptions', 'overoll-expire-points');
+
 -- Reward codes not used within 15 minutes expire: the points (or the welcome gift) go back.
-select cron.schedule('overoll-expire-redemptions', '* * * * *', $cmd$select private.call_api_job('expire-redemptions')$cmd$);
+select cron.schedule('club-expire-redemptions', '* * * * *', $cmd$select private.call_api_job('expire-redemptions')$cmd$);
 
 -- Points expiry, daily at 01:15 UTC (03:15 Athens time in winter, 04:15 in summer).
-select cron.schedule('overoll-expire-points', '15 1 * * *', $cmd$select private.call_api_job('expire-points')$cmd$);
+select cron.schedule('club-expire-points', '15 1 * * *', $cmd$select private.call_api_job('expire-points')$cmd$);

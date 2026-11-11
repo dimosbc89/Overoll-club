@@ -32,7 +32,8 @@ Reward catalog (draft, efood prices of 11 Nov 2026, costs from `packages/core`):
 ## Status of the Supabase project
 
 - **Database: done (11 Nov 2026).** All 11 migrations and the seed (2 stores, 9 rewards, cinnamon roll as welcome gift) were applied through the Supabase connection, because CI's token could not reach this project yet. Each file was checked by md5 against the repo before it ran, and recorded in `supabase_migrations.schema_migrations` exactly as `scripts/apply-migrations.ts` records it, so CI continues from here. The schema (tables, columns, policies, functions, indexes, grants) matches Overoll's apart from the jobs function below; security advisor: same two INFO notes as Overoll (server-only tables without policies, by design).
-- **Waiting for CI** (`deploy (koala)` job): the Edge Function `api`, Auth settings (site and redirect URLs, sign-in code), the `ALLOWED_ORIGINS` secret and the scheduled jobs. Needs a token with access to this project: GitHub secret `SUPABASE_ACCESS_TOKEN_KOALA` (or a `SUPABASE_ACCESS_TOKEN` that reaches both projects), then re-run the job.
+- **API, Auth and jobs: done (11 Nov 2026)** by CI (`deploy (koala)`) with the GitHub secret `SUPABASE_ACCESS_TOKEN_KOALA`: Edge Function `api`, site and redirect URLs, 6-digit sign-in code email, `ALLOWED_ORIGINS`, scheduled jobs (`club-expire-redemptions` every minute, `club-expire-points` daily). Checked: the API refuses unauthenticated calls, answers CORS only for the Koala sites, and the every-minute job returns 200.
+- **Web: done (11 Nov 2026).** Cloudflare Pages `koala-club` (https://koala-club.pages.dev, `npm run build:web:mobile -- --brand koala` → `apps/mobile/dist`) and `koala-club-admin` (https://koala-club-admin.pages.dev, `npm run build:web:admin -- --brand koala` → `apps/admin/out`), connected to the repo: every push to `main` rebuilds them. Both talk only to the Koala project.
 
 ## Before launch: needed from Koala
 
