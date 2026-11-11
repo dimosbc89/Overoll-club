@@ -46,14 +46,14 @@ for f in "$root"/supabase/seed/*.sql; do
 done
 for brand in "${brands[@]}"; do
   brand_data="$root/data/$brand"
-  want_stores=$(node -e "console.log(require('$brand_data/overoll/stores.json').stores.length)")
-  want_rewards=$(node -e "console.log(require('$brand_data/overoll/rewards.json').rewards.length)")
+  want_stores=$(node -e "console.log(require('$brand_data/stores.json').stores.length)")
+  want_rewards=$(node -e "console.log(require('$brand_data/rewards.json').rewards.length)")
   got=$($seed_cmd -At -c "select (select count(*) from public.brands where slug = '$brand') || ' ' || (select count(*) from public.stores s join public.brands b on b.id = s.brand_id where b.slug = '$brand') || ' ' || (select count(*) from public.rewards r join public.brands b on b.id = r.brand_id where b.slug = '$brand')")
   if [ "$got" != "1 $want_stores $want_rewards" ]; then
     echo "SEED CHECK FAILED ($brand): brands/stores/rewards = $got, expected 1 $want_stores $want_rewards"; exit 1
   fi
-  welcome_reward=$(node -e "console.log(require('$brand_data/overoll/rewards.json').welcome_reward.reward)")
-  want_welcome=$(node -e "const r=require('$brand_data/overoll/rewards.json'); console.log(r.rewards.find(x => x.id === r.welcome_reward.reward).name_en)")
+  welcome_reward=$(node -e "console.log(require('$brand_data/rewards.json').welcome_reward.reward)")
+  want_welcome=$(node -e "const r=require('$brand_data/rewards.json'); console.log(r.rewards.find(x => x.id === r.welcome_reward.reward).name_en)")
   got_welcome=$($seed_cmd -At -c "select r.name_en from public.brands b join public.rewards r on r.id = (b.config #>> '{welcome,rewardId}')::uuid and r.brand_id = b.id where b.slug = '$brand'")
   if [ "$got_welcome" != "$want_welcome" ]; then
     echo "SEED CHECK FAILED ($brand): welcome reward = '$got_welcome', expected '$want_welcome' ($welcome_reward)"; exit 1
