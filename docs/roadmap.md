@@ -114,3 +114,14 @@ Legend: **D** = Dimos · **C** = Claude · ☐ open · ☑ done
 - Delivery codes decision; POS discovery for integration
 - Newsletter invitation to Overoll's existing list (marketing, later)
 - Phase 2 list in the plan doc
+
+## Koala Club (second brand, from 11 Nov) · details in `docs/koala/README.md`
+
+- ☑ C: multi-brand platform: one Supabase project per brand (`supabase/projects/<brand>.json`), data and seed per brand, CI deploys each brand on its own
+- ☑ C: Koala brand layer in the apps (theme, logo, fonts, copy in Greek and English)
+- ☑ C: Supabase project `koala-club`: database (11 migrations, 2 stores, 9 rewards, cinnamon roll welcome gift)
+- ☑ D: GitHub secret `SUPABASE_ACCESS_TOKEN_KOALA` (11 Nov)
+- ☐ C: CI deploys the API, Auth settings and scheduled jobs to `koala-club`; check them
+- ☐ C: Cloudflare Pages `koala-club` (web app) and `koala-club-admin` (back office + till)
+- ☐ C: end-to-end test: join, points at the till, reward code
+- ☐ D: answers from Koala (catalog and prices, opening hours, names, domain and sender email, legal entity, wordmark, efood, till device)
