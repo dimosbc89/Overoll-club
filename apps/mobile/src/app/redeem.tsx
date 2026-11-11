@@ -14,7 +14,9 @@ import { useSession } from '../lib/session';
 import { getSupabase } from '../lib/supabase';
 import { useNow } from '../lib/useNow';
 import { type } from '../theme/fonts';
-import { colors, radius, space } from '../theme/tokens';
+import { brand } from '../brand';
+import { raised } from '../theme/surface';
+import { colors, qr, radius, space } from '../theme/tokens';
 
 type Outcome = 'used' | 'cancelled' | 'expired';
 
@@ -124,8 +126,8 @@ function CodeScreen({ bundle }: { bundle: MemberBundle }) {
       onPress={back}
       style={({ pressed }) => [styles.back, pressed && { opacity: 0.7 }]}
     >
-      <Icon name="back" size={20} color={colors.plumDeep} strokeWidth={1.75} />
-      <Text style={[type.label, { color: colors.plumDeep }]}>{t('tabs.rewards')}</Text>
+      <Icon name="back" size={20} color={colors.accent} strokeWidth={1.75} />
+      <Text style={[type.label, { color: colors.accent }]}>{t('tabs.rewards')}</Text>
     </Pressable>
   );
 
@@ -140,7 +142,7 @@ function CodeScreen({ bundle }: { bundle: MemberBundle }) {
       <Screen title={t('redeem.code.title')} gap={18}>
         {backLink}
         <View style={styles.outcome} accessibilityLiveRegion="polite">
-          {outcome === 'used' ? <Icon name="croissant" size={40} color={colors.plumDeep} /> : null}
+          {outcome === 'used' ? <Icon name={brand.giftIcon} size={40} color={colors.accent} /> : null}
           <Text accessibilityRole="header" style={[type.heading, styles.center]}>
             {name}
           </Text>
@@ -165,16 +167,16 @@ function CodeScreen({ bundle }: { bundle: MemberBundle }) {
 
       <View style={styles.panel}>
         <View style={styles.qrBox} accessible accessibilityRole="image" accessibilityLabel={t('redeem.code.qrA11y')}>
-          <QRCode value={shown.code} size={200} color={colors.ink} backgroundColor={colors.white} ecl="M" quietZone={0} />
+          <QRCode value={shown.code} size={200} color={qr.dark} backgroundColor={qr.light} ecl="M" quietZone={0} />
         </View>
         <Text style={styles.code} accessibilityLabel={shown.code.split('').join(' ')}>
           {groupCode(shown.code)}
         </Text>
         <View style={styles.timer}>
-          <Text style={[type.bodyStrong, styles.center, { fontSize: 15, lineHeight: 20 }]} accessibilityLiveRegion="none">
+          <Text style={[type.bodyStrong, styles.center, styles.onCard, { fontSize: 15, lineHeight: 20 }]} accessibilityLiveRegion="none">
             {t('redeem.code.timer', { time: formatCountdown(left) })}
           </Text>
-          <ProgressBar value={Math.ceil(left / 1000)} max={total} label={t('redeem.code.timeA11y')} track={colors.white} height={8} />
+          <ProgressBar value={Math.ceil(left / 1000)} max={total} label={t('redeem.code.timeA11y')} track={colors.surface} height={8} />
         </View>
       </View>
 
@@ -206,9 +208,10 @@ const styles = StyleSheet.create({
   centerSelf: { alignSelf: 'center' },
   center: { textAlign: 'center' },
   title: { textAlign: 'center', fontSize: 16, lineHeight: 24 },
-  panel: { backgroundColor: colors.pink, borderRadius: radius.lg, padding: space.lg, alignItems: 'center', gap: space.md },
-  qrBox: { backgroundColor: colors.white, borderRadius: radius.md, padding: space.md },
-  code: { ...type.display, fontSize: 28, lineHeight: 32, letterSpacing: 4 },
+  panel: { backgroundColor: colors.card, borderRadius: radius.lg, padding: space.lg, alignItems: 'center', gap: space.md, ...raised },
+  onCard: { color: colors.onCard },
+  qrBox: { backgroundColor: qr.light, borderRadius: radius.md, padding: space.md },
+  code: { ...type.display, fontSize: 28, lineHeight: 32, letterSpacing: 4, color: colors.onCard },
   timer: { width: '100%', gap: space.sm },
   actions: { gap: 10 },
   bottom: { marginTop: 'auto' },

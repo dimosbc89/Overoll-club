@@ -1,5 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
+import { brand } from '../brand';
 import type { MemberBundle } from './data';
 
 /**
@@ -8,7 +9,7 @@ import type { MemberBundle } from './data';
  * the device and is removed on sign-out. (Native: move it to the keychain
  * with expo-secure-store when the native apps ship.)
  */
-const prefix = 'overoll.member.';
+const prefix = `${brand.slug}.member.`;
 const VERSION = 1;
 
 export async function loadCachedBundle(userId: string): Promise<MemberBundle | null> {

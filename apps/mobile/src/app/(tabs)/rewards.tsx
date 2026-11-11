@@ -16,6 +16,8 @@ import { tierName } from '../../lib/tiers';
 import { useNow } from '../../lib/useNow';
 import { useRemote } from '../../lib/useRemote';
 import { font, type } from '../../theme/fonts';
+import { brand as appBrand } from '../../brand';
+import { raised } from '../../theme/surface';
 import { colors, radius, space } from '../../theme/tokens';
 
 export default function RewardsTab() {
@@ -121,7 +123,7 @@ function MemberRewards({ bundle }: { bundle: MemberBundle }) {
         <Pressable
           accessibilityRole="link"
           onPress={() => router.push('/redeem')}
-          style={({ pressed }) => [styles.active, pressed && { backgroundColor: colors.cream }]}
+          style={({ pressed }) => [styles.active, pressed && { backgroundColor: colors.background }]}
         >
           <Text style={type.label}>{t('redeem.active', { reward: activeName, time: formatCountdown(activeLeft) })}</Text>
         </Pressable>
@@ -130,12 +132,12 @@ function MemberRewards({ bundle }: { bundle: MemberBundle }) {
       {gift ? (
         <View style={styles.gift} accessibilityLabel={t('rewards.welcome.title')}>
           <View style={styles.giftIcon}>
-            <Icon name="croissant" size={26} color={colors.ink} />
+            <Icon name={appBrand.giftIcon} size={26} color={colors.text} />
           </View>
           <View style={styles.giftText}>
             <Tag tone="paper" label={t('rewards.welcome.badge')} />
             <Text style={[type.bodyStrong, styles.giftTitle]}>{t('rewards.welcome.title')}</Text>
-            <Text style={type.caption}>{t('rewards.welcome.validUntil', { date: formatDayMonth(gift.expires_at, locale) })}</Text>
+            <Text style={[type.caption, styles.onGift]}>{t('rewards.welcome.validUntil', { date: formatDayMonth(gift.expires_at, locale) })}</Text>
           </View>
           <Button
             variant="paper"
@@ -176,7 +178,7 @@ function MemberRewards({ bundle }: { bundle: MemberBundle }) {
                 accessibilityLabel={`${name}, ${cost}, ${status}`}
                 accessibilityHint={t('rewards.redeem')}
                 onPress={() => setTarget({ kind: 'reward', reward: view.reward, cost: view.cost })}
-                style={({ pressed }) => [styles.row, i > 0 && styles.divider, pressed && { backgroundColor: colors.cream }]}
+                style={({ pressed }) => [styles.row, i > 0 && styles.divider, pressed && { backgroundColor: colors.background }]}
               >
                 {content}
               </Pressable>
@@ -202,13 +204,14 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     paddingVertical: space.ms,
     paddingHorizontal: space.md,
-    backgroundColor: colors.white,
+    backgroundColor: colors.surface,
     borderRadius: radius.md,
     borderWidth: 1.5,
-    borderColor: colors.plum,
+    borderColor: colors.outline,
   },
   gift: {
-    backgroundColor: colors.pink,
+    ...raised,
+    backgroundColor: colors.gift,
     borderRadius: radius.md,
     padding: space.md,
     flexDirection: 'row',
@@ -220,12 +223,13 @@ const styles = StyleSheet.create({
     width: 52,
     height: 52,
     borderRadius: 26,
-    backgroundColor: colors.white,
+    backgroundColor: colors.surface,
     alignItems: 'center',
     justifyContent: 'center',
   },
   giftText: { flex: 1, gap: space.xs, minWidth: 0 },
-  giftTitle: { ...font(800), fontSize: 16, lineHeight: 22, marginTop: 2 },
+  giftTitle: { ...font(800), fontSize: 16, lineHeight: 22, marginTop: 2, color: colors.onGift },
+  onGift: { color: colors.onGift },
   giftButton: { flexBasis: '100%' },
   list: { padding: 0, gap: 0, overflow: 'hidden' },
   row: {
@@ -238,6 +242,6 @@ const styles = StyleSheet.create({
   },
   divider: { borderTopWidth: 1, borderTopColor: colors.line },
   rowText: { flex: 1, minWidth: 0 },
-  cost: { ...type.label, fontSize: 13, lineHeight: 18, color: colors.plumDeep },
-  canHave: { ...type.label, fontSize: 13, lineHeight: 18, color: colors.plumDeep },
+  cost: { ...type.label, fontSize: 13, lineHeight: 18, color: colors.accent },
+  canHave: { ...type.label, fontSize: 13, lineHeight: 18, color: colors.accent },
 });

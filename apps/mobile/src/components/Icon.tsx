@@ -6,7 +6,7 @@ import Svg, { Circle, Path, Rect } from 'react-native-svg';
  * Overoll design system's stand-in). Decorative: hidden from screen readers,
  * the text next to them carries the meaning.
  */
-export type IconName = 'croissant' | 'card' | 'gift' | 'pin' | 'user' | 'back' | 'check';
+export type IconName = 'croissant' | 'cup' | 'card' | 'gift' | 'pin' | 'user' | 'back' | 'check';
 
 export function Icon({
   name,
@@ -32,6 +32,14 @@ export function Icon({
             {...stroke}
             d="M8.709 2.554a10 10 0 0 0-6.155 6.155 1.5 1.5 0 0 0 .676 1.626l9.807 5.42a2 2 0 0 0 2.718-2.718l-5.42-9.807a1.5 1.5 0 0 0-1.626-.676"
           />
+        </>
+      )}
+      {name === 'cup' && (
+        <>
+          <Path {...stroke} d="M17 8h1a3 3 0 0 1 0 6h-1" />
+          <Path {...stroke} d="M3 8h14v8a5 5 0 0 1-5 5H8a5 5 0 0 1-5-5V8z" />
+          <Path {...stroke} d="M7 2.5c0 1 1 1 1 2s-1 1-1 2" />
+          <Path {...stroke} d="M11 2.5c0 1 1 1 1 2s-1 1-1 2" />
         </>
       )}
       {name === 'card' && (

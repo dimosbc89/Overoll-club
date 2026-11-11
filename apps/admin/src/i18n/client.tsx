@@ -3,13 +3,14 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from 'react';
 
 import { createTranslate, defaultLocale, isLocale, type Locale, type Translate } from './messages';
+import { brand } from '../lib/brand';
 
 /**
  * Language for the back office and the till console, chosen in the header switch
  * and kept in this browser (the site is static, so there is no server to remember
  * it). Pages are pre-rendered in Greek; a stored English choice applies on load.
  */
-export const LOCALE_STORAGE_KEY = 'overoll_locale';
+export const LOCALE_STORAGE_KEY = `${brand.slug}_locale`;
 
 interface I18n {
   locale: Locale;

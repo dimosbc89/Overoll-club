@@ -1,15 +1,11 @@
 /**
  * Overoll logo shapes, from assets/brand/*.svg (the same paths as the Overoll
  * design system). test/brand-paths.test.ts checks they still match the files.
- * Drawn by <Logo>, which colours them: pink on cream/white, white on pink.
+ * Drawn by <Logo> in the brand's logo colours.
  */
-export interface BrandShape {
-  width: number;
-  height: number;
-  paths: readonly string[];
-}
+import type { LogoShape } from './types';
 
-export const logo: BrandShape = {
+export const logo: LogoShape = {
   width: 167.078,
   height: 132.297,
   paths: [
@@ -32,7 +28,7 @@ export const logo: BrandShape = {
   ],
 };
 
-export const wordmark: BrandShape = {
+export const wordmark: LogoShape = {
   width: 111.582,
   height: 30.137,
   paths: [
@@ -46,7 +42,7 @@ export const wordmark: BrandShape = {
   ],
 };
 
-export const mark: BrandShape = {
+export const mark: LogoShape = {
   width: 111.582,
   height: 65.234,
   paths: [

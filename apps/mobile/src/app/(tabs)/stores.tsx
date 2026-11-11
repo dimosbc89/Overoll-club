@@ -10,9 +10,10 @@ import { mapsUrl } from '../../lib/maps';
 import { localStore } from '../../lib/storeNames';
 import { useRemote } from '../../lib/useRemote';
 import { type } from '../../theme/fonts';
+import { raised } from '../../theme/surface';
 import { colors, minTouch, radius, space } from '../../theme/tokens';
 
-const shadow = Platform.OS === 'web' ? { boxShadow: '0 1px 2px #48423e14, 0 8px 24px #48423e14' } : { elevation: 2, shadowColor: colors.ink, shadowOpacity: 0.08, shadowRadius: 12, shadowOffset: { width: 0, height: 4 } };
+const shadow = raised;
 
 function hoursLabel(store: StoreRow, t: Translate, now: Date): string {
   const today = todayHours(store.opening_hours, now, store.time_zone);
@@ -69,14 +70,14 @@ const styles = StyleSheet.create({
   list: { gap: space.sm },
   store: {
     minHeight: minTouch,
-    backgroundColor: colors.white,
+    backgroundColor: colors.surface,
     borderRadius: radius.md,
     padding: space.md,
     gap: 2,
     ...shadow,
   },
-  pressed: { backgroundColor: colors.cream },
+  pressed: { backgroundColor: colors.background },
   name: { ...type.bodyStrong, fontSize: 17, lineHeight: 24 },
-  address: { ...type.body, color: colors.inkMuted },
-  hours: { ...type.label, color: colors.plumDeep },
+  address: { ...type.body, color: colors.textMuted },
+  hours: { ...type.label, color: colors.accent },
 });

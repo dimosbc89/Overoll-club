@@ -25,18 +25,43 @@ jobs:
       - run: npm run test:db
       - run: npm run functions:build
 
-  migrate:
-    # Applies new files in supabase/migrations to every brand's hosted database
-    # (scripts/apply-migrations.ts), after every test passed and before the function deploy.
-    needs: test
+  brands:
+    # One deploy job per brand below: the list is supabase/projects/*.json.
     if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
     runs-on: ubuntu-24.04
-    env:
-      SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+    outputs:
+      list: ${{ steps.list.outputs.list }}
     steps:
-      - name: Skip when the token is not set
+      - uses: actions/checkout@v5
+      - id: list
+        run: |
+          echo "list=$(node -p "JSON.stringify(require('fs').readdirSync('supabase/projects').filter(f => f.endsWith('.json')).map(f => f.slice(0, -5)).sort())")" >> "$GITHUB_OUTPUT"
+
+  deploy:
+    # Per brand, in order: new migrations (scripts/apply-migrations.ts), the Edge Function, then
+    # the project settings (scripts/configure-project.ts: Auth URLs, sign-in email, SMTP once
+    # switched on, CORS origins, a new brand's seed, scheduled jobs). Brands run independently:
+    # one brand's failure never stops another brand's deploy.
+    #
+    # Token: SUPABASE_ACCESS_TOKEN_<BRAND> when that secret exists (e.g. SUPABASE_ACCESS_TOKEN_KOALA),
+    # otherwise SUPABASE_ACCESS_TOKEN. Supabase dashboard → Account → Access tokens; GitHub repo →
+    # Settings → Secrets and variables → Actions. Without a token the brand is skipped.
+    needs: [test, brands]
+    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+    runs-on: ubuntu-24.04
+    strategy:
+      fail-fast: false
+      matrix:
+        brand: ${{ fromJSON(needs.brands.outputs.list) }}
+    name: deploy (${{ matrix.brand }})
+    env:
+      BRAND: ${{ matrix.brand }}
+      SUPABASE_ACCESS_TOKEN: ${{ secrets[format('SUPABASE_ACCESS_TOKEN_{0}', matrix.brand)] || secrets.SUPABASE_ACCESS_TOKEN }}
+      RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
+    steps:
+      - name: Skip when no token is set for this brand
         if: env.SUPABASE_ACCESS_TOKEN == ''
-        run: echo "SUPABASE_ACCESS_TOKEN is not set; skipping migrations."
+        run: echo "No SUPABASE_ACCESS_TOKEN for $BRAND; skipping its deploy."
       - uses: actions/checkout@v5
         if: env.SUPABASE_ACCESS_TOKEN != ''
       - uses: actions/setup-node@v5
@@ -44,66 +69,24 @@ jobs:
         with:
           node-version: 22
           cache: npm
+      - name: Install
+        if: env.SUPABASE_ACCESS_TOKEN != ''
+        run: npm ci
       - name: Apply new migrations
         if: env.SUPABASE_ACCESS_TOKEN != ''
-        run: npm ci && npm run migrations:apply
-
-  deploy-functions:
-    # Runs only on main and only once the SUPABASE_ACCESS_TOKEN secret exists
-    # (Supabase dashboard → Account → Access tokens; GitHub repo → Settings →
-    # Secrets and variables → Actions). Migrations are applied separately.
-    needs: [test, migrate]
-    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
-    runs-on: ubuntu-24.04
-    env:
-      SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
-    steps:
-      - name: Skip when the deploy token is not set
-        if: env.SUPABASE_ACCESS_TOKEN == ''
-        run: echo "SUPABASE_ACCESS_TOKEN is not set; skipping the deploy."
-      - uses: actions/checkout@v5
+        run: npm run migrations:apply -- --project "$BRAND"
+      - name: Build Edge Functions
         if: env.SUPABASE_ACCESS_TOKEN != ''
-      - uses: actions/setup-node@v5
-        if: env.SUPABASE_ACCESS_TOKEN != ''
-        with:
-          node-version: 22
-          cache: npm
-      - if: env.SUPABASE_ACCESS_TOKEN != ''
-        run: npm ci && npm run functions:build
+        run: npm run functions:build
       - uses: supabase/setup-cli@v1
         if: env.SUPABASE_ACCESS_TOKEN != ''
         with:
           version: latest
-      - name: Deploy Edge Functions (every brand's project, supabase/projects/*.json)
+      - name: Deploy Edge Functions
         if: env.SUPABASE_ACCESS_TOKEN != ''
         run: |
-          for f in supabase/projects/*.json; do
-            ref=$(node -p "require('./$f').projectRef")
-            echo "== $f ($ref)"
-            supabase functions deploy api --remote=$ref --use-api --no-verify-jwt --yes
-          done
-
-  configure-project:
-    # Applies supabase/projects/<brand>.json to each brand's project with the Management API:
-    # Auth URLs, the sign-in code email, SMTP via Resend (once switched on), the API's CORS
-    # origins, the scheduled jobs, and a new brand's seed (only when its brand row is missing).
-    needs: [test, migrate]
-    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
-    runs-on: ubuntu-24.04
-    env:
-      SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
-      RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
-    steps:
-      - name: Skip when the token is not set
-        if: env.SUPABASE_ACCESS_TOKEN == ''
-        run: echo "SUPABASE_ACCESS_TOKEN is not set; skipping."
-      - uses: actions/checkout@v5
-        if: env.SUPABASE_ACCESS_TOKEN != ''
-      - uses: actions/setup-node@v5
-        if: env.SUPABASE_ACCESS_TOKEN != ''
-        with:
-          node-version: 22
-          cache: npm
+          ref=$(node -p "require('./supabase/projects/' + process.env.BRAND + '.json').projectRef")
+          supabase functions deploy api --remote=$ref --use-api --no-verify-jwt --yes
       - name: Apply Supabase settings
         if: env.SUPABASE_ACCESS_TOKEN != ''
-        run: npm ci && npm run project:apply
+        run: npm run project:apply -- --project "$BRAND"

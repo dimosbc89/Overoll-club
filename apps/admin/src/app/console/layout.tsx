@@ -13,5 +13,9 @@ const manrope = Manrope({
 
 /** Full-screen till layout (tablet landscape, 1180×820 in the designs): no back-office header. */
 export default function ConsoleLayout({ children }: { children: ReactNode }) {
-  return <div className={`${manrope.variable} ${styles.root}`}>{children}</div>;
+  return (
+    <div data-console className={`${manrope.variable} ${styles.root}`}>
+      {children}
+    </div>
+  );
 }

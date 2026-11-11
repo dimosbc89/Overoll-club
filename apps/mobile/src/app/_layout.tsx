@@ -5,7 +5,7 @@ import { Platform } from 'react-native';
 
 import { I18nProvider } from '../i18n/I18nProvider';
 import { SessionProvider } from '../lib/session';
-import { fontAssets } from '../theme/fonts';
+import { fontAssets } from '../theme/fontAssets';
 import { colors } from '../theme/tokens';
 
 export default function RootLayout() {
@@ -19,7 +19,7 @@ export default function RootLayout() {
     <I18nProvider>
       <SessionProvider>
         <StatusBar style="dark" />
-        <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: colors.cream } }} />
+        <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: colors.background } }} />
       </SessionProvider>
     </I18nProvider>
   );

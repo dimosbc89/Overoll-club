@@ -7,6 +7,7 @@ import type { Cashier, StoreInfo } from '../../lib/console/machine';
 import { inLocale } from '../../lib/store-names';
 import styles from './console.module.css';
 import { Button, Initial, type ScreenContext } from './ui';
+import { brand } from '../../lib/brand';
 
 interface Props {
   ctx: ScreenContext;
@@ -23,7 +24,7 @@ export function ConsoleHeader({ ctx, store, cashier, todayOpen, busy }: Props) {
   return (
     <header className={styles.header}>
       {/* Plain <img>: a static SVG needs no image optimisation. */}
-      <img src="/overoll-wordmark.svg" alt={t('brand.wordmark')} width={104} height={28} />
+      <img src={brand.wordmark.onLight} alt={t('brand.wordmark')} width={brand.wordmark.width} height={brand.wordmark.height} />
       {store ? <p className={styles.storeName}>{t('console.header', { store: shortStoreName(inLocale(store.name, store.nameEn, locale)) })}</p> : null}
       <div className={styles.spacer} />
       {cashier ? (

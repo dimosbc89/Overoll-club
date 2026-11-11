@@ -17,7 +17,9 @@ import { useRefreshOnFocus, useSession } from '../../lib/session';
 import { useNow } from '../../lib/useNow';
 import { tierName } from '../../lib/tiers';
 import { font, type } from '../../theme/fonts';
-import { colors, minTouch, radius, space } from '../../theme/tokens';
+import { raised } from '../../theme/surface';
+import { colors, minTouch, qr, radius, space } from '../../theme/tokens';
+import { brand } from '../../brand';
 
 /** Home: the member card when signed in, the landing page otherwise (copy deck §h). */
 export default function CardTab() {
@@ -82,14 +84,14 @@ function MemberCard({ bundle, offline }: { bundle: MemberBundle; offline: boolea
         <View style={styles.pointsRow}>
           <View accessible accessibilityLabel={t('card.pointsA11y', { points })}>
             <Text style={styles.points}>{points}</Text>
-            <Text style={type.label}>{t('card.points')}</Text>
+            <Text style={[type.label, styles.onCard]}>{t('card.points')}</Text>
           </View>
           <Tag tone="paper" label={t('card.tier', { tier })} />
         </View>
 
         <View style={styles.qrBox}>
           <View accessible accessibilityRole="image" accessibilityLabel={t('card.qr.a11y')} style={styles.qr}>
-            {token ? <QRCode value={token} size={176} color={colors.ink} backgroundColor={colors.white} ecl="M" quietZone={0} /> : null}
+            {token ? <QRCode value={token} size={176} color={qr.dark} backgroundColor={qr.light} ecl="M" quietZone={0} /> : null}
           </View>
           <Text
             style={styles.memberCode}
@@ -98,8 +100,8 @@ function MemberCard({ bundle, offline }: { bundle: MemberBundle; offline: boolea
             {groupCode(member.member_code)}
           </Text>
         </View>
-        <Text style={[type.label, styles.centerText]}>{t('card.qr.hint')}</Text>
-        <Text style={[type.caption, styles.centerText]}>{t('card.qr.rotates', { seconds: config.qr.stepSeconds })}</Text>
+        <Text style={[type.label, styles.centerText, styles.onCard]}>{t('card.qr.hint')}</Text>
+        <Text style={[type.caption, styles.centerText, styles.onCard]}>{t('card.qr.rotates', { seconds: config.qr.stepSeconds })}</Text>
       </View>
 
       {next.kind !== 'none' ? (
@@ -156,7 +158,7 @@ function MemberCard({ bundle, offline }: { bundle: MemberBundle; offline: boolea
 function Banner({ label, onPress, icon }: { label: string; onPress?: () => void; icon?: boolean }) {
   const content = (
     <>
-      {icon ? <Icon name="croissant" size={22} color={colors.plumDeep} /> : null}
+      {icon ? <Icon name={brand.giftIcon} size={22} color={colors.accent} /> : null}
       <Text style={[type.label, styles.bannerText]}>{label}</Text>
     </>
   );
@@ -166,7 +168,7 @@ function Banner({ label, onPress, icon }: { label: string; onPress?: () => void;
       accessibilityRole="link"
       accessibilityLabel={label}
       onPress={onPress}
-      style={({ pressed }) => [styles.banner, pressed && { backgroundColor: colors.cream }]}
+      style={({ pressed }) => [styles.banner, pressed && { backgroundColor: colors.background }]}
     >
       {content}
     </Pressable>
@@ -198,19 +200,20 @@ function WalletPlaceholder({ label }: { label: string }) {
 
 const styles = StyleSheet.create({
   topRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', gap: space.md },
-  card: { backgroundColor: colors.pink, borderRadius: radius.lg, padding: space.mdl, paddingBottom: 18, gap: 14 },
+  card: { backgroundColor: colors.card, borderRadius: radius.lg, padding: space.mdl, paddingBottom: 18, gap: 14, ...raised },
+  onCard: { color: colors.onCard },
   pointsRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-end' },
-  points: { ...type.display, fontSize: 52, lineHeight: 54, letterSpacing: -1 },
+  points: { ...type.display, fontSize: 52, lineHeight: 54, letterSpacing: -1, color: colors.onCard },
   qrBox: {
     alignSelf: 'center',
-    backgroundColor: colors.white,
+    backgroundColor: qr.light,
     borderRadius: radius.md,
     padding: 14,
     alignItems: 'center',
     gap: space.sm,
   },
   qr: { width: 176, height: 176 },
-  memberCode: { ...type.label, fontSize: 13, lineHeight: 18, letterSpacing: 1.5 },
+  memberCode: { ...type.label, fontSize: 13, lineHeight: 18, letterSpacing: 1.5, color: qr.dark },
   centerText: { textAlign: 'center' },
   progress: { gap: space.sm },
   banner: {
@@ -220,10 +223,10 @@ const styles = StyleSheet.create({
     minHeight: 48,
     paddingVertical: space.ms,
     paddingHorizontal: space.md,
-    backgroundColor: colors.white,
+    backgroundColor: colors.surface,
     borderRadius: radius.md,
     borderWidth: 1.5,
-    borderColor: colors.plum,
+    borderColor: colors.outline,
   },
   bannerText: { flex: 1 },
   walletBlock: { gap: space.sm, marginTop: 'auto', paddingTop: space.sm },
@@ -234,10 +237,10 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     borderWidth: 1.5,
     borderStyle: 'dashed',
-    borderColor: colors.inkMuted,
+    borderColor: colors.textMuted,
     alignItems: 'center',
     justifyContent: 'center',
     paddingHorizontal: space.sm,
   },
-  walletText: { ...type.caption, ...font(700), color: colors.inkMuted, textAlign: 'center' },
+  walletText: { ...type.caption, ...font(700), color: colors.textMuted, textAlign: 'center' },
 });

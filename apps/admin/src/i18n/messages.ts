@@ -1,3 +1,4 @@
+import { brand } from '../lib/brand';
 import el from './el.json';
 import en from './en.json';
 
@@ -17,7 +18,11 @@ export type Messages = Record<MessageKey, string>;
 // Fails to compile if en.json is missing a key from el.json.
 const english: Messages = en;
 
-export const messages: Record<Locale, Messages> = { el, en: english };
+/** The shared texts with this brand's own wording on top (src/lib/brand.ts, same keys). */
+export const messages: Record<Locale, Messages> = {
+  el: { ...el, ...brand.copy.el } as Messages,
+  en: { ...english, ...brand.copy.en } as Messages,
+};
 
 export type MessageParams = Record<string, string | number>;
 export type Translate = (key: MessageKey, params?: MessageParams) => string;

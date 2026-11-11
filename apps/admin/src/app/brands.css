@@ -1,0 +1,30 @@
+/* Palettes of brands other than Overoll, whose palette is the default (globals.css and
+   console/console.module.css). <html data-brand> comes from src/lib/brand.ts; the till's
+   root carries data-console. Same variable names, so every page and control follows.
+   Contrast (Koala): ink on sun 11:1, cream on deep green 10:1, green on cream 5.8:1. */
+html[data-brand='koala'] {
+  --pink: #ffc93c;
+  --pink-light: #ffe7a3;
+  --cream: #f8f1de;
+  --butter: #e2d6bb;
+  --white: #fffcf4;
+  --cocoa: #014a3a;
+  --ink: #18261f;
+  --mauve: #026852;
+  --green: #9eddc0;
+}
+
+html[data-brand='koala'] [data-console] {
+  --pink: #ffc93c;
+  --plum: #18261f;
+  --plum-deep: #026852;
+  --plum-deeper: #014a3a;
+  --cream: #f8f1de;
+  --white: #fffcf4;
+  --line: #e2d6bb;
+  --ink: #18261f;
+  --ink-muted: #44534c;
+  --tint: #e3f4ea;
+  --shadow-card: 4px 4px 0 #18261f;
+  --focus-ring: 0 0 0 2px #f8f1de, 0 0 0 4px #026852;
+}

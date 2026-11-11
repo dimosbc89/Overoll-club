@@ -9,6 +9,7 @@ import { createClient, type SupabaseClient } from '@supabase/supabase-js';
 
 import { supabaseEnv } from '../env';
 import type { DeviceContext, Employee, StoreInfo } from './machine';
+import { brand } from '../brand';
 
 // ---------------------------------------------------------------------------
 // Browser client (the device session lives in localStorage)
@@ -25,7 +26,7 @@ export function consoleSupabase(): SupabaseClient | null {
       persistSession: true,
       autoRefreshToken: true,
       detectSessionInUrl: false,
-      storageKey: 'overoll-console-auth',
+      storageKey: `${brand.slug}-console-auth`,
     },
   });
   return browserClient;
@@ -146,9 +147,10 @@ export function supabaseDeviceAuth(client: SupabaseClient): DeviceAuth {
   };
 }
 
-/** "Overoll Χαλάνδρι" → "Χαλάνδρι": the wordmark is already in the header. */
+/** "Overoll Χαλάνδρι" → "Χαλάνδρι" (the brand's name is already in the header's wordmark). */
 export function shortStoreName(name: string): string {
-  return name.replace(/^Overoll\s+/i, '') || name;
+  const prefix = new RegExp(`^${brand.brandName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\s+`, 'i');
+  return name.replace(prefix, '') || name;
 }
 
 // ---------------------------------------------------------------------------

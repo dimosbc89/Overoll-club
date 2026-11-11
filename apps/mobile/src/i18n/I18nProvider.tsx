@@ -1,10 +1,11 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from 'react';
 
+import { brand } from '../brand';
 import { clubUrl, clubUrlStatic, PROGRAM_NAME, SUPPORT_EMAIL } from '../lib/program';
 import { createTranslate, defaultLocale, isLocale, type Locale, type MessageParams, type Translate } from './messages';
 
-const STORAGE_KEY = 'overoll.locale';
+const STORAGE_KEY = `${brand.slug}.locale`;
 
 interface I18nValue {
   locale: Locale;
@@ -13,7 +14,7 @@ interface I18nValue {
 }
 
 function globalParams(club: string): MessageParams {
-  return { programName: PROGRAM_NAME, clubUrl: club, supportEmail: SUPPORT_EMAIL };
+  return { programName: PROGRAM_NAME, brandName: brand.brandName, clubUrl: club, supportEmail: SUPPORT_EMAIL };
 }
 
 const I18nContext = createContext<I18nValue>({

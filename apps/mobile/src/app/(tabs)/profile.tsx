@@ -132,7 +132,7 @@ function MemberProfile({ bundle }: { bundle: MemberBundle }) {
                     <Text style={type.bodyStrong}>{title}</Text>
                     <Muted>{[receipt, when].filter(Boolean).join(' · ')}</Muted>
                   </View>
-                  <Text style={[type.bodyStrong, item.points > 0 && { color: colors.plumDeep }]}>{points}</Text>
+                  <Text style={[type.bodyStrong, item.points > 0 && { color: colors.accent }]}>{points}</Text>
                 </View>
               );
             })}

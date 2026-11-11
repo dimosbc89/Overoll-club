@@ -4,7 +4,9 @@ import type { ReactNode } from 'react';
 import { SkipLink } from '../components/SkipLink';
 import { I18nProvider } from '../i18n/client';
 import { translate } from '../i18n/messages';
+import { brand } from '../lib/brand';
 import './globals.css';
+import './brands.css';
 
 // Static site (Cloudflare Pages): metadata in Greek, the default language; pages set
 // the tab title in the chosen language on the client (useDocumentTitle).
@@ -13,7 +15,7 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
 };
 
-export const viewport: Viewport = { themeColor: '#f5b0b4' };
+export const viewport: Viewport = { themeColor: brand.themeColor };
 
 /**
  * Root: <html>/<body> only. The back office pages get the cocoa header from
@@ -22,7 +24,7 @@ export const viewport: Viewport = { themeColor: '#f5b0b4' };
  */
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
-    <html lang="el">
+    <html lang="el" data-brand={brand.slug}>
       <body>
         <I18nProvider>
           <SkipLink />

@@ -1,12 +1,13 @@
 import { Platform } from 'react-native';
 
+import { brand } from '../brand';
 import { clubUrlSetting } from './env';
 
-/** Program name setting (copy deck `{programName}`); the final name comes later. */
-export const PROGRAM_NAME = 'Overoll Club';
+/** Program name (copy deck `{programName}`), from the brand (src/brand). */
+export const PROGRAM_NAME = brand.programName;
 
-/** Support address for testing (spec §1); Overoll's own address replaces it before launch. */
-export const SUPPORT_EMAIL = 'club-support@growagency.online';
+/** Support address (`{supportEmail}`): GROW's test address until the brand's own goes live. */
+export const SUPPORT_EMAIL = brand.supportEmail;
 
 /** `{clubUrl}` known at build time: the setting, else the program name. Same in static HTML and in the browser. */
 export function clubUrlStatic(): string {

@@ -3,7 +3,6 @@ import { useState, type ReactNode } from 'react';
 import {
   ActivityIndicator,
   Modal,
-  Platform,
   Pressable,
   RefreshControl,
   ScrollView,
@@ -21,7 +20,8 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { useI18n } from '../i18n/I18nProvider';
 import { font, type } from '../theme/fonts';
-import { colors, controlHeight, maxContentWidth, minTouch, radius, space } from '../theme/tokens';
+import { control, raised } from '../theme/surface';
+import { colors, controlHeight, maxContentWidth, minTouch, radius, shape, space } from '../theme/tokens';
 import { Icon } from './Icon';
 
 /**
@@ -61,7 +61,7 @@ export function Screen({
         style={styles.screen}
         contentContainerStyle={styles.scrollContent}
         keyboardShouldPersistTaps="handled"
-        refreshControl={pull ? <RefreshControl refreshing={refreshing} onRefresh={pull} tintColor={colors.plumDeep} colors={[colors.plumDeep]} /> : undefined}
+        refreshControl={pull ? <RefreshControl refreshing={refreshing} onRefresh={pull} tintColor={colors.accent} colors={[colors.accent]} /> : undefined}
       >
         {header}
         <View style={[styles.column, { gap }]}>{children}</View>
@@ -103,8 +103,8 @@ interface ButtonProps extends Omit<PressableProps, 'children' | 'style'> {
 }
 
 /**
- * Pill button. Filled = pink with ink text; outline = plum ring; paper = white.
- * Pressed: plum-deep with white text, as in the design system.
+ * Pill button. Filled = the brand's primary colour; outline = a ring; paper = surface.
+ * Pressed or selected: the brand's pressed colour.
  */
 export function Button({
   label,
@@ -138,9 +138,16 @@ export function Button({
     >
       {({ pressed }) =>
         loading ? (
-          <ActivityIndicator color={colors.ink} />
+          <ActivityIndicator color={variant === 'filled' ? colors.onPrimary : colors.text} />
         ) : (
-          <Text style={[type.label, styles.buttonLabel, (pressed || selected) && !inactive && styles.pressedLabel]}>
+          <Text
+            style={[
+              type.label,
+              styles.buttonLabel,
+              variant === 'filled' && { color: colors.onPrimary },
+              (pressed || selected) && !inactive && styles.pressedLabel,
+            ]}
+          >
             {label}
           </Text>
         )
@@ -169,7 +176,7 @@ export function LinkButton({
       onPress={onPress}
       style={({ pressed }) => [styles.link, pressed && { opacity: 0.7 }, style]}
     >
-      <Text style={[type.label, { color: colors.plumDeep }]}>{label}</Text>
+      <Text style={[type.label, { color: colors.accent }]}>{label}</Text>
     </Pressable>
   );
 }
@@ -179,7 +186,7 @@ type TagTone = 'pink' | 'plum' | 'paper' | 'outline';
 export function Tag({ label, tone = 'pink', style }: { label: string; tone?: TagTone; style?: StyleProp<ViewStyle> }) {
   return (
     <View style={[styles.tag, tagTones[tone], style]}>
-      <Text style={[type.label, styles.tagLabel, { color: tone === 'plum' ? colors.white : tone === 'outline' ? colors.plumDeep : colors.ink }]}>
+      <Text style={[type.label, styles.tagLabel, { color: tagText[tone] }]}>
         {label}
       </Text>
     </View>
@@ -235,7 +242,7 @@ export function Checkbox({
       style={({ pressed }) => [styles.checkRow, pressed && { opacity: 0.8 }]}
     >
       <View style={[styles.box, checked && styles.boxChecked]}>
-        {checked ? <Icon name="check" size={18} color={colors.white} strokeWidth={2.5} /> : null}
+        {checked ? <Icon name="check" size={18} color={colors.onPressed} strokeWidth={2.5} /> : null}
       </View>
       <View style={styles.checkText}>
         <Text style={type.body}>{label}</Text>
@@ -259,7 +266,7 @@ export function TextField({
       <TextInput
         accessibilityLabel={label}
         accessibilityHint={hint}
-        placeholderTextColor={colors.inkMuted}
+        placeholderTextColor={colors.textMuted}
         onFocus={() => setFocused(true)}
         onBlur={() => setFocused(false)}
         style={[styles.input, focused && styles.inputFocused, !!error && styles.inputError]}
@@ -274,7 +281,7 @@ export function TextField({
 /** A message the screen reader announces as soon as it appears. */
 export function ErrorText({ message }: { message: string }) {
   return (
-    <Text accessibilityRole="alert" accessibilityLiveRegion="assertive" style={[type.label, { color: colors.plumDeep }]}>
+    <Text accessibilityRole="alert" accessibilityLiveRegion="assertive" style={[type.label, { color: colors.accent }]}>
       {message}
     </Text>
   );
@@ -304,20 +311,23 @@ export function Sheet({
   );
 }
 
-const shadow: ViewStyle =
-  Platform.OS === 'web'
-    ? ({ boxShadow: '0 1px 2px #48423e14, 0 8px 24px #48423e14' } as ViewStyle)
-    : { shadowColor: colors.ink, shadowOpacity: 0.08, shadowRadius: 12, shadowOffset: { width: 0, height: 4 }, elevation: 2 };
-
+/** Tag tones keep their old names: pink = primary, plum = pressed (strong), paper = surface. */
 const tagTones: Record<TagTone, ViewStyle> = {
-  pink: { backgroundColor: colors.pink },
-  plum: { backgroundColor: colors.plumDeep },
-  paper: { backgroundColor: colors.white },
-  outline: { backgroundColor: 'transparent', borderWidth: 1.5, borderColor: colors.plum },
+  pink: { backgroundColor: colors.primary, ...control },
+  plum: { backgroundColor: colors.pressed },
+  paper: { backgroundColor: colors.surface, ...control },
+  outline: { backgroundColor: 'transparent', borderWidth: shape.outlineWidth, borderColor: colors.outline },
+};
+
+const tagText: Record<TagTone, string> = {
+  pink: colors.onPrimary,
+  plum: colors.onPressed,
+  paper: colors.text,
+  outline: colors.accent,
 };
 
 const styles = StyleSheet.create({
-  screen: { flex: 1, backgroundColor: colors.cream },
+  screen: { flex: 1, backgroundColor: colors.background },
   scrollContent: { flexGrow: 1, alignItems: 'center' },
   column: {
     flexGrow: 1,
@@ -327,7 +337,7 @@ const styles = StyleSheet.create({
     paddingTop: space.mdl,
     paddingBottom: space.lg,
   },
-  card: { backgroundColor: colors.white, borderRadius: radius.md, padding: space.md, gap: space.xs, ...shadow },
+  card: { backgroundColor: colors.surface, borderRadius: radius.md, padding: space.md, gap: space.xs, ...raised },
   button: {
     minHeight: controlHeight,
     paddingHorizontal: space.lg,
@@ -336,32 +346,32 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   buttonSm: { minHeight: 36, paddingHorizontal: space.md },
-  filled: { backgroundColor: colors.pink },
-  outline: { backgroundColor: 'transparent', borderWidth: 1.5, borderColor: colors.plum },
-  paper: { backgroundColor: colors.white },
-  selected: { backgroundColor: colors.plumDeep, borderColor: colors.plumDeep },
-  pressed: { backgroundColor: colors.plumDeep, borderColor: colors.plumDeep },
+  filled: { backgroundColor: colors.primary, ...control },
+  outline: { backgroundColor: 'transparent', borderWidth: shape.outlineWidth, borderColor: colors.outline },
+  paper: { backgroundColor: colors.surface, ...control },
+  selected: { backgroundColor: colors.pressed, borderColor: colors.pressed },
+  pressed: { backgroundColor: colors.pressed, borderColor: colors.pressed },
   disabled: { opacity: 0.45 },
   buttonLabel: { textAlign: 'center', letterSpacing: 0.14 },
-  pressedLabel: { color: colors.white },
+  pressedLabel: { color: colors.onPressed },
   link: { minHeight: minTouch, justifyContent: 'center', alignSelf: 'center', paddingHorizontal: space.sm },
   tag: { alignSelf: 'flex-start', minHeight: 28, paddingHorizontal: space.ms, borderRadius: radius.full, justifyContent: 'center' },
   tagLabel: { fontSize: 13, letterSpacing: 0.13 },
   track: { borderRadius: radius.full, overflow: 'hidden' },
-  fill: { height: '100%', borderRadius: radius.full, backgroundColor: colors.plumDeep },
+  fill: { height: '100%', borderRadius: radius.full, backgroundColor: colors.accent },
   checkRow: { flexDirection: 'row', gap: space.ms, alignItems: 'flex-start', minHeight: minTouch, paddingVertical: space.xs },
   box: {
     width: 24,
     height: 24,
     marginTop: 1,
     borderRadius: 6,
-    borderWidth: 1.5,
-    borderColor: colors.plum,
-    backgroundColor: colors.white,
+    borderWidth: shape.outlineWidth,
+    borderColor: colors.outline,
+    backgroundColor: colors.surface,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  boxChecked: { backgroundColor: colors.plumDeep, borderColor: colors.plumDeep },
+  boxChecked: { backgroundColor: colors.pressed, borderColor: colors.pressed },
   checkText: { flex: 1, gap: 2 },
   field: { gap: space.xs + 2 },
   input: {
@@ -371,17 +381,17 @@ const styles = StyleSheet.create({
     borderRadius: radius.md,
     borderWidth: 1.5,
     borderColor: colors.line,
-    backgroundColor: colors.white,
-    color: colors.ink,
+    backgroundColor: colors.surface,
+    color: colors.text,
     fontSize: 17,
   },
-  inputFocused: { borderColor: colors.plumDeep },
-  inputError: { borderColor: colors.plumDeep },
+  inputFocused: { borderColor: colors.accent },
+  inputError: { borderColor: colors.accent },
   sheetRoot: { flex: 1, justifyContent: 'flex-end', alignItems: 'center', backgroundColor: colors.scrim },
   sheet: {
     width: '100%',
     maxWidth: maxContentWidth,
-    backgroundColor: colors.white,
+    backgroundColor: colors.surface,
     borderTopLeftRadius: radius.lg,
     borderTopRightRadius: radius.lg,
   },

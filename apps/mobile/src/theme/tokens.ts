@@ -1,36 +1,25 @@
 /**
- * Overoll design-system tokens (the design canvas `theme.css`, from the Overoll
- * design system). Pure data (no react-native import) so tests and every
- * platform can share it.
+ * Design tokens. Colours and the card/button shape come from the brand this build
+ * belongs to (src/brand, EXPO_PUBLIC_BRAND); spacing, radii and sizes are shared.
+ * Pure data (no react-native import) so tests and every platform can share it.
  *
- * Contrast rules:
- * - ink on pink, cream or white: fine for any text.
- * - plum-deep on white or cream (~6:1): links, prices, small bold text.
- * - pink is a surface colour only: nothing a person must read is pink.
- * - white text only on plum-deep (pressed buttons, plum tags).
+ * Colours are named by role, and test/brand.test.ts checks every text colour against
+ * the backgrounds it sits on for every brand:
+ * - text / textMuted on background or surface; onX on X (header, card, gift, primary, pressed).
+ * - accent on background or surface: links, prices, error text (4.5:1).
+ * - outline: borders only (3:1). Nothing a person must read is in primary/header/card colour.
  */
-export const colors = {
-  /** Primary surface: buttons, the member card, the code panel. */
-  pink: '#ebabc5',
-  /** Outlines (outline buttons, number circles). */
-  plum: '#b2688a',
-  /** Links, prices, progress fills, pressed buttons, plum tags. */
-  plumDeep: '#924b6d',
-  /** Page background. */
-  cream: '#f9f0e9',
-  /** Surfaces: cards, sheets, the QR box. */
-  white: '#ffffff',
-  /** Text. */
-  ink: '#48423e',
-  /** Secondary text. */
-  inkMuted: '#6b6560',
-  /** Dividers, empty progress tracks. */
-  line: '#e4dbd4',
-  /** Dimmed backdrop behind sheets. */
-  scrim: 'rgba(72, 66, 62, 0.45)',
-} as const;
+import { brand } from '../brand';
+
+export const colors = brand.colors;
+
+/** Card and button shape: border and shadow style of the brand. */
+export const shape = brand.shape;
 
 export type ColorToken = keyof typeof colors;
+
+/** QR codes are always dark on white, whatever the brand, so every scanner reads them. */
+export const qr = { dark: '#000000', light: '#ffffff' } as const;
 
 export const space = {
   xs: 4,

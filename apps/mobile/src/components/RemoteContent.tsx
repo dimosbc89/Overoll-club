@@ -11,7 +11,7 @@ export function Loading() {
   const { t } = useI18n();
   return (
     <View style={styles.center} accessibilityLiveRegion="polite">
-      <ActivityIndicator color={colors.plumDeep} accessibilityLabel={t('state.loading')} />
+      <ActivityIndicator color={colors.accent} accessibilityLabel={t('state.loading')} />
       <Body>{t('state.loading')}</Body>
     </View>
   );

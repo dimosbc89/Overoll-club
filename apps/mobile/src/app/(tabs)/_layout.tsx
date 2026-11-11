@@ -23,10 +23,10 @@ export default function TabsLayout() {
     <Tabs
       screenOptions={{
         headerShown: false,
-        sceneStyle: { backgroundColor: colors.cream },
+        sceneStyle: { backgroundColor: colors.background },
         // Design: 6 px above, 10 below, 48 px items (icon + label).
         tabBarStyle: {
-          backgroundColor: colors.white,
+          backgroundColor: colors.surface,
           borderTopColor: colors.line,
           borderTopWidth: 1,
           height: 6 + minTouch + 8 + Math.max(insets.bottom, 10),
@@ -34,8 +34,8 @@ export default function TabsLayout() {
           paddingBottom: Math.max(insets.bottom, 10),
         },
         tabBarItemStyle: { minHeight: minTouch },
-        tabBarActiveTintColor: colors.plumDeep,
-        tabBarInactiveTintColor: colors.inkMuted,
+        tabBarActiveTintColor: colors.accent,
+        tabBarInactiveTintColor: colors.textMuted,
         tabBarLabelStyle: { ...font(700), fontSize: 12, lineHeight: 16 },
       }}
     >

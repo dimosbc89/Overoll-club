@@ -9,9 +9,12 @@
  *
  *   mobile → apps/mobile/dist   (Expo web, static HTML per route)
  *   admin  → apps/admin/out     (Next.js static export: back office + till console)
+ *
+ * Files in apps/<app>/public-brands/<brand>/ (favicon, email logo…) are copied over the
+ * output last, so a brand replaces the shared public files it needs to.
  */
 import { spawnSync } from 'node:child_process';
-import { existsSync } from 'node:fs';
+import { cpSync, existsSync } from 'node:fs';
 import { join } from 'node:path';
 import { loadProject, root } from './projects.js';
 
@@ -43,6 +46,14 @@ function brandArg(argv: string[]): string {
   return eq ? eq.slice('--brand='.length) : (process.env.BRAND ?? 'overoll');
 }
 
+/** The brand's own public files over the shared ones (apps/<app>/public-brands/<brand>/). */
+function overlayBrandFiles(appDir: string, outDir: string, brand: string) {
+  const dir = join(appDir, 'public-brands', brand);
+  if (!existsSync(dir)) return;
+  cpSync(dir, outDir, { recursive: true });
+  console.log(`brand files: public-brands/${brand} → ${outDir.replace(root + '/', '')}`);
+}
+
 function main() {
   const app = process.argv[2];
   const brand = brandArg(process.argv.slice(3));
@@ -59,6 +70,7 @@ function main() {
       EXPO_PUBLIC_CLUB_URL: s.siteUrl,
     });
     if (!existsSync(join(dir, 'dist/index.html'))) throw new Error('apps/mobile/dist/index.html missing');
+    overlayBrandFiles(dir, join(dir, 'dist'), brand);
     console.log('web app built: apps/mobile/dist');
   } else if (app === 'admin') {
     const dir = join(root, 'apps/admin');
@@ -70,6 +82,7 @@ function main() {
       STATIC_EXPORT: '1',
     });
     if (!existsSync(join(dir, 'out/index.html'))) throw new Error('apps/admin/out/index.html missing');
+    overlayBrandFiles(dir, join(dir, 'out'), brand);
     console.log('back office built: apps/admin/out');
   } else {
     console.error('usage: tsx scripts/build-web.ts mobile|admin [--brand <slug>]');

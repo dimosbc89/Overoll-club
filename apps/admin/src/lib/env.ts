@@ -1,3 +1,5 @@
+import { brand } from './brand';
+
 /**
  * Public configuration. Next.js inlines NEXT_PUBLIC_* at build time, so set
  * them before `next build`. The publishable key is safe to expose: row-level
@@ -15,14 +17,14 @@ export function supabaseEnv(): SupabaseEnv | null {
   return { url, publishableKey };
 }
 
-/** The brand this back office manages (multi-brand database). */
-export const BRAND_SLUG = 'overoll';
+/** The brand this back office manages (src/lib/brand.ts, picked at build time). */
+export const BRAND_SLUG = brand.slug;
 
-/** Program name setting (docs/program-spec.md §1: working name), fills `{programName}`. */
-export const PROGRAM_NAME = 'Overoll Club';
+/** Program name, fills `{programName}`. */
+export const PROGRAM_NAME = brand.programName;
 
-/** Support address for testing (program spec §1), fills `{supportEmail}`. Replace before launch. */
-export const SUPPORT_EMAIL = 'club-support@growagency.online';
+/** Support address (GROW's test address until the brand's own), fills `{supportEmail}`. */
+export const SUPPORT_EMAIL = brand.supportEmail;
 
-/** The club site and member web app (program spec §1, web address), fills `{clubUrl}`. */
-export const CLUB_URL = 'loyalty.overoll.gr';
+/** The club site and member web app, fills `{clubUrl}`: the build's setting, else the brand's. */
+export const CLUB_URL = (process.env.NEXT_PUBLIC_CLUB_URL?.trim() || brand.clubUrl).replace(/^https?:\/\//, '').replace(/\/+$/, '');

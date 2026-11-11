@@ -22,6 +22,7 @@ import { useSession } from '../lib/session';
 import { getSupabase } from '../lib/supabase';
 import { useNow } from '../lib/useNow';
 import { type } from '../theme/fonts';
+import { brand } from '../brand';
 import { colors, space } from '../theme/tokens';
 import { Icon } from './Icon';
 import { StepNumber } from './Landing';
@@ -188,7 +189,7 @@ export function JoinFlow({ initialMode }: { initialMode: Mode }) {
 
         <Card style={styles.giftCard}>
           <View style={styles.giftIcon}>
-            <Icon name="croissant" size={24} color={colors.ink} />
+            <Icon name={brand.giftIcon} size={24} color={colors.onGift} />
           </View>
           <View style={styles.giftText}>
             <Tag tone="plum" label={t('rewards.welcome.badge')} />
@@ -391,7 +392,7 @@ export function JoinFlow({ initialMode }: { initialMode: Mode }) {
       <Body>{t('join.welcome.body')}</Body>
       <Card style={styles.giftCard}>
         <View style={styles.giftIcon}>
-          <Icon name="croissant" size={24} color={colors.ink} />
+          <Icon name={brand.giftIcon} size={24} color={colors.onGift} />
         </View>
         <Text style={[type.bodyStrong, styles.giftText]}>{t('join.welcome.croissant')}</Text>
       </Card>
@@ -403,7 +404,7 @@ export function JoinFlow({ initialMode }: { initialMode: Mode }) {
 
 const styles = StyleSheet.create({
   giftCard: { flexDirection: 'row', gap: space.md, alignItems: 'center', paddingVertical: space.md, paddingHorizontal: space.mdl },
-  giftIcon: { width: 48, height: 48, borderRadius: 24, backgroundColor: colors.pink, alignItems: 'center', justifyContent: 'center' },
+  giftIcon: { width: 48, height: 48, borderRadius: 24, backgroundColor: colors.gift, alignItems: 'center', justifyContent: 'center' },
   giftText: { flex: 1, gap: 2 },
   steps: { gap: space.ms },
   stepRow: { flexDirection: 'row', gap: space.ms, alignItems: 'center' },

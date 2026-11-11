@@ -24,8 +24,8 @@ export function LanguageToggle() {
 }
 
 /**
- * The pink top of the join and landing screens (Main.dc.html): white logo,
- * language switch, optional kicker line and a big title. Ink text on pink.
+ * The coloured top of the join and landing screens (Main.dc.html): logo, language
+ * switch, optional kicker line and a big title, in the brand's header colours.
  */
 export function PinkHeader({ kicker, title, children }: { kicker?: string | null; title: string; children?: ReactNode }) {
   const insets = useSafeAreaInsets();
@@ -33,11 +33,11 @@ export function PinkHeader({ kicker, title, children }: { kicker?: string | null
     <View style={[styles.header, { paddingTop: insets.top + space.mdl }]}>
       <View style={styles.inner}>
         <View style={styles.topRow}>
-          <Logo variant="logo" ink="white" width={104} />
+          <Logo variant="logo" onHeader width={104} />
           <LanguageToggle />
         </View>
         {kicker ? <Text style={styles.kicker}>{kicker}</Text> : null}
-        <Text accessibilityRole="header" style={type.display}>
+        <Text accessibilityRole="header" style={[type.display, { color: colors.onHeader }]}>
           {title}
         </Text>
         {children}
@@ -50,7 +50,7 @@ const styles = StyleSheet.create({
   header: {
     width: '100%',
     alignItems: 'center',
-    backgroundColor: colors.pink,
+    backgroundColor: colors.header,
     paddingHorizontal: space.lg,
     paddingBottom: space.xl,
     borderBottomLeftRadius: radius.lg,
@@ -58,5 +58,5 @@ const styles = StyleSheet.create({
   },
   inner: { width: '100%', maxWidth: maxContentWidth - space.mdl * 2, gap: space.mdl },
   topRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
-  kicker: { ...type.label, fontSize: 13, lineHeight: 18, letterSpacing: 0.13 },
+  kicker: { ...type.label, fontSize: 13, lineHeight: 18, letterSpacing: 0.13, color: colors.onHeader },
 });

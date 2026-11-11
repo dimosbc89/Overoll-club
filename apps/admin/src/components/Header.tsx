@@ -6,6 +6,7 @@ import { useI18n } from '../i18n/client';
 import { locales } from '../i18n/messages';
 import styles from './Header.module.css';
 import { Nav } from './Nav';
+import { brand } from '../lib/brand';
 
 /** Cocoa bar with the pink wordmark (8.5:1), navigation and the language switch. */
 export function Header() {
@@ -22,7 +23,7 @@ export function Header() {
     <header className={styles.header}>
       <Link href="/" className={styles.brand}>
         {/* Plain <img>: a static SVG needs no image optimisation. */}
-        <img src="/overoll-wordmark.svg" alt={t('brand.wordmark')} width={104} height={28} />
+        <img src={brand.wordmark.onDark} alt={t('brand.wordmark')} width={brand.wordmark.width} height={brand.wordmark.height} />
       </Link>
       <Nav items={items} label={t('nav.label')} />
       <div role="group" className={styles.language} aria-label={t('language.label')}>

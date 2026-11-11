@@ -6,9 +6,10 @@ import type { Translate } from '../../i18n/messages';
 import { createFrameReader } from '../../lib/console/qr-detector';
 import styles from './console.module.css';
 import { Button } from './ui';
+import { brand } from '../../lib/brand';
 
 type Facing = 'environment' | 'user';
-const FACING_KEY = 'overoll-console-camera';
+const FACING_KEY = `${brand.slug}-console-camera`;
 /** The same code is reported again only after this pause (a failed scan doesn't loop). */
 const REPEAT_MS = 4000;
 const FRAME_MS = 200;
