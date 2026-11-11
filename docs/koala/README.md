@@ -9,7 +9,7 @@ Second brand on the platform. Dimos decided on 11 Nov 2026 to build it for launc
 | Data | `data/koala/` (brand, stores, menu, rewards) → `supabase/seed/koala.sql`, applied once (CI applies it to a project whose brand row is missing) |
 | Design | Figma `MHtMmw4vUc80oY5PuaBytx` (Koala Club — loyalty app concept), official logo mark `assets/brand/koala/` |
 | Pitch deck | https://claude.ai/artifact/3rpyBDM6n5R9CPucpx3TWH |
-| Web app / back office | `koala-club.pages.dev` / `koala-club-admin.pages.dev` until Koala has a domain |
+| Web app / back office | `club.koalacoffee.gr` / `admin.koalacoffee.gr` once the domain is live (12 Nov: waiting for the `.gr` registry); `koala-club.pages.dev` / `koala-club-admin.pages.dev` always work |
 
 ## Programme
 
@@ -45,7 +45,7 @@ Koala Club for iOS and Android, from the same code (`apps/mobile`, `EXPO_PUBLIC_
 - [ ] Confirm the welcome gift (cinnamon roll is on efood only for Αργυρούπολη).
 - [ ] Opening hours of both stores (not published anywhere).
 - [ ] Programme and tier names (Koala Club, Joey, Koala, Eucalyptus).
-- [ ] Domain for the club site and the back office, and a sender address for the sign-in email (Resend + DNS). Until then the sign-in email only reaches Supabase org members.
+- [x] Domain: `koalacoffee.gr` (12 Nov 2026, Cloudflare in GROW's account): `club.` and `admin.`, sign-in emails from `app@koalacoffee.gr` (`docs/koala/dns-records.md`). Until Resend is verified the sign-in email only reaches Supabase org members.
 - [ ] Legal entity for the terms and privacy policy (vrisko lists "KOALA - ΔΗΜΟΓΕΡΟΝΤΑ ΕΕ" for Αργυρούπολη; confirm for both stores).
 - [ ] Official wordmark (we have the koala mark only).
 - [ ] Whether efood orders earn points; tablet or phone at each till.
