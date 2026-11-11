@@ -11,7 +11,7 @@ One app per brand, from the same code. `EXPO_PUBLIC_BRAND` picks the brand at bu
 | URL scheme | `overollclub://` | `koalaclub://` |
 | Icon, adaptive icon, splash | `brands/overoll/*.png` | `brands/koala/*.png` |
 
-The counter QR on native opens `<scheme>://join?store=<code>`. Bundle ids can still change until the app record exists in App Store Connect / Google Play Console. App Store guideline 4.2.6: apps built from a shared template must be submitted from the brand's own Apple Developer account, so each brand needs its own organisation account (GROW is added to it as developer).
+The counter QR on native opens `<scheme>://join?store=<code>`. Bundle ids can still change until the app record exists in App Store Connect / Google Play Console. App Store guideline 4.2.6 asks that apps built from a shared template be submitted by the business itself. Decided 11 Nov 2026: Koala is submitted first from GROW AGENCY's Apple Developer account (team `JUVGRB24Q6`) with Koala's written authorization, as `docs/program-spec.md` §10 plans for Overoll; if Apple refuses, the app is transferred to a Koala account. Overoll's app will differ (its own redesign), so the two are not the same app.
 
 ### Native builds (EAS)
 

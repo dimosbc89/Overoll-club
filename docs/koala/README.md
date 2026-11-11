@@ -35,6 +35,10 @@ Reward catalog (draft, efood prices of 11 Nov 2026, costs from `packages/core`):
 - **API, Auth and jobs: done (11 Nov 2026)** by CI (`deploy (koala)`) with the GitHub secret `SUPABASE_ACCESS_TOKEN_KOALA`: Edge Function `api`, site and redirect URLs, 6-digit sign-in code email, `ALLOWED_ORIGINS`, scheduled jobs (`club-expire-redemptions` every minute, `club-expire-points` daily). Checked: the API refuses unauthenticated calls, answers CORS only for the Koala sites, and the every-minute job returns 200.
 - **Web: done (11 Nov 2026).** Cloudflare Pages `koala-club` (https://koala-club.pages.dev, `npm run build:web:mobile -- --brand koala` → `apps/mobile/dist`) and `koala-club-admin` (https://koala-club-admin.pages.dev, `npm run build:web:admin -- --brand koala` → `apps/admin/out`), connected to the repo: every push to `main` rebuilds them. Both talk only to the Koala project.
 
+## Native apps
+
+Koala Club for iOS and Android, from the same code (`apps/mobile`, `EXPO_PUBLIC_BRAND=koala`, EAS profile `koala`): bundle id / package `online.growagency.koala`, scheme `koalaclub://`, draft icon and splash in `apps/mobile/brands/koala/`. Decided by Dimos on 11 Nov 2026: published first from GROW AGENCY's Apple Developer account (and GROW's Google Play account), with Koala's written authorization (App Store guideline 4.2.6); if Apple refuses, the app moves to a Koala account.
+
 ## Before launch: needed from Koala
 
 - [ ] Approve the reward catalog and the in-store prices (we used efood prices).
@@ -45,3 +49,4 @@ Reward catalog (draft, efood prices of 11 Nov 2026, costs from `packages/core`):
 - [ ] Legal entity for the terms and privacy policy (vrisko lists "KOALA - ΔΗΜΟΓΕΡΟΝΤΑ ΕΕ" for Αργυρούπολη; confirm for both stores).
 - [ ] Official wordmark (we have the koala mark only).
 - [ ] Whether efood orders earn points; tablet or phone at each till.
+- [ ] Signed authorization letter for publishing the app from GROW AGENCY's store accounts.
