@@ -2,8 +2,8 @@
 #
 # Start one either way:
 #   - GitHub → Actions → "Native builds" → Run workflow (brand, platform, preview/store), or
-#   - push a tag  eas/<brand>/<android|ios|all>/<preview|store>/<anything unique>
-#     e.g.  git tag eas/koala/android/preview/1 && git push origin eas/koala/android/preview/1
+#   - push a branch or tag named  eas/<brand>/<android|ios|all>/<preview|store>[/<anything>]
+#     e.g.  git push origin main:refs/heads/eas/koala/android/preview   (builds that commit)
 #
 # preview: an install link for test phones (Android APK; iOS for registered devices).
 # store:   the build for Google Play / App Store (version number goes up by itself).
@@ -36,6 +36,7 @@ on:
         options: [preview, store]
         default: preview
   push:
+    branches: ['eas/**']
     tags: ['eas/**']
 
 concurrency:
@@ -55,13 +56,13 @@ jobs:
       - name: What to build
         id: what
         env:
-          REF_TYPE: ${{ github.ref_type }}
+          EVENT: ${{ github.event_name }}
           REF_NAME: ${{ github.ref_name }}
           IN_BRAND: ${{ inputs.brand }}
           IN_PLATFORM: ${{ inputs.platform }}
           IN_KIND: ${{ inputs.kind }}
         run: |
-          if [ "$REF_TYPE" = "tag" ]; then
+          if [ "$EVENT" = "push" ]; then
             IFS=/ read -r prefix brand platform kind rest <<< "$REF_NAME"
           else
             brand="$IN_BRAND"; platform="$IN_PLATFORM"; kind="$IN_KIND"
