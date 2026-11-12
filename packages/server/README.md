@@ -35,6 +35,7 @@ Each one is `fn(sql, input)` and returns `{ ok: true, ... }` or `{ ok: false, co
 | `verifyEmployeePin` | device or manager of the store | `callerUserId, storeId, employeeId, pin` (no idempotency key: moves nothing) | `employee {id, displayName}` | `forbidden, employee_not_found, bad_pin, pin_locked` |
 | `expireRedemptions` | job, every minute (all brands) | `now?, batchSize?` | `expired, redemptionIds, giftsExpired, giftIds` | none |
 | `expirePoints` | job, daily (all brands) | `now?, batchSize?` | `expired, memberIds, pointsExpired` | none |
+| `reviewTiers` | job, daily (all brands) | `now?, batchSize?` | `reviewed, lowered, raised, changedMemberIds` | none |
 | `deleteMember` | the signed-in user, for their own account (v0.4) | `callerUserId, confirm: true, idempotencyKey` | `memberIds, codesCancelled, authUserDeleted` | `forbidden` (staff accounts) |
 | `createEmployee` | store manager, HQ, platform (v0.5) | `callerUserId, storeId, displayName, pin, idempotencyKey` | `employee {id, storeId, displayName, active}` | `forbidden, store_not_found, pin_format, pin_too_simple` |
 | `updateEmployee` | store manager, HQ, platform (v0.5) | `callerUserId, employeeId`, any of `displayName, active, pin` (no key: setting values again is harmless) | `employee` | `forbidden, not_found, pin_format, pin_too_simple` |

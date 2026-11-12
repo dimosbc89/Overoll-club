@@ -10,6 +10,9 @@ import {
   rewardBaseCost,
   rewardCostForTier,
   tierAfterAnnualReview,
+  latestTierReview,
+  nextTierReview,
+  isTierReviewDue,
   tierAfterEarn,
   tierProgress,
 } from '../src/index.js';
@@ -91,5 +94,31 @@ describe('expiry', () => {
     expect(expiryReminderDue(last, new Date('2027-11-10T08:00:00Z'), config)).toBe(30);
     expect(expiryReminderDue(last, new Date('2027-12-03T08:00:00Z'), config)).toBe(7);
     expect(expiryReminderDue(last, new Date('2027-11-20T08:00:00Z'), config)).toBeNull();
+  });
+});
+
+describe('tier review days (join anniversaries)', () => {
+  const joined = new Date('2027-01-05T09:30:00Z');
+
+  it('none in the first year, then the latest anniversary', () => {
+    expect(latestTierReview(joined, new Date('2027-12-31T00:00:00Z'))).toBeNull();
+    expect(latestTierReview(joined, new Date('2028-01-05T09:30:00Z'))?.toISOString()).toBe('2028-01-05T09:30:00.000Z');
+    expect(latestTierReview(joined, new Date('2030-03-01T00:00:00Z'))?.toISOString()).toBe('2030-01-05T09:30:00.000Z');
+    expect(nextTierReview(joined, new Date('2027-06-01T00:00:00Z')).toISOString()).toBe('2028-01-05T09:30:00.000Z');
+    expect(nextTierReview(joined, new Date('2028-01-05T09:30:00Z')).toISOString()).toBe('2029-01-05T09:30:00.000Z');
+  });
+
+  it('29 February joins are reviewed on 28 February, and on the 29th in leap years', () => {
+    const leap = new Date('2028-02-29T12:00:00Z');
+    expect(nextTierReview(leap, leap).toISOString()).toBe('2029-02-28T12:00:00.000Z');
+    expect(latestTierReview(leap, new Date('2032-03-01T00:00:00Z'))?.toISOString()).toBe('2032-02-29T12:00:00.000Z');
+  });
+
+  it('a review is due once per anniversary', () => {
+    const now = new Date('2028-01-06T00:00:00Z');
+    expect(isTierReviewDue(joined, null, new Date('2027-12-01T00:00:00Z'))).toBe(false);
+    expect(isTierReviewDue(joined, null, now)).toBe(true);
+    expect(isTierReviewDue(joined, new Date('2028-01-05T09:30:00Z'), now)).toBe(false);
+    expect(isTierReviewDue(joined, new Date('2028-01-05T09:30:00Z'), new Date('2029-01-05T09:30:00Z'))).toBe(true);
   });
 });

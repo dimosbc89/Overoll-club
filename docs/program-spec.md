@@ -73,7 +73,7 @@ Example: €6.40 receipt, Gold member → floor(640 × 10 × 125 / 10 000) = 80 
 | Gold | 1,500 | ×1.25 | 20% |
 | Club | 4,000 | ×1.50 | 30% |
 
-- Moving up is instant. Tiers are reviewed on the member's join anniversary and drop at most one level per year.
+- Moving up is instant. Tiers are reviewed on the member's join anniversary and drop at most one level per year. The review runs every night (`jobs/review-tiers`, 01:45 UTC) for each member whose anniversary has come, once per anniversary; 29 February joins are reviewed on 28 February in other years. If the job was ever down for over a year, a member still drops one level only.
 - "Points earned" counts earn and bonus entries minus their undos, not redemptions or HQ adjustments. The window is `tierWindowMonths` (12) in the config.
 - Undoing an earn never lowers the tier straight away; the annual review does.
 

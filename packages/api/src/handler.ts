@@ -22,6 +22,7 @@ import {
   joinMember,
   removeStaff,
   resolveMemberToken,
+  reviewTiers,
   undoEarn,
   updateEmployee,
   updateReward,
@@ -150,6 +151,10 @@ export const routes: Readonly<Record<string, Route>> = {
   'jobs/expire-points': {
     auth: 'service',
     run: (sql, _uid, b) => expirePoints(sql, batchOption(b)),
+  },
+  'jobs/review-tiers': {
+    auth: 'service',
+    run: (sql, _uid, b) => reviewTiers(sql, batchOption(b)),
   },
 };
 /* eslint-enable @typescript-eslint/no-explicit-any */

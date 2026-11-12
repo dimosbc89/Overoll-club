@@ -14,3 +14,4 @@ export * from './employees.js';
 export * from './store-staff.js';
 export * from './adjust-points.js';
 export * from './catalog.js';
+export * from './review-tiers.js';

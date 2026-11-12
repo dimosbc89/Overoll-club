@@ -56,3 +56,6 @@ select cron.schedule('club-expire-redemptions', '* * * * *', $cmd$select private
 
 -- Points expiry, daily at 01:15 UTC (03:15 Athens time in winter, 04:15 in summer).
 select cron.schedule('club-expire-points', '15 1 * * *', $cmd$select private.call_api_job('expire-points')$cmd$);
+
+-- Yearly tier review on each member's join anniversary, daily at 01:45 UTC (after the points expiry).
+select cron.schedule('club-review-tiers', '45 1 * * *', $cmd$select private.call_api_job('review-tiers')$cmd$);

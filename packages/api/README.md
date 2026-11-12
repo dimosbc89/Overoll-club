@@ -23,6 +23,7 @@ All routes are `POST` with a JSON body and `Authorization: Bearer <token>`:
 | `/api/rewards/create`, `/api/rewards/update` | HQ (v0.6) | `createReward`, `updateReward` |
 | `/api/jobs/expire-redemptions` | service role key only | `expireRedemptions` (every minute; also expires gifts) |
 | `/api/jobs/expire-points` | service role key only | `expirePoints` (daily) |
+| `/api/jobs/review-tiers` | service role key only | `reviewTiers` (daily: yearly tier review on join anniversaries) |
 
 - Identity comes only from the verified token; `userId`, `callerUserId` and `now` in a body are dropped.
 - Responses: `200 {ok:true,…}`; errors `{ok:false, code, message?}` with 400 `invalid_input`,

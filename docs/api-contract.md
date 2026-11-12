@@ -97,6 +97,8 @@ Migration `20261112090000_catalog_writes_via_api`: signed-in users no longer ins
 - Audit log: `store.create`, `store.update`, `reward.create`, `reward.update` (changed fields, old → new).
 - New error codes: `store_code_taken` (409), `welcome_reward` (409). Texts in `data/copy/errors.*.json`, copy deck §f2, to approve.
 
+Yearly tier review (migration `20261112120000_tier_review`): job `jobs/review-tiers` (service only, daily 01:45 UTC). New `members.tier_reviewed_at` (the anniversary last reviewed); `members.tier_review_on` is now filled: the date of the next review in the brand's time zone (for the app's Profile, `profile.tierReview`). A tier lowered at the review is in the audit log (`member.tier_review`).
+
 Monthly store report (migration `20261112110000_store_report`, read only):
 - `redemptions.value_cents` (new): the reward's shelf price when the code was used, set by `redemptions/use`; codes used earlier got the price of the day of the migration.
 - `public.store_report(p_store_id uuid, p_from timestamptz, p_to timestamptz)` (`rpc`, `SECURITY INVOKER`): codes used at the store in `[p_from, p_to)`, one row per reward and cashier: `reward_id, reward_name_el, reward_name_en, employee_id, employee_name, used, gifts, points, value_cents`. For the store's manager, HQ and platform admins; till devices, members and anyone else get no rows (anonymous: refused).

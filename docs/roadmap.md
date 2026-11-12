@@ -74,7 +74,8 @@ Legend: **D** = Dimos · **C** = Claude · ☐ open · ☑ done
 - ☐ D + C: apply the v0.4 migrations (`account_deletion`, `store_names_en`) to Supabase, rename the files to the recorded versions, re-run `supabase/seed/<brand>.sql` (fills the English names), deploy; then delete a test account in the app and check the auth user is gone (if the `postgres` role may not delete auth users, the Edge Function does it with the Auth admin API)
 - ☐ D: approve the v0.4 texts: `member_deleted` and `member_not_found` (§f2, changed), `console.scan.typeHint` (§f1b); the landing FAQ `landing.faq.delete.a` still mentions downloading a copy of your data first, which isn't built yet
 - ☑ C: keep the member's QR secret in the phone's secure storage in the native apps (Keychain / Keystore via expo-secure-store, this device only, out of backups; the web keeps it in browser storage; 12 Nov)
-- ☐ C: tiers (annual review), fraud alerts (expiry job and PIN lockout done in week 1)
+- ☑ C: tiers: yearly review on the join anniversary (12 Nov: daily job `jobs/review-tiers`, one level down at most, audited)
+- ☐ C: fraud alerts (expiry job and PIN lockout done in week 1)
 - ☐ D: test the full loop: join → scan → points → reward → redeem
 
 ## Week 4 · 30 Nov – 6 Dec · Back office + test

@@ -136,6 +136,14 @@ describe('HTTP layer', () => {
     }
   });
 
+  it('jobs/review-tiers: service token only', async () => {
+    expect((await handle(post('/api/jobs/review-tiers', {}, tokenFor(ids.hq)))).status).toBe(403);
+    expect((await handle(post('/api/jobs/review-tiers', {}))).status).toBe(401);
+    const res = await handle(post('/functions/v1/api/jobs/review-tiers', { batchSize: 50 }, SERVICE));
+    expect(res.status).toBe(200);
+    expect(await res.json()).toMatchObject({ ok: true, lowered: 0, raised: 0 });
+  });
+
   it('staff/verify-pin: the employee on success, 422 for a wrong or locked PIN, 403 for another store', async () => {
     const [row] = await db.admin<{ id: string }[]>`
       insert into public.employees (brand_id, store_id, display_name, pin_hash)

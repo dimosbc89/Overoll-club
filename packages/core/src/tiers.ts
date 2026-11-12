@@ -85,6 +85,37 @@ export function tierAfterAnnualReview(
   return tiers[currentRank - 1]!.id;
 }
 
+/**
+ * Review days are the anniversaries of joining (12 calendar months apart, in
+ * UTC; 29 Feb falls back to 28 Feb). The latest one at or before `now`, or
+ * null in the member's first year.
+ */
+export function latestTierReview(joinedAt: Date, now: Date): Date | null {
+  let latest: Date | null = null;
+  for (let years = 1; ; years++) {
+    const anniversary = addMonthsUtc(joinedAt, 12 * years);
+    if (anniversary.getTime() > now.getTime()) return latest;
+    latest = anniversary;
+  }
+}
+
+/** The member's next review day after `now`. */
+export function nextTierReview(joinedAt: Date, now: Date): Date {
+  for (let years = 1; ; years++) {
+    const anniversary = addMonthsUtc(joinedAt, 12 * years);
+    if (anniversary.getTime() > now.getTime()) return anniversary;
+  }
+}
+
+/**
+ * Is a review due? Yes when an anniversary has passed that was not reviewed
+ * yet (`reviewedAt` is the anniversary the last review was for).
+ */
+export function isTierReviewDue(joinedAt: Date, reviewedAt: Date | null, now: Date): boolean {
+  const latest = latestTierReview(joinedAt, now);
+  return latest !== null && (reviewedAt === null || reviewedAt.getTime() < latest.getTime());
+}
+
 export interface TierProgress {
   current: TierId;
   next: TierId | null;
