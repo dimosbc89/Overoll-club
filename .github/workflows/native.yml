@@ -7,6 +7,8 @@
 #
 # preview: an install link for test phones (Android APK; iOS for registered devices).
 # store:   the build for Google Play / App Store (version number goes up by itself).
+# submit:  send the latest store build to App Store Connect (TestFlight) / Google Play, with the
+#          brand's submit profile in apps/mobile/eas.json (iOS: ascAppId of the App Store Connect app).
 #
 # Secrets (GitHub → Settings → Secrets and variables → Actions):
 #   EXPO_TOKEN (or EXPO_TOKEN_<BRAND>): an expo.dev access token of the account that owns the
@@ -31,9 +33,9 @@ on:
         options: [android, ios, all]
         default: android
       kind:
-        description: 'preview: install link for test phones · store: for Google Play / App Store'
+        description: 'preview: install link for test phones · store: build for Google Play / App Store · submit: send the latest store build'
         type: choice
-        options: [preview, store]
+        options: [preview, store, submit]
         default: preview
   push:
     branches: ['eas/**']
@@ -73,14 +75,15 @@ jobs:
           case "$platform" in android|ios|all) ;; *) echo "::error::Platform must be android, ios or all, not '$platform'"; exit 1 ;; esac
           case "$kind" in
             preview) profile="$brand-preview" ;;
-            store) profile="$brand" ;;
-            *) echo "::error::Kind must be preview or store, not '$kind'"; exit 1 ;;
+            store|submit) profile="$brand" ;;
+            *) echo "::error::Kind must be preview, store or submit, not '$kind'"; exit 1 ;;
           esac
           {
             echo "brand=$brand"
             echo "brand_upper=$(echo "$brand" | tr '[:lower:]-' '[:upper:]_')"
             echo "platform=$platform"
             echo "profile=$profile"
+            echo "kind=$kind"
           } >> "$GITHUB_OUTPUT"
           echo "Building $brand · $platform · profile $profile"
 
@@ -102,6 +105,7 @@ jobs:
           APPLE_TEAM_ID: ${{ secrets.EXPO_APPLE_TEAM_ID }}
           PROFILE: ${{ steps.what.outputs.profile }}
           PLATFORM: ${{ steps.what.outputs.platform }}
+          KIND: ${{ steps.what.outputs.kind }}
         run: |
           if [ -z "$EXPO_TOKEN" ]; then
             echo "::error::Secret EXPO_TOKEN (or EXPO_TOKEN_${{ steps.what.outputs.brand_upper }}) is not set: create an access token on expo.dev and save it in GitHub."
@@ -117,6 +121,15 @@ jobs:
             export EXPO_ASC_API_KEY_PATH="$key_file" EXPO_ASC_KEY_ID="$ASC_KEY_ID" EXPO_ASC_ISSUER_ID="$ASC_ISSUER_ID"
             [ -n "$APPLE_TEAM_ID" ] && export EXPO_APPLE_TEAM_ID="$APPLE_TEAM_ID" EXPO_APPLE_TEAM_TYPE=COMPANY_OR_ORGANIZATION
             echo "App Store Connect API key available for iOS credentials."
+          fi
+          if [ "$KIND" = "submit" ]; then
+            if node -e "const s=require('./eas.json').submit?.[process.env.PROFILE]; const p=process.env.PLATFORM; process.exit(['ios','all'].includes(p) && !s?.ios?.ascAppId ? 1 : 0)"; then :; else
+              echo "::error::apps/mobile/eas.json submit.$PROFILE.ios.ascAppId is not set (the app's Apple ID in App Store Connect)."
+              exit 1
+            fi
+            npx --yes eas-cli@latest submit --profile "$PROFILE" --platform "$PLATFORM" --latest --non-interactive --no-wait
+            echo "### Submission started for $PROFILE ($PLATFORM): see Submissions on expo.dev" >> "$GITHUB_STEP_SUMMARY"
+            exit 0
           fi
           npx --yes eas-cli@latest build --profile "$PROFILE" --platform "$PLATFORM" --non-interactive --no-wait --json > "$RUNNER_TEMP/builds.json"
           node -e '

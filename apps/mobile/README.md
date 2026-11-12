@@ -19,6 +19,8 @@ The counter QR on native opens `<scheme>://join?store=<code>`. Bundle ids can st
 
 Builds run on Expo's servers, started by `.github/workflows/native.yml` with the GitHub secret `EXPO_TOKEN` (or `EXPO_TOKEN_<BRAND>`): Actions → "Native builds" → Run workflow, or a push to a branch (or tag) `eas/<brand>/<android|ios|all>/<preview|store>`. The job links to the build; Expo e-mails when it is ready. iOS needs the brand's Apple credentials on EAS once: either an App Store Connect API key (Admin) in the secrets `EXPO_ASC_KEY_P8`, `EXPO_ASC_KEY_ID`, `EXPO_ASC_ISSUER_ID`, `EXPO_APPLE_TEAM_ID`, or one interactive `eas build -p ios` by the Apple account holder.
 
+Store submissions: the workflow's `submit` kind sends the latest store build (`eas submit --latest`) with the brand's submit profile in `eas.json`; iOS needs `submit.<brand>.ios.ascAppId`, the app's Apple ID in App Store Connect. The very first iOS submission can instead be run interactively by the Apple account holder (`eas submit -p ios --profile <brand> --latest`), which also creates the App Store Connect app.
+
 ```bash
 EXPO_PUBLIC_BRAND=koala npx expo config --type public   # see a brand's resolved app config
 git push --force origin main:refs/heads/eas/koala/android/preview   # test APK for Koala from main

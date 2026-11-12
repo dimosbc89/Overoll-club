@@ -38,5 +38,12 @@
         "buildType": "apk"
       }
     }
+  },
+  "submit": {
+    "koala": {
+      "ios": {
+        "appleTeamId": "JUVGRB24Q6"
+      }
+    }
   }
 }
