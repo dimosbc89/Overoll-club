@@ -12,6 +12,8 @@ coverage/
 supabase/.temp/
 *.p12
 *.pem
+# Apple's public WWDR intermediate certificate (no key), needed to sign Wallet passes.
+!data/wallet/apple-wwdr-g4.pem
 *.pkpass
 
 # Edge Function bundles (npm run functions:build)
