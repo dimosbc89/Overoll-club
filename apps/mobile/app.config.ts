@@ -17,6 +17,8 @@ interface NativeIdentity {
   androidPackage: string;
   iconBackground: string;
   background: string;
+  /** Store version shown to people (CFBundleShortVersionString / versionName); build numbers are EAS's (remote, auto-incremented). */
+  version?: string;
   /** Expo account or organisation that owns the EAS project (store builds), and the project's id on expo.dev. */
   expoOwner?: string;
   easProjectId?: string;
@@ -37,7 +39,7 @@ export function appConfig(slug: string, base: Partial<ExpoConfig> = {}): ExpoCon
     ...base,
     name: project.programName,
     slug: native.slug,
-    version: '0.1.0',
+    version: native.version ?? '0.1.0',
     scheme: project.appScheme,
     orientation: 'portrait',
     userInterfaceStyle: 'light',

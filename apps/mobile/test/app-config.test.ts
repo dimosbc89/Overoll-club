@@ -11,6 +11,7 @@ const native = import.meta.glob<{
   androidPackage: string;
   iconBackground: string;
   background: string;
+  version?: string;
 }>('../brands/*/native.json', { eager: true, import: 'default' });
 const projects = import.meta.glob<{ programName: string; appScheme: string }>('../../../supabase/projects/*.json', {
   eager: true,
@@ -39,6 +40,13 @@ describe('native app identity per brand', () => {
     }
     for (const key of ['iosBundleId', 'androidPackage', 'slug'] as const) {
       expect(new Set(ids.map((n) => n[key])).size, key).toBe(ids.length);
+    }
+  });
+
+  it('store versions are plain x.y.z', () => {
+    for (const slug of slugs) {
+      const version = native[`../brands/${slug}/native.json`]!.version;
+      if (version !== undefined) expect(version).toMatch(/^\d+\.\d+\.\d+$/);
     }
   });
 

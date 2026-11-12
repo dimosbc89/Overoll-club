@@ -2,6 +2,7 @@
   "slug": "koala-club",
   "iosBundleId": "online.growagency.koala",
   "androidPackage": "online.growagency.koala",
+  "version": "1.0.0",
   "iconBackground": "#026852",
   "background": "#f8f1de",
   "expoOwner": "grow-agency-lp",
