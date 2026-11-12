@@ -39,6 +39,8 @@ Reward catalog (draft, efood prices of 11 Nov 2026, costs from `packages/core`):
 
 Koala Club for iOS and Android, from the same code (`apps/mobile`, `EXPO_PUBLIC_BRAND=koala`, EAS profile `koala`): bundle id / package `online.growagency.koala`, scheme `koalaclub://`, draft icon and splash in `apps/mobile/brands/koala/`. Decided by Dimos on 11 Nov 2026: published first from GROW AGENCY's Apple Developer account (and GROW's Google Play account), with Koala's written authorization (App Store guideline 4.2.6); if Apple refuses, the app moves to a Koala account.
 
+Builds: EAS project `koala-club` on GROW's Expo account (dimos@growagency.online), started from GitHub Actions ("Native builds", `apps/mobile/README.md`). Android first: a test APK for Dimos's phone, then the Play Console app record (GROW's Google Play account). iOS needs GROW's Apple credentials on EAS once (App Store Connect API key or one interactive build).
+
 ## Before launch: needed from Koala
 
 - [ ] Approve the reward catalog and the in-store prices (we used efood prices).

@@ -17,6 +17,9 @@ interface NativeIdentity {
   androidPackage: string;
   iconBackground: string;
   background: string;
+  /** Expo account or organisation that owns the EAS project (store builds), and the project's id on expo.dev. */
+  expoOwner?: string;
+  easProjectId?: string;
 }
 
 export function brandSlug(env: Record<string, string | undefined> = process.env): string {
@@ -40,7 +43,13 @@ export function appConfig(slug: string, base: Partial<ExpoConfig> = {}): ExpoCon
     userInterfaceStyle: 'light',
     backgroundColor: native.background,
     icon: `${assets}/icon.png`,
-    ios: { bundleIdentifier: native.iosBundleId, supportsTablet: false },
+    ...(native.expoOwner ? { owner: native.expoOwner } : {}),
+    ios: {
+      bundleIdentifier: native.iosBundleId,
+      supportsTablet: false,
+      // HTTPS only, no own encryption: exempt from export compliance (App Store Connect asks otherwise on every build).
+      infoPlist: { ITSAppUsesNonExemptEncryption: false },
+    },
     android: {
       package: native.androidPackage,
       predictiveBackGestureEnabled: false,
@@ -57,7 +66,11 @@ export function appConfig(slug: string, base: Partial<ExpoConfig> = {}): ExpoCon
       // Member QR secret in the Keychain / Keystore; kept out of Android backups (a restored key can't decrypt it).
       ['expo-secure-store', { configureAndroidBackup: true }],
     ],
-    extra: { ...(base.extra ?? {}), brand: slug },
+    extra: {
+      ...(base.extra ?? {}),
+      brand: slug,
+      ...(native.easProjectId ? { eas: { projectId: native.easProjectId } } : {}),
+    },
   };
 }
 

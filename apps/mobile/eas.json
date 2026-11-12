@@ -16,7 +16,10 @@
     "koala-preview": {
       "extends": "koala",
       "distribution": "internal",
-      "autoIncrement": false
+      "autoIncrement": false,
+      "android": {
+        "buildType": "apk"
+      }
     },
     "overoll": {
       "env": {
@@ -30,7 +33,10 @@
     "overoll-preview": {
       "extends": "overoll",
       "distribution": "internal",
-      "autoIncrement": false
+      "autoIncrement": false,
+      "android": {
+        "buildType": "apk"
+      }
     }
   }
 }

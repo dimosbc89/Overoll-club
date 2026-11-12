@@ -15,11 +15,13 @@ The counter QR on native opens `<scheme>://join?store=<code>`. Bundle ids can st
 
 ### Native builds (EAS)
 
-`eas.json` has one profile per brand (`overoll`, `koala`, plus `<brand>-preview` for internal test builds) with the same public settings the web build uses (`test/app-config.test.ts` keeps them in step with `supabase/projects/`). Not done yet: an Expo account and `eas init` per app (adds `extra.eas.projectId`), and the brands' Apple and Google accounts.
+`eas.json` has one profile per brand (`overoll`, `koala`, plus `<brand>-preview` for test phones: Android APK, iOS for registered devices) with the same public settings the web build uses (`test/app-config.test.ts` keeps them in step with `supabase/projects/`). Each brand is its own project on expo.dev: `brands/<brand>/native.json` has `expoOwner` (the Expo account) and `easProjectId`, which `app.config.ts` sets as `owner` and `extra.eas.projectId`.
+
+Builds run on Expo's servers, started by `.github/workflows/native.yml` with the GitHub secret `EXPO_TOKEN` (or `EXPO_TOKEN_<BRAND>`): Actions → "Native builds" → Run workflow, or a tag `eas/<brand>/<android|ios|all>/<preview|store>/<n>`. The job links to the build; Expo e-mails when it is ready. iOS needs the brand's Apple credentials on EAS once: either an App Store Connect API key (Admin) in the secrets `EXPO_ASC_KEY_P8`, `EXPO_ASC_KEY_ID`, `EXPO_ASC_ISSUER_ID`, `EXPO_APPLE_TEAM_ID`, or one interactive `eas build -p ios` by the Apple account holder.
 
 ```bash
 EXPO_PUBLIC_BRAND=koala npx expo config --type public   # see a brand's resolved app config
-eas build --profile koala --platform all                # once the Expo and store accounts exist
+git tag eas/koala/android/preview/1 && git push origin eas/koala/android/preview/1   # test APK for Koala
 ```
 
 ## Run

@@ -1,0 +1,132 @@
+# Native app builds (iOS / Android) on Expo's build servers (EAS Build), per brand.
+#
+# Start one either way:
+#   - GitHub → Actions → "Native builds" → Run workflow (brand, platform, preview/store), or
+#   - push a tag  eas/<brand>/<android|ios|all>/<preview|store>/<anything unique>
+#     e.g.  git tag eas/koala/android/preview/1 && git push origin eas/koala/android/preview/1
+#
+# preview: an install link for test phones (Android APK; iOS for registered devices).
+# store:   the build for Google Play / App Store (version number goes up by itself).
+#
+# Secrets (GitHub → Settings → Secrets and variables → Actions):
+#   EXPO_TOKEN (or EXPO_TOKEN_<BRAND>): an expo.dev access token of the account that owns the
+#     brand's EAS project (apps/mobile/brands/<brand>/native.json: expoOwner, easProjectId).
+#   iOS, until EAS holds the brand's Apple certificates, also an App Store Connect API key (Admin):
+#     EXPO_ASC_KEY_P8 (contents of the .p8 file), EXPO_ASC_KEY_ID, EXPO_ASC_ISSUER_ID, EXPO_APPLE_TEAM_ID.
+# The job only starts the build and links to it; Expo e-mails when it is done.
+
+name: Native builds
+
+on:
+  workflow_dispatch:
+    inputs:
+      brand:
+        description: Brand (supabase/projects/<brand>.json)
+        type: choice
+        options: [koala, overoll]
+        default: koala
+      platform:
+        description: Platform
+        type: choice
+        options: [android, ios, all]
+        default: android
+      kind:
+        description: 'preview: install link for test phones · store: for Google Play / App Store'
+        type: choice
+        options: [preview, store]
+        default: preview
+  push:
+    tags: ['eas/**']
+
+concurrency:
+  group: native-${{ github.ref }}
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: What to build
+        id: what
+        env:
+          REF_TYPE: ${{ github.ref_type }}
+          REF_NAME: ${{ github.ref_name }}
+          IN_BRAND: ${{ inputs.brand }}
+          IN_PLATFORM: ${{ inputs.platform }}
+          IN_KIND: ${{ inputs.kind }}
+        run: |
+          if [ "$REF_TYPE" = "tag" ]; then
+            IFS=/ read -r prefix brand platform kind rest <<< "$REF_NAME"
+          else
+            brand="$IN_BRAND"; platform="$IN_PLATFORM"; kind="$IN_KIND"
+          fi
+          if [ ! -f "supabase/projects/$brand.json" ] || [ ! -f "apps/mobile/brands/$brand/native.json" ]; then
+            echo "::error::Unknown brand '$brand' (no supabase/projects/$brand.json or apps/mobile/brands/$brand/native.json)"; exit 1
+          fi
+          case "$platform" in android|ios|all) ;; *) echo "::error::Platform must be android, ios or all, not '$platform'"; exit 1 ;; esac
+          case "$kind" in
+            preview) profile="$brand-preview" ;;
+            store) profile="$brand" ;;
+            *) echo "::error::Kind must be preview or store, not '$kind'"; exit 1 ;;
+          esac
+          {
+            echo "brand=$brand"
+            echo "brand_upper=$(echo "$brand" | tr '[:lower:]-' '[:upper:]_')"
+            echo "platform=$platform"
+            echo "profile=$profile"
+          } >> "$GITHUB_OUTPUT"
+          echo "Building $brand · $platform · profile $profile"
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      - name: Start the EAS build
+        working-directory: apps/mobile
+        env:
+          EXPO_TOKEN: ${{ secrets[format('EXPO_TOKEN_{0}', steps.what.outputs.brand_upper)] || secrets.EXPO_TOKEN }}
+          EXPO_PUBLIC_BRAND: ${{ steps.what.outputs.brand }}
+          ASC_P8: ${{ secrets.EXPO_ASC_KEY_P8 }}
+          ASC_KEY_ID: ${{ secrets.EXPO_ASC_KEY_ID }}
+          ASC_ISSUER_ID: ${{ secrets.EXPO_ASC_ISSUER_ID }}
+          APPLE_TEAM_ID: ${{ secrets.EXPO_APPLE_TEAM_ID }}
+          PROFILE: ${{ steps.what.outputs.profile }}
+          PLATFORM: ${{ steps.what.outputs.platform }}
+        run: |
+          if [ -z "$EXPO_TOKEN" ]; then
+            echo "::error::Secret EXPO_TOKEN (or EXPO_TOKEN_${{ steps.what.outputs.brand_upper }}) is not set: create an access token on expo.dev and save it in GitHub."
+            exit 1
+          fi
+          if ! node -e "const n=require('./brands/'+process.env.EXPO_PUBLIC_BRAND+'/native.json'); process.exit(n.easProjectId && n.expoOwner ? 0 : 1)"; then
+            echo "::error::apps/mobile/brands/$EXPO_PUBLIC_BRAND/native.json has no expoOwner / easProjectId yet (the project on expo.dev)."
+            exit 1
+          fi
+          if [ -n "$ASC_P8" ] && [ -n "$ASC_KEY_ID" ] && [ -n "$ASC_ISSUER_ID" ]; then
+            key_file="$RUNNER_TEMP/AuthKey_$ASC_KEY_ID.p8"
+            printf '%s\n' "$ASC_P8" > "$key_file"
+            export EXPO_ASC_API_KEY_PATH="$key_file" EXPO_ASC_KEY_ID="$ASC_KEY_ID" EXPO_ASC_ISSUER_ID="$ASC_ISSUER_ID"
+            [ -n "$APPLE_TEAM_ID" ] && export EXPO_APPLE_TEAM_ID="$APPLE_TEAM_ID" EXPO_APPLE_TEAM_TYPE=COMPANY_OR_ORGANIZATION
+            echo "App Store Connect API key available for iOS credentials."
+          fi
+          npx --yes eas-cli@latest build --profile "$PROFILE" --platform "$PLATFORM" --non-interactive --no-wait --json > "$RUNNER_TEMP/builds.json"
+          node -e '
+            const raw = require(process.argv[1]);
+            const builds = Array.isArray(raw) ? raw : [raw];
+            const n = require("./brands/" + process.env.EXPO_PUBLIC_BRAND + "/native.json");
+            const lines = ["### EAS builds started", "", "| Platform | Build | Version |", "| --- | --- | --- |"];
+            for (const b of builds) {
+              const url = `https://expo.dev/accounts/${n.expoOwner}/projects/${n.slug}/builds/${b.id}`;
+              lines.push(`| ${b.platform ?? ""} | [${b.id}](${url}) | ${b.appVersion ?? ""} (${b.appBuildVersion ?? ""}) |`);
+              console.log(`${b.platform ?? "build"}: ${url}`);
+            }
+            require("fs").appendFileSync(process.env.GITHUB_STEP_SUMMARY, lines.join("\n") + "\n");
+          ' "$RUNNER_TEMP/builds.json"
