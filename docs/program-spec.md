@@ -25,7 +25,7 @@ All numbers live in `packages/core/src/config.ts` and can be changed by HQ later
 | Pilot store | **Chalandri** (Κατσουλιέρη 10): a neighbourhood store with regulars and calmer mornings than Praxitelous, so staff learn the flow without a queue |
 | App store accounts | Published under GROW's Apple Developer and Google Play accounts (see risk in §10) |
 | Deadline | All stores live by the week of **4 January 2027** |
-| Reward cost | Carried by the store where the reward is redeemed; monthly report per store |
+| Reward cost | Carried by the store where the reward is redeemed; monthly report per store (back office → Αναφορές: rewards handed out per reward and per cashier, valued at the in-store price at the time, CSV for Excel) |
 
 ## 2. Glossary
 

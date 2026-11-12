@@ -100,9 +100,17 @@ export async function useRedemption(sql: Db, raw: UseRedemptionInput): Promise<U
         const member = await lockMember(tx, found.member_id);
         if (!member) throw new Error(`Redemption ${found.id} has no member`);
         const [redemption] = await tx<
-          { status: string; expires_at: Date; points_spent: number; reward_id: string; name_el: string; name_en: string }[]
+          {
+            status: string;
+            expires_at: Date;
+            points_spent: number;
+            reward_id: string;
+            name_el: string;
+            name_en: string;
+            shelf_price_cents: number;
+          }[]
         >`
-          select r.status, r.expires_at, r.points_spent, r.reward_id, w.name_el, w.name_en
+          select r.status, r.expires_at, r.points_spent, r.reward_id, w.name_el, w.name_en, w.shelf_price_cents
           from public.redemptions r join public.rewards w on w.id = r.reward_id
           where r.id = ${found.id}
           for update of r
@@ -115,7 +123,9 @@ export async function useRedemption(sql: Db, raw: UseRedemptionInput): Promise<U
 
         await tx`
           update public.redemptions
-          set status = 'used', used_at = ${i.now}, used_store_id = ${i.storeId}, used_employee_id = ${i.employeeId}
+          set status = 'used', used_at = ${i.now}, used_store_id = ${i.storeId}, used_employee_id = ${i.employeeId},
+            -- What the store gave away, at today's price: the monthly store report stays right after a price change.
+            value_cents = ${redemption.shelf_price_cents}
           where id = ${found.id}
         `;
         await audit(tx, {

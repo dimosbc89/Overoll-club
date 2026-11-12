@@ -81,7 +81,7 @@ Legend: **D** = Dimos · **C** = Claude · ☐ open · ☑ done
 
 - ☑ C: back office v0.5 (11 Nov, both brands): HQ and store-manager sign-in, dashboard (today / 7 days, per store), cashiers with PIN, till devices and managers by email, HQ admins, member search with history and points correction with reason (`docs/api-contract.md` v0.5)
 - ☑ C: HQ admin: edit stores and the reward catalog from the back office (v0.6, 12 Nov: details, opening hours, open/close a store; rewards with price → points from core, switch off/on; audited; the welcome gift can't be switched off)
-- ☐ C: store manager view: monthly redemption report (own store numbers and cashiers: done in v0.5)
+- ☑ C: store manager view: monthly redemption report (12 Nov: Αναφορές page, per reward and per cashier, value at the in-store price when handed out, CSV for Excel; own store numbers and cashiers: done in v0.5)
 - ☐ C: send a message to members (push + Wallet), manual for now
 - ☐ C: print files: counter QR stand per store, cup/bag sticker
 - ☐ D: end-to-end test with 5 friends; print the pilot materials for Chalandri

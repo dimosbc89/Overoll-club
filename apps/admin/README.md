@@ -31,7 +31,7 @@ Next.js bakes `NEXT_PUBLIC_*` in at **build** time, so set them before `npm run 
 
 | Path | What |
 | --- | --- |
-| `src/app/(admin)` | Back office with the header: `/` dashboard, `/members`, `/staff`, `/stores` and `/rewards` (public lists; HQ admins edit stores, hours and the reward catalog there, v0.6), `/sign-in` |
+| `src/app/(admin)` | Back office with the header: `/` dashboard, `/members`, `/staff`, `/reports` (monthly store report, managers and HQ), `/stores` and `/rewards` (public lists; HQ admins edit stores, hours and the reward catalog there, v0.6), `/sign-in` |
 | `src/app/console` | Staff console (till), full screen, client-side; own layout with Manrope and the design-canvas tokens |
 | `src/i18n` | `el.json` (reference) and `en.json` with the same keys, typed `t()`; language in the `overoll_locale` cookie, set by a server action |
 | `src/lib` | Supabase reads (server only), € formatting, opening hours, keypads, tier costs via `@grow-loyalty/core`, the API client (`api.ts`), store names per language (`store-names.ts`) |

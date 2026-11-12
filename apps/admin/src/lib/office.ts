@@ -596,3 +596,49 @@ export function startOfLocalDay(now: Date, timeZone: string, daysBack = 0): Date
   const guess = new Date(midnightLocalAsUtc - zoneOffsetMs(new Date(midnightLocalAsUtc), timeZone));
   return new Date(midnightLocalAsUtc - zoneOffsetMs(guess, timeZone));
 }
+
+/** Midnight that starts a local calendar date in `timeZone` (month 1–12; day may run past the month end). */
+export function localMidnight(year: number, month: number, day: number, timeZone: string): Date {
+  const asUtc = Date.UTC(year, month - 1, day);
+  const guess = new Date(asUtc - zoneOffsetMs(new Date(asUtc), timeZone));
+  return new Date(asUtc - zoneOffsetMs(guess, timeZone));
+}
+
+/** The calendar month containing `now` in `timeZone`. */
+export function localMonthOf(now: Date, timeZone: string): { year: number; month: number } {
+  const local = new Date(now.getTime() + zoneOffsetMs(now, timeZone));
+  return { year: local.getUTCFullYear(), month: local.getUTCMonth() + 1 };
+}
+
+// ---------------------------------------------------------------------------
+// Monthly store report (v0.6): public.store_report, managers and HQ
+// ---------------------------------------------------------------------------
+
+export interface ReportRow {
+  rewardId: string;
+  rewardNameEl: string;
+  rewardNameEn: string;
+  employeeId: string | null;
+  employeeName: string | null;
+  used: number;
+  gifts: number;
+  points: number;
+  valueCents: number;
+}
+
+/** Rewards handed out at a store in [from, to), one row per reward and cashier. */
+export async function loadStoreReport(client: SupabaseClient, storeId: string, from: Date, to: Date): Promise<ReportRow[]> {
+  const { data, error } = await client.rpc('store_report', { p_store_id: storeId, p_from: from.toISOString(), p_to: to.toISOString() });
+  if (error) throw error;
+  return ((data ?? []) as Record<string, unknown>[]).map((r) => ({
+    rewardId: String(r.reward_id),
+    rewardNameEl: String(r.reward_name_el ?? ''),
+    rewardNameEn: String(r.reward_name_en ?? ''),
+    employeeId: (r.employee_id as string | null) ?? null,
+    employeeName: (r.employee_name as string | null) ?? null,
+    used: Number(r.used ?? 0),
+    gifts: Number(r.gifts ?? 0),
+    points: Number(r.points ?? 0),
+    valueCents: Number(r.value_cents ?? 0),
+  }));
+}

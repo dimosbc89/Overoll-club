@@ -19,6 +19,7 @@ export function Header() {
     { href: '/', label: t('nav.dashboard') },
     ...(user?.hq ? [{ href: '/members', label: t('nav.members') }] : []),
     ...(user ? [{ href: '/staff', label: t('nav.staff') }] : []),
+    ...(user ? [{ href: '/reports', label: t('nav.reports') }] : []),
     { href: '/stores', label: t('nav.stores') },
     { href: '/rewards', label: t('nav.rewards') },
     { href: '/console', label: t('nav.console') },

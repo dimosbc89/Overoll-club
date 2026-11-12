@@ -97,6 +97,11 @@ Migration `20261112090000_catalog_writes_via_api`: signed-in users no longer ins
 - Audit log: `store.create`, `store.update`, `reward.create`, `reward.update` (changed fields, old → new).
 - New error codes: `store_code_taken` (409), `welcome_reward` (409). Texts in `data/copy/errors.*.json`, copy deck §f2, to approve.
 
+Monthly store report (migration `20261112110000_store_report`, read only):
+- `redemptions.value_cents` (new): the reward's shelf price when the code was used, set by `redemptions/use`; codes used earlier got the price of the day of the migration.
+- `public.store_report(p_store_id uuid, p_from timestamptz, p_to timestamptz)` (`rpc`, `SECURITY INVOKER`): codes used at the store in `[p_from, p_to)`, one row per reward and cashier: `reward_id, reward_name_el, reward_name_en, employee_id, employee_name, used, gifts, points, value_cents`. For the store's manager, HQ and platform admins; till devices, members and anyone else get no rows (anonymous: refused).
+- Store staff (managers, till devices) now also read their brand's switched-off rewards, so older codes keep their names; members and visitors still see active rewards only.
+
 ## What the apps read directly (Supabase client, row-level security)
 
 Member app (signed-in member): `members` (own row, not once deleted), `member_balances` (own), `member_secrets` (own: `qr_secret`, `pass_version` → core `createRotatingToken` for the QR, offline), `rewards` (active), `stores` (active; `name_en` / `address_en` from v0.4), `member_gifts` (own), `redemptions` (own; a `pending` one not past `expires_at` is the active code), `ledger_entries` (own, history). Costs per tier: core `rewardCostForTier`; progress: core `nextRewardProgress`, `tierProgress`.

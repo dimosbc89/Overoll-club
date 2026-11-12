@@ -426,6 +426,44 @@ set role anon;
 select tst.refused($$select * from public.dashboard_stats('2000-01-01')$$, 'anonymous cannot call the dashboard');
 reset role;
 
+-- ------------------------------------------------------ store report (v0.6)
+-- A code for a reward HQ has since switched off, used at Aigaleo (store b) by Nikos.
+set role service_role;
+insert into public.redemptions (brand_id, member_id, reward_id, code, points_spent, expires_at, status, used_at, used_store_id, used_employee_id, value_cents)
+  select brand_id, '40000000-0000-0000-0000-000000000002', id, 'RPRTAAAA', 400, now() + interval '15 minutes', 'used', now(),
+    '20000000-0000-0000-0000-00000000000b', '30000000-0000-0000-0000-00000000000b', 250
+  from public.rewards where name_en = 'Retired';
+reset role;
+select set_config('request.jwt.claim.sub', '00000000-0000-0000-0000-0000000000d1', false);
+set role authenticated;
+select tst.eq((select count(*) from public.store_report('20000000-0000-0000-0000-00000000000b', now() - interval '1 day', now() + interval '1 day')
+               where reward_name_en = 'Retired' and employee_name = 'Nikos' and used = 1 and points = 400 and value_cents = 250), 1,
+              'the store manager gets the report, with the value at the time of use and switched-off rewards named');
+select tst.eq((select count(*) from public.store_report('20000000-0000-0000-0000-00000000000a', now() - interval '1 day', now() + interval '1 day')), 0, 'a manager gets nothing for another store');
+select tst.eq((select count(*) from public.rewards where not active), 1, 'a store manager reads switched-off rewards of the brand');
+reset role;
+select set_config('request.jwt.claim.sub', '00000000-0000-0000-0000-0000000000b1', false);
+set role authenticated;
+select tst.eq((select sum(used)::bigint from public.store_report('20000000-0000-0000-0000-00000000000b', now() - interval '1 day', now() + interval '1 day')), 1::bigint, 'HQ gets any store report of the brand');
+select tst.eq((select count(*) from public.store_report('20000000-0000-0000-0000-00000000000b', now() + interval '1 day', now() + interval '2 days')), 0, 'only codes used inside the period');
+reset role;
+select set_config('request.jwt.claim.sub', '00000000-0000-0000-0000-0000000000c1', false);
+set role authenticated;
+select tst.eq((select count(*) from public.store_report('20000000-0000-0000-0000-00000000000b', now() - interval '1 day', now() + interval '1 day')), 0, 'a till device gets no report of another store');
+select tst.eq((select count(*) from public.store_report('20000000-0000-0000-0000-00000000000a', now() - interval '1 day', now() + interval '1 day')), 0, 'a till device gets no report, even of its own store');
+select tst.eq((select count(*) from public.rewards where name_en = 'Retired'), 1, 'a till device reads switched-off rewards (names of older codes)');
+reset role;
+select set_config('request.jwt.claim.sub', '00000000-0000-0000-0000-0000000000a1', false);
+set role authenticated;
+select tst.eq((select count(*) from public.store_report('20000000-0000-0000-0000-00000000000b', now() - interval '1 day', now() + interval '1 day')), 0, 'a member gets no store report');
+select tst.eq((select count(*) from public.rewards where not active), 0, 'members still see active rewards only');
+reset role;
+select set_config('request.jwt.claim.sub', '', false);
+set role anon;
+select tst.refused($$select * from public.store_report('20000000-0000-0000-0000-00000000000b', now() - interval '1 day', now())$$, 'anonymous cannot call the store report');
+select tst.eq((select count(*) from public.rewards where not active), 0, 'visitors see active rewards only');
+reset role;
+
 select tst.eq((select count(*) from pg_class c join pg_namespace n on n.oid = c.relnamespace
                where n.nspname in ('public', 'private') and c.relkind = 'r' and not c.relrowsecurity), 0,
               'every table in public and private has row-level security on');

@@ -44,7 +44,7 @@ async function memberWith(points: number, tier?: 'classic' | 'gold' | 'club'): P
 
 async function redemptionRow(id: string) {
   const [row] = await db.admin`
-    select status, points_spent, created_at, expires_at, used_at, used_store_id, used_employee_id, cancelled_at
+    select status, points_spent, created_at, expires_at, used_at, used_store_id, used_employee_id, cancelled_at, value_cents
     from public.redemptions where id = ${id}
   `;
   return row!;
@@ -184,6 +184,8 @@ describe('useRedemption', () => {
       used_at: at(base, 120),
       used_store_id: ids.storeA,
       used_employee_id: ids.maria,
+      // The croissant's shelf price at the time of use (store report, v0.6).
+      value_cents: 350,
     });
     expect(await use(created.code, at(base, 130), { idempotencyKey: k })).toEqual(used);
     expect(await use(created.code, at(base, 130))).toMatchObject({ ok: false, code: 'already_used' });
