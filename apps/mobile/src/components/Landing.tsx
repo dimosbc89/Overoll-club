@@ -1,5 +1,4 @@
 import { useRouter } from 'expo-router';
-import Head from 'expo-router/head';
 import { Platform, StyleSheet, Text, View } from 'react-native';
 
 import { useI18n } from '../i18n/I18nProvider';
@@ -7,6 +6,7 @@ import type { MessageKey } from '../i18n/messages';
 import { showsNoAppCopy } from '../lib/platformFeatures';
 import { type } from '../theme/fonts';
 import { colors, space } from '../theme/tokens';
+import { PageHead } from './PageHead';
 import { NotConfigured } from './RemoteContent';
 import { PinkHeader } from './PinkHeader';
 import { Body, Button, Card, LinkButton, Muted, Screen } from './ui';
@@ -64,10 +64,7 @@ export function Landing({ notConfigured }: { notConfigured?: boolean }) {
 
   return (
     <Screen title={t('landing.hero.title')} header={<PinkHeader title={t('landing.hero.title')} />} gap={space.mdl}>
-      <Head>
-        <title>{t('landing.meta.title')}</title>
-        <meta name="description" content={t('landing.meta.description')} />
-      </Head>
+      <PageHead title={t('landing.meta.title')} description={t('landing.meta.description')} />
       {notConfigured ? <NotConfigured /> : null}
       <Text style={type.lead}>{t('landing.hero.subline')}</Text>
       <View style={styles.actions}>

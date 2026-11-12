@@ -1,4 +1,3 @@
-import Head from 'expo-router/head';
 import { useState, type ReactNode } from 'react';
 import {
   ActivityIndicator,
@@ -23,6 +22,7 @@ import { font, type } from '../theme/fonts';
 import { control, raised } from '../theme/surface';
 import { colors, controlHeight, maxContentWidth, minTouch, radius, shape, space } from '../theme/tokens';
 import { Icon } from './Icon';
+import { PageHead } from './PageHead';
 
 /**
  * Cream page with a centred column (the designs are 390 wide). `title` names
@@ -54,9 +54,7 @@ export function Screen({
     : undefined;
   return (
     <SafeAreaView edges={header ? [] : ['top']} style={styles.screen}>
-      <Head>
-        <title>{t('meta.pageTitle', { page: title })}</title>
-      </Head>
+      <PageHead title={t('meta.pageTitle', { page: title })} />
       <ScrollView
         style={styles.screen}
         contentContainerStyle={styles.scrollContent}
