@@ -42,7 +42,10 @@
   "submit": {
     "koala": {
       "ios": {
-        "appleTeamId": "JUVGRB24Q6"
+        "appleTeamId": "JUVGRB24Q6",
+        "language": "el",
+        "appName": "Koala Club",
+        "sku": "koala-club"
       }
     }
   }
