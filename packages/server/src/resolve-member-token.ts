@@ -1,4 +1,4 @@
-import type { TierId } from '@overoll/core';
+import type { TierId } from '@grow-loyalty/core';
 import { storeAccess } from './internal/access.js';
 import { loadBrand } from './internal/brand.js';
 import * as input from './internal/input.js';

@@ -1,4 +1,4 @@
-import { type ProgramConfig, resolveConfig } from '@overoll/core';
+import { type ProgramConfig, resolveConfig } from '@grow-loyalty/core';
 import type { Tx } from '../result.js';
 
 export interface Brand {

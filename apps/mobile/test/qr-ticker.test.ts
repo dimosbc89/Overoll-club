@@ -1,4 +1,4 @@
-import { createRotatingToken, defaultConfig, resolveConfig } from '@overoll/core';
+import { createRotatingToken, defaultConfig, resolveConfig } from '@grow-loyalty/core';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { msUntilNextStep, startTokenTicker } from '../src/lib/qrTicker';

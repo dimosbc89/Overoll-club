@@ -1,4 +1,4 @@
-import { defaultConfig, type ProgramConfig } from '@overoll/core';
+import { defaultConfig, type ProgramConfig } from '@grow-loyalty/core';
 import type { Session } from '@supabase/supabase-js';
 import * as Crypto from 'expo-crypto';
 import { useFocusEffect } from 'expo-router';

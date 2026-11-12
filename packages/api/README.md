@@ -1,6 +1,6 @@
-# @overoll/api
+# @grow-loyalty/api
 
-The HTTP layer in front of `@overoll/server`. Runtime-neutral (Fetch API), so the same
+The HTTP layer in front of `@grow-loyalty/server`. Runtime-neutral (Fetch API), so the same
 handler runs in the Supabase Edge Function `api` (Deno) and in the Node tests.
 
 All routes are `POST` with a JSON body and `Authorization: Bearer <token>`:
@@ -30,7 +30,7 @@ All routes are `POST` with a JSON body and `Authorization: Bearer <token>`:
 - Jobs take an optional `batchSize` (a positive whole number; anything else means the default, 100).
 - Bodies over 16 KB are refused. CORS origins from `ALLOWED_ORIGINS` (default `*`).
 
-Tests (`npm test -w @overoll/api`) reuse the throwaway Postgres of `packages/server`.
+Tests (`npm test -w @grow-loyalty/api`) reuse the throwaway Postgres of `packages/server`.
 
 ## Edge Function
 

@@ -1,4 +1,4 @@
-# Overoll Club — working agreement for Claude
+# GROW Loyalty — working agreement for Claude
 
 Loyalty platform built by GROW Agency, one codebase for several brands:
 - **Overoll Croissanterie** (`overoll`, 11–20 stores, Greece + Cyprus): every store live in the week of 4 January 2027, on web app + Apple/Google Wallet. Native apps follow.

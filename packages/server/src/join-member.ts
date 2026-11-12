@@ -1,4 +1,4 @@
-import type { TierId } from '@overoll/core';
+import type { TierId } from '@grow-loyalty/core';
 import { audit } from './internal/audit.js';
 import { findBrandBySlug } from './internal/brand.js';
 import { idempotent } from './internal/idempotency.js';

@@ -1,4 +1,4 @@
-import { type ProgramConfig, lockAfterWrongPin, pinLockedUntil, wrongPinLookbackStart } from '@overoll/core';
+import { type ProgramConfig, lockAfterWrongPin, pinLockedUntil, wrongPinLookbackStart } from '@grow-loyalty/core';
 import { type Failure, type Tx, fail } from '../result.js';
 import { audit } from './audit.js';
 

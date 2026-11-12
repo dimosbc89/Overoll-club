@@ -1,4 +1,4 @@
-import type { TierId } from '@overoll/core';
+import type { TierId } from '@grow-loyalty/core';
 
 import type { Translate } from '../i18n/messages';
 

@@ -6,7 +6,7 @@ import { loadRewards, useLoaded } from '../../../lib/data';
 import { formatEuroFromCents, formatPoints } from '../../../lib/format';
 import { rewardCosts } from '../../../lib/reward-costs';
 
-/** Reward catalog with the point cost per tier, computed by @overoll/core. */
+/** Reward catalog with the point cost per tier, computed by @grow-loyalty/core. */
 export default function RewardsPage() {
   const { t, locale } = useI18n();
   useDocumentTitle(t('rewards.title'));

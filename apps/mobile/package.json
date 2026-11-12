@@ -1,5 +1,5 @@
 {
-  "name": "@overoll/mobile",
+  "name": "@grow-loyalty/mobile",
   "version": "0.1.0",
   "private": true,
   "description": "Overoll Club customer app: iOS, Android and the customer web app (Expo web)",
@@ -15,7 +15,7 @@
   },
   "dependencies": {
     "@expo-google-fonts/manrope": "^0.4.3",
-    "@overoll/core": "*",
+    "@grow-loyalty/core": "*",
     "@react-native-async-storage/async-storage": "2.2.0",
     "@supabase/supabase-js": "^2.119.0",
     "expo": "~58.0.23",

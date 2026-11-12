@@ -1,4 +1,4 @@
-import { defaultConfig, resolveConfig } from '@overoll/core';
+import { defaultConfig, resolveConfig } from '@grow-loyalty/core';
 import { describe, expect, it } from 'vitest';
 
 import type { AwardedPoints } from '../src/lib/api';

@@ -1,4 +1,4 @@
-import { isRedemptionExpired } from '@overoll/core';
+import { isRedemptionExpired } from '@grow-loyalty/core';
 import { audit } from './internal/audit.js';
 import { returnGift } from './internal/gifts.js';
 import * as input from './internal/input.js';

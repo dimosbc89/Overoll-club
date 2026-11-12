@@ -1,6 +1,6 @@
 'use client';
 
-import { normalizeRedemptionCode } from '@overoll/core';
+import { normalizeRedemptionCode } from '@grow-loyalty/core';
 import { type FormEvent, useEffect, useRef } from 'react';
 
 import {

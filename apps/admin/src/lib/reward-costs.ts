@@ -1,4 +1,4 @@
-import { defaultConfig, rewardCostForTier, type ProgramConfig } from '@overoll/core';
+import { defaultConfig, rewardCostForTier, type ProgramConfig } from '@grow-loyalty/core';
 
 export interface RewardCosts {
   classic: number;

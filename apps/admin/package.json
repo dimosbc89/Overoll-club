@@ -1,5 +1,5 @@
 {
-  "name": "@overoll/admin",
+  "name": "@grow-loyalty/admin",
   "version": "0.1.0",
   "private": true,
   "description": "Overoll Club back office: HQ admin, store manager, staff console (Next.js)",
@@ -11,7 +11,7 @@
     "typecheck": "next typegen && tsc --noEmit"
   },
   "dependencies": {
-    "@overoll/core": "*",
+    "@grow-loyalty/core": "*",
     "@supabase/supabase-js": "^2.119.0",
     "jsqr": "^1.4.0",
     "next": "16.4.5",

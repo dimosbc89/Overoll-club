@@ -1,4 +1,4 @@
-# @overoll/mobile — member app (Overoll Club, Koala Club)
+# @grow-loyalty/mobile — member app (Overoll Club, Koala Club)
 
 Expo SDK 58 + expo-router. One codebase for **iOS, Android and the customer web app** (Expo web, static output). Screens follow the approved-for-review designs on the design canvas (`Main`, `Card`, `Rewards`, `Redeem`); texts come from `docs/copy-deck.md`.
 
@@ -27,12 +27,12 @@ eas build --profile koala --platform all                # once the Expo and stor
 From the repo root (Node 22): `npm install`, then:
 
 ```bash
-npm run web -w @overoll/mobile         # web app in the browser
-npm run ios -w @overoll/mobile         # iOS simulator / Expo Go
-npm run android -w @overoll/mobile
-npm run export:web -w @overoll/mobile  # static web build in apps/mobile/dist
-npm test -w @overoll/mobile            # vitest (see Tests)
-npm run typecheck -w @overoll/mobile
+npm run web -w @grow-loyalty/mobile         # web app in the browser
+npm run ios -w @grow-loyalty/mobile         # iOS simulator / Expo Go
+npm run android -w @grow-loyalty/mobile
+npm run export:web -w @grow-loyalty/mobile  # static web build in apps/mobile/dist
+npm test -w @grow-loyalty/mobile            # vitest (see Tests)
+npm run typecheck -w @grow-loyalty/mobile
 ```
 
 ## Environment
@@ -86,7 +86,7 @@ Rules: no user-facing text in components (add keys to both message files **and**
 
 ## Tests
 
-`npm test -w @overoll/mobile`: API client (error mapping, network errors, timeout, idempotency key reuse), countdown and formatting, QR refresh timing (fake timers), member view (tier prices, next reward/tier, welcome banner), join form (age via core, email, OTP, Supabase errors), i18n (parity, placeholders, every text word for word from the copy deck, no emoji), logo shapes match `assets/brand`.
+`npm test -w @grow-loyalty/mobile`: API client (error mapping, network errors, timeout, idempotency key reuse), countdown and formatting, QR refresh timing (fake timers), member view (tier prices, next reward/tier, welcome banner), join form (age via core, email, OTP, Supabase errors), i18n (parity, placeholders, every text word for word from the copy deck, no emoji), logo shapes match `assets/brand`.
 
 ## Placeholders and next steps
 

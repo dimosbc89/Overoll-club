@@ -1,5 +1,5 @@
 {
-  "name": "@overoll/api",
+  "name": "@grow-loyalty/api",
   "version": "0.1.0",
   "private": true,
   "description": "HTTP layer for the Overoll Club server operations (runs as a Supabase Edge Function)",
@@ -11,7 +11,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@overoll/server": "0.1.0"
+    "@grow-loyalty/server": "0.1.0"
   },
   "devDependencies": {
     "@types/node": "^26.6.6",

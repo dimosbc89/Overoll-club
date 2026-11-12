@@ -1,4 +1,4 @@
-import { defaultConfig } from '@overoll/core';
+import { defaultConfig } from '@grow-loyalty/core';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import elErrors from '../../../data/copy/errors.el.json';

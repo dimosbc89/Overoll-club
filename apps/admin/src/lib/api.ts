@@ -8,7 +8,7 @@
  * - Failures come back as `{ ok: false, code }`; `fetch` failures and timeouts are
  *   `network_error`. Show `errorMessage(code)`, never the API's English `message`.
  */
-import type { ProgramConfig, TierId } from '@overoll/core';
+import type { ProgramConfig, TierId } from '@grow-loyalty/core';
 
 import errorsEl from '../../../../data/copy/errors.el.json';
 import errorsEn from '../../../../data/copy/errors.en.json';

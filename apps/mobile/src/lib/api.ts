@@ -12,7 +12,7 @@
  *
  * Pure TypeScript (no React Native imports) so it runs in the unit tests.
  */
-import type { ProgramConfig } from '@overoll/core';
+import type { ProgramConfig } from '@grow-loyalty/core';
 
 import elErrors from '../../../../data/copy/errors.el.json';
 import enErrors from '../../../../data/copy/errors.en.json';

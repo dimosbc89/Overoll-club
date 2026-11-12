@@ -24,7 +24,7 @@ import {
   updateEmployee,
   useRedemption,
   verifyEmployeePin,
-} from '@overoll/server';
+} from '@grow-loyalty/server';
 
 export interface HandlerDeps {
   sql: Db;

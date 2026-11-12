@@ -1,4 +1,4 @@
-import { defaultConfig } from '@overoll/core';
+import { defaultConfig } from '@grow-loyalty/core';
 import { describe, expect, it } from 'vitest';
 
 import type { GiftRow, RewardRow } from '../src/lib/data';

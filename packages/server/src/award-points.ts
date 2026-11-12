@@ -18,7 +18,7 @@ import {
   tierWindowStart,
   validatePurchaseAmount,
   welcomeGiftExpiresAt,
-} from '@overoll/core';
+} from '@grow-loyalty/core';
 import { checkEmployeePin, storeAccess } from './internal/access.js';
 import { audit } from './internal/audit.js';
 import { loadBrand } from './internal/brand.js';

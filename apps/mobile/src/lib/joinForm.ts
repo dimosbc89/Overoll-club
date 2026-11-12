@@ -2,7 +2,7 @@
  * Join and sign-in form rules (pure, unit-tested). Age and other numbers come
  * from the program config in packages/core.
  */
-import { isOldEnoughToJoin, type ProgramConfig } from '@overoll/core';
+import { isOldEnoughToJoin, type ProgramConfig } from '@grow-loyalty/core';
 
 import type { Locale } from '../i18n/messages';
 import { BRAND_SLUG } from './env';

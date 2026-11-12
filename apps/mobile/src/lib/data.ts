@@ -1,4 +1,4 @@
-import { defaultConfig, resolveConfig, type ProgramConfig, type TierId } from '@overoll/core';
+import { defaultConfig, resolveConfig, type ProgramConfig, type TierId } from '@grow-loyalty/core';
 import type { SupabaseClient } from '@supabase/supabase-js';
 
 import { BRAND_SLUG } from './env';

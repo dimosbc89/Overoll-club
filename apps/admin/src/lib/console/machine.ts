@@ -26,7 +26,7 @@ import {
   parseToken,
   pointsForPurchase,
   validatePurchaseAmount,
-} from '@overoll/core';
+} from '@grow-loyalty/core';
 
 import {
   type AwardedPoints,

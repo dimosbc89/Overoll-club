@@ -1,5 +1,5 @@
 {
-  "name": "@overoll/server",
+  "name": "@grow-loyalty/server",
   "version": "0.1.0",
   "private": true,
   "description": "Overoll Club server operations that move points: join, scan, award, undo, redeem, use, expire",
@@ -11,7 +11,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@overoll/core": "0.1.0",
+    "@grow-loyalty/core": "0.1.0",
     "postgres": "^3.4.9"
   },
   "devDependencies": {

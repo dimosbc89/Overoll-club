@@ -1,5 +1,5 @@
 {
-  "name": "@overoll/core",
+  "name": "@grow-loyalty/core",
   "version": "0.1.0",
   "private": true,
   "description": "Overoll Club program rules: points, tiers, rewards, expiry, member QR tokens",

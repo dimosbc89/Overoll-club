@@ -12,7 +12,7 @@ import {
   type CatalogReward,
   type ProgramConfig,
   type TierId,
-} from '@overoll/core';
+} from '@grow-loyalty/core';
 
 import type { GiftRow, RedemptionRow, RewardRow } from './data';
 import { availableGift } from './data';

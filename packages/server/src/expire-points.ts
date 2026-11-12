@@ -1,4 +1,4 @@
-import { addMonthsUtc, arePointsExpired, pointsExpireAt } from '@overoll/core';
+import { addMonthsUtc, arePointsExpired, pointsExpireAt } from '@grow-loyalty/core';
 import { audit } from './internal/audit.js';
 import { loadBrand } from './internal/brand.js';
 import * as input from './internal/input.js';

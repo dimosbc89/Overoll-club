@@ -1,4 +1,4 @@
-import { type ProgramConfig, type TierId, normalizeMemberCode, parseToken, verifyToken } from '@overoll/core';
+import { type ProgramConfig, type TierId, normalizeMemberCode, parseToken, verifyToken } from '@grow-loyalty/core';
 import { type Failure, type Tx, fail } from '../result.js';
 
 export interface LockedMember {

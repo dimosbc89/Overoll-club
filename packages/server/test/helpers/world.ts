@@ -1,4 +1,4 @@
-import { createRotatingToken, createWalletToken, defaultConfig } from '@overoll/core';
+import { createRotatingToken, createWalletToken, defaultConfig } from '@grow-loyalty/core';
 import { joinMember } from '../../src/index.js';
 import type { Sql } from './db.js';
 

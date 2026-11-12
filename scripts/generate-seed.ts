@@ -15,7 +15,7 @@ import {
   rewardBaseCost,
   rewardCostForTier,
   tierRule,
-} from '@overoll/core';
+} from '@grow-loyalty/core';
 
 const readJson = <T>(path: string): T => JSON.parse(readFileSync(join(root, path), 'utf8')) as T;
 

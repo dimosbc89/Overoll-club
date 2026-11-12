@@ -4,7 +4,7 @@ import type { ButtonHTMLAttributes, ReactNode } from 'react';
 
 import type { Locale, MessageKey, MessageParams, Translate } from '../../i18n/messages';
 import type { ConsoleAction } from '../../lib/console/machine';
-import type { ProgramConfig } from '@overoll/core';
+import type { ProgramConfig } from '@grow-loyalty/core';
 import styles from './console.module.css';
 
 /** What every screen gets from the console. */

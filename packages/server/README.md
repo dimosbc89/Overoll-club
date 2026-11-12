@@ -1,14 +1,14 @@
-# @overoll/server
+# @grow-loyalty/server
 
 The operations that move points: join, scan, award, undo, redeem, cancel, use and expire codes, check a cashier's PIN, expire points, delete an account. `packages/api` serves them over HTTP (Supabase Edge Function `api`); this package holds the logic and its tests.
 
 - The operations run with the **service role** (row-level security bypassed), so each one checks the caller's rights itself against `public.staff_roles` and `public.members.user_id`.
-- Every number and calculation comes from `@overoll/core`, using the brand's config (`brands.config` over `defaultConfig`, via core `resolveConfig`).
+- Every number and calculation comes from `@grow-loyalty/core`, using the brand's config (`brands.config` over `defaultConfig`, via core `resolveConfig`).
 - They run in Node and Deno: ESM, no Node-only APIs in `src/` (a test checks this). They use [postgres.js](https://github.com/porsager/postgres) v3.
 
 ```ts
 import postgres from 'postgres';
-import { awardPoints } from '@overoll/server';
+import { awardPoints } from '@grow-loyalty/server';
 
 const sql = postgres(process.env.SUPABASE_DB_URL!); // no `types`/`transform` options
 const result = await awardPoints(sql, {
@@ -105,7 +105,7 @@ Each one is `fn(sql, input)` and returns `{ ok: true, ... }` or `{ ok: false, co
 ## Tests
 
 ```bash
-npm test -w @overoll/server   # or `npm test` from the repo root
+npm test -w @grow-loyalty/server   # or `npm test` from the repo root
 ```
 
 `test/global-setup.ts` starts a throwaway PostgreSQL (`/usr/lib/postgresql/*/bin`, as user `postgres` when run as root) on a free port (never 55432/55433). It applies `supabase/tests/supabase-stub.sql` and every migration into a template database, and deletes everything afterwards. Each test file clones its own database. The operations connect as `service_role`, as in production.

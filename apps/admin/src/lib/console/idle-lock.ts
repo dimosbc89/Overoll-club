@@ -1,4 +1,4 @@
-import { type ProgramConfig, staffPinSessionExpired } from '@overoll/core';
+import { type ProgramConfig, staffPinSessionExpired } from '@grow-loyalty/core';
 
 export interface IdleLock {
   /** The cashier did something (tap, key press, server answer): restart the idle clock. */

@@ -5,8 +5,8 @@ const nextConfig: NextConfig = {
   // browser against Supabase and the API, so there is no Next.js server.
   output: 'export',
   images: { unoptimized: true },
-  // @overoll/core ships TypeScript source (the program rules); compile it here.
-  transpilePackages: ['@overoll/core'],
+  // @grow-loyalty/core ships TypeScript source (the program rules); compile it here.
+  transpilePackages: ['@grow-loyalty/core'],
   experimental: {
     // Core imports its own files as './config.js' (TypeScript ESM style).
     // Turbopack can't map those to .ts yet, so dev and build use webpack

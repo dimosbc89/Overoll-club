@@ -4,7 +4,7 @@
  * `staff_roles` (role `store_device`), the brand config, the store's
  * employees and today's activity. Everything that writes goes through the API.
  */
-import { InvalidConfigError, localDay, resolveConfig } from '@overoll/core';
+import { InvalidConfigError, localDay, resolveConfig } from '@grow-loyalty/core';
 import { createClient, type SupabaseClient } from '@supabase/supabase-js';
 
 import { supabaseEnv } from '../env';

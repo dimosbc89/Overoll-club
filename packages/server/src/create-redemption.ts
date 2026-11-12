@@ -6,7 +6,7 @@ import {
   redemptionCodeLength,
   redemptionExpiresAt,
   rewardCostForTier,
-} from '@overoll/core';
+} from '@grow-loyalty/core';
 import { audit } from './internal/audit.js';
 import { type Brand, loadBrand } from './internal/brand.js';
 import { expireGift, lockGift } from './internal/gifts.js';

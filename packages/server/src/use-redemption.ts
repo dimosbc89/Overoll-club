@@ -1,4 +1,4 @@
-import { isRedemptionExpired, normalizeRedemptionCode } from '@overoll/core';
+import { isRedemptionExpired, normalizeRedemptionCode } from '@grow-loyalty/core';
 import { checkEmployeePin, storeAccess } from './internal/access.js';
 import { loadBrand } from './internal/brand.js';
 import { audit } from './internal/audit.js';

@@ -1,4 +1,4 @@
-import { staffPinProblem } from '@overoll/core';
+import { staffPinProblem } from '@grow-loyalty/core';
 import { type StoreAccess, storeAccess } from './internal/access.js';
 import { audit } from './internal/audit.js';
 import { loadBrand } from './internal/brand.js';

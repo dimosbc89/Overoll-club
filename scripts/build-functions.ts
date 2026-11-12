@@ -1,7 +1,7 @@
 /**
  * Bundles each Supabase Edge Function's app module into one plain ESM file:
  *   supabase/functions/<name>/app.ts  →  supabase/functions/<name>/dist/app.js
- * Workspace packages (@overoll/*) and pure-JS dependencies are bundled. The
+ * Workspace packages (@grow-loyalty/*) and pure-JS dependencies are bundled. The
  * npm libraries that need the Deno runtime (`postgres`, `@supabase/supabase-js`)
  * are only type imports in app.ts: the entry file imports them as npm:
  * specifiers and hands them to `start()`. The build fails if any import is left

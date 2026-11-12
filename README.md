@@ -1,23 +1,24 @@
-# Overoll Club
+# GROW Loyalty
 
-Loyalty program for **Overoll Croissanterie**: customers join from a QR on the counter, keep their card in Apple/Google Wallet or the app, earn points at every visit and redeem free coffee and croissants. Each store has a staff console; Overoll HQ runs everything from one back office.
+Loyalty platform built by [GROW Agency](https://growagency.online): customers join from a QR on the counter, keep their card in the app (or Apple/Google Wallet), earn points at every visit and redeem rewards. Each store has a staff console; the brand's HQ runs everything from one back office.
 
-Built by [GROW Agency](https://growagency.online).
+One codebase, one hosted project per brand. Brands share the code; each has its own database, sign-in email, web addresses, store app, rules and look (`supabase/projects/<brand>.json`, `data/<brand>/`, the apps' brand definitions).
+
+| Brand | Customer app | Back office | Notes |
+| --- | --- | --- | --- |
+| Overoll Croissanterie (`overoll`) | https://loyalty.overoll.gr (pending DNS) | https://admin.loyalty.overoll.gr (pending DNS) | Launch week of 4 Jan 2027 |
+| Koala Coffee (`koala`) | https://club.koalacoffee.gr | https://admin.koalacoffee.gr | [docs/koala](docs/koala/README.md) |
 
 | | |
 | --- | --- |
 | Program rules | [docs/program-spec.md](docs/program-spec.md) |
-| Roadmap to launch (Jan 2027) | [docs/roadmap.md](docs/roadmap.md) |
+| Overoll roadmap (Jan 2027) | [docs/roadmap.md](docs/roadmap.md) |
 | How we work in this repo | [CLAUDE.md](CLAUDE.md) |
 | Screen designs v0.1 (canvas) | https://claude.ai/artifact/7qctwteA34EPPEs29QEmPs |
 | Screen designs v0.1 (Figma, for the designer) | https://www.figma.com/design/d7XLjDxLVN9sTfok1UfkIS |
 | Copy deck (el/en) | [docs/copy-deck.md](docs/copy-deck.md) |
 
-## Status
-
-Week 1 foundation: program rules engine (`packages/core`, 32 tests), database schema with access rules (`supabase`, 50 checks), brand, stores, menu and reward catalog (`docs`, `data`). Apps and back office are next.
-
-## Environments
+## Environments (Overoll)
 
 | | |
 | --- | --- |

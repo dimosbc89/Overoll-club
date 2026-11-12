@@ -1,4 +1,4 @@
-import { canUndo } from '@overoll/core';
+import { canUndo } from '@grow-loyalty/core';
 import { brandAccess, checkEmployeePin, storeAccess } from './internal/access.js';
 import { audit } from './internal/audit.js';
 import { loadBrand } from './internal/brand.js';

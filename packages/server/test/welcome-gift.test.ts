@@ -1,4 +1,4 @@
-import { InvalidConfigError } from '@overoll/core';
+import { InvalidConfigError } from '@grow-loyalty/core';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import {
   type AwardPointsInput,

@@ -1,4 +1,4 @@
-import type { EarnLimitError, PurchaseError } from '@overoll/core';
+import type { EarnLimitError, PurchaseError } from '@grow-loyalty/core';
 import type postgres from 'postgres';
 
 /**
@@ -35,7 +35,7 @@ export type ErrorCode =
   | 'invalid_token'
   | 'expired_token'
   | 'old_pass'
-  // earning (amount and fraud limits come from @overoll/core)
+  // earning (amount and fraud limits come from @grow-loyalty/core)
   | PurchaseError
   | 'amount_too_small'
   | EarnLimitError

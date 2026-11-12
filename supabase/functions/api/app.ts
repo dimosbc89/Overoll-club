@@ -22,7 +22,7 @@
  */
 import type { createClient as CreateClient } from '@supabase/supabase-js';
 import type postgresType from 'postgres';
-import { createHandler } from '@overoll/api';
+import { createHandler } from '@grow-loyalty/api';
 
 declare const Deno: {
   env: { get(name: string): string | undefined };

@@ -71,7 +71,7 @@ describe('PIN pad', () => {
   });
 });
 
-describe('rewardCosts (rule from @overoll/core)', () => {
+describe('rewardCosts (rule from @grow-loyalty/core)', () => {
   it('applies the tier discounts from the program spec', () => {
     // Espresso: base 300 → Gold 20% off = 240, Club 30% off = 210.
     expect(rewardCosts(300)).toEqual({ classic: 300, gold: 240, club: 210 });

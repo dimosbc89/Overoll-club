@@ -1,4 +1,4 @@
-import { createRotatingToken, type ProgramConfig } from '@overoll/core';
+import { createRotatingToken, type ProgramConfig } from '@grow-loyalty/core';
 import { useEffect, useState } from 'react';
 
 /** Milliseconds until the next QR time step starts (steps are aligned to the epoch, as on the server). */

@@ -1,4 +1,4 @@
-import { type GiftStatus, giftStatusAfterCodeReturned } from '@overoll/core';
+import { type GiftStatus, giftStatusAfterCodeReturned } from '@grow-loyalty/core';
 import type { Tx } from '../result.js';
 import { audit } from './audit.js';
 

@@ -1,4 +1,4 @@
-# @overoll/admin — Overoll Club back office
+# @grow-loyalty/admin — Overoll Club back office
 
 Next.js 16 (App Router). HQ admin, store manager views and the staff console (till).
 
@@ -7,14 +7,14 @@ Next.js 16 (App Router). HQ admin, store manager views and the staff console (ti
 From the repo root (Node 22): `npm install`, then:
 
 ```bash
-npm run dev -w @overoll/admin        # http://localhost:3000 (till: /console)
-npm run build -w @overoll/admin
-npm run start -w @overoll/admin
-npm test -w @overoll/admin           # vitest: console state machine, API client, idle lock, keypads, i18n, …
-npm run typecheck -w @overoll/admin  # next typegen + tsc
+npm run dev -w @grow-loyalty/admin        # http://localhost:3000 (till: /console)
+npm run build -w @grow-loyalty/admin
+npm run start -w @grow-loyalty/admin
+npm test -w @grow-loyalty/admin           # vitest: console state machine, API client, idle lock, keypads, i18n, …
+npm run typecheck -w @grow-loyalty/admin  # next typegen + tsc
 ```
 
-Dev and build use **webpack** (`--webpack`): `@overoll/core` imports its own files as `./config.js`, which Turbopack can't map to `.ts` yet (`experimental.extensionAlias` in `next.config.ts`). The build downloads Manrope once through `next/font/google` (self-hosted afterwards), so it needs internet access.
+Dev and build use **webpack** (`--webpack`): `@grow-loyalty/core` imports its own files as `./config.js`, which Turbopack can't map to `.ts` yet (`experimental.extensionAlias` in `next.config.ts`). The build downloads Manrope once through `next/font/google` (self-hosted afterwards), so it needs internet access.
 
 ## Environment
 
@@ -34,11 +34,11 @@ Next.js bakes `NEXT_PUBLIC_*` in at **build** time, so set them before `npm run 
 | `src/app/(admin)` | Back office with the cocoa header: `/` dashboard, `/stores`, `/rewards`, `/sign-in` |
 | `src/app/console` | Staff console (till), full screen, client-side; own layout with Manrope and the design-canvas tokens |
 | `src/i18n` | `el.json` (reference) and `en.json` with the same keys, typed `t()`; language in the `overoll_locale` cookie, set by a server action |
-| `src/lib` | Supabase reads (server only), € formatting, opening hours, keypads, tier costs via `@overoll/core`, the API client (`api.ts`), store names per language (`store-names.ts`) |
+| `src/lib` | Supabase reads (server only), € formatting, opening hours, keypads, tier costs via `@grow-loyalty/core`, the API client (`api.ts`), store names per language (`store-names.ts`) |
 | `src/lib/console` | Till logic without React: state machine, request runner, idle lock, QR frame reader, device reads |
 | `src/app/globals.css` | Back-office brand tokens from `docs/brand.md` as CSS variables |
 
-Rules: point costs, limits and previews come from `@overoll/core` (`pointsForPurchase`, `validatePurchaseAmount`, `canUndo`, `staffPinSessionExpired`, `resolveConfig`), never re-implemented here; money stays integer cents until `formatEuroFromCents`.
+Rules: point costs, limits and previews come from `@grow-loyalty/core` (`pointsForPurchase`, `validatePurchaseAmount`, `canUndo`, `staffPinSessionExpired`, `resolveConfig`), never re-implemented here; money stays integer cents until `formatEuroFromCents`.
 
 ## Staff console (`/console`)
 

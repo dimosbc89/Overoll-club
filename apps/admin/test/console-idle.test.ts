@@ -1,4 +1,4 @@
-import { defaultConfig, resolveConfig } from '@overoll/core';
+import { defaultConfig, resolveConfig } from '@grow-loyalty/core';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { startIdleLock } from '../src/lib/console/idle-lock';

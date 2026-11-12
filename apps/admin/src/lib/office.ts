@@ -8,7 +8,7 @@
  *   decides what HQ (the brand) or a manager (their store) sees.
  * - Writes go through the API (`createOfficeApi`).
  */
-import { type ProgramConfig, type TierId, resolveConfig } from '@overoll/core';
+import { type ProgramConfig, type TierId, resolveConfig } from '@grow-loyalty/core';
 import { createClient, type SupabaseClient } from '@supabase/supabase-js';
 
 import { apiBaseUrl, createPoster, type ApiResponse } from './api';
