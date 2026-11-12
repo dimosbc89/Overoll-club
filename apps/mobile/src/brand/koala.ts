@@ -12,7 +12,7 @@ export const koala: BrandDefinition = {
   slug: 'koala',
   programName: 'Koala Club',
   brandName: 'Koala',
-  supportEmail: 'club-support@growagency.online',
+  supportEmail: 'hello@koalacoffee.gr',
   colors: {
     background: '#f8f1de',
     surface: '#fffcf4',

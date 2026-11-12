@@ -5,7 +5,7 @@
   "publishableKey": "sb_publishable_tt5oLd6aU58k3l4xzF8bZA_sqahX_jw",
   "programName": "Koala Club",
   "brandName": "Koala",
-  "supportEmail": "club-support@growagency.online",
+  "supportEmail": "hello@koalacoffee.gr",
   "siteUrl": "https://koala-club.pages.dev",
   "emailLogoUrl": "https://koala-club.pages.dev/email-logo.png",
   "appScheme": "koalaclub",
@@ -31,10 +31,10 @@
     "length": 6
   },
   "email": {
-    "$comment": "Off until Koala has a domain verified in Resend. Until then Supabase's built-in sender only delivers to members of the Supabase org, so real customers cannot sign in yet.",
+    "$comment": "Resend domain koalacoffee.gr added 12 Nov 2026 (team growagency, eu-west-1; records in docs/koala/dns-records.md). Switch `enabled` to true once Resend shows it verified and the GitHub secret RESEND_API_KEY_KOALA (a Resend key with sending access to koalacoffee.gr only) is set. Until then Supabase's built-in sender only delivers to members of the Supabase org.",
     "enabled": false,
     "senderName": "Koala Club",
-    "senderEmail": "app@koalaclub.example",
+    "senderEmail": "app@koalacoffee.gr",
     "smtpHost": "smtp.resend.com",
     "smtpPort": 465,
     "smtpUser": "resend",

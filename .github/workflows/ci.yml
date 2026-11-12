@@ -46,6 +46,7 @@ jobs:
     # Token: SUPABASE_ACCESS_TOKEN_<BRAND> when that secret exists (e.g. SUPABASE_ACCESS_TOKEN_KOALA),
     # otherwise SUPABASE_ACCESS_TOKEN. Supabase dashboard → Account → Access tokens; GitHub repo →
     # Settings → Secrets and variables → Actions. Without a token the brand is skipped.
+    # Same for the Resend SMTP password: RESEND_API_KEY_<BRAND>, otherwise RESEND_API_KEY.
     needs: [test, brands]
     if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
     runs-on: ubuntu-24.04
@@ -57,7 +58,7 @@ jobs:
     env:
       BRAND: ${{ matrix.brand }}
       SUPABASE_ACCESS_TOKEN: ${{ secrets[format('SUPABASE_ACCESS_TOKEN_{0}', matrix.brand)] || secrets.SUPABASE_ACCESS_TOKEN }}
-      RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
+      RESEND_API_KEY: ${{ secrets[format('RESEND_API_KEY_{0}', matrix.brand)] || secrets.RESEND_API_KEY }}
     steps:
       - name: Skip when no token is set for this brand
         if: env.SUPABASE_ACCESS_TOKEN == ''

@@ -11,10 +11,15 @@ The zone is managed by GROW in Cloudflare, so records are added there directly. 
 | 4 | A | `mail` | `176.119.210.91` | DNS only | GROW's mail server `cloud.growagency.online` (same as cosmostax.gr, marketingagencygreece.online) | added 12 Nov |
 | 5 | MX | `@` | `mail.koalacoffee.gr`, priority 10 | | Mail to `@koalacoffee.gr` goes to GROW's mail server (confirmed by Dimos, 12 Nov) | added 12 Nov |
 | 6 | TXT | `@` | `v=spf1 +a +mx +a:cloud.growagency.online -all` | | SPF for mail sent by GROW's server as `@koalacoffee.gr` | added 12 Nov |
-| 7–9 | TXT / MX / CNAME | from Resend | DKIM `resend._domainkey`, return path `send` | | Sign-in emails from `app@koalacoffee.gr` | waiting: Resend sign-in |
+| 7 | TXT | `resend._domainkey` | `p=MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCkmn+SAb1v+V6esxohbFaz3MO1yxGtDhjfExin+5RWzGr0nJeIgDBVDEeS+MCwfDxGLAIWAg3eX7+DnRzkdvLLN/LeNoLPse+Cu+FumNfc25m9/VbKQux38RoSH2vdo74lI/FBxDDuEKj3Rc6EC+Usfy/1kpmQKoEVeE7PpWzRGwIDAQAB` | | DKIM for the sign-in emails from `app@koalacoffee.gr` (Resend, team growagency, eu-west-1) | added 12 Nov, Resend pending |
+| 8 | CNAME | `rsend` | `rsend-euw1.forge.rmta.net` | DNS only | Resend sending | added 12 Nov, Resend pending |
+| 9 | CNAME | `send` | `send.forge.rmta.net` | DNS only | Resend return path (its own SPF, separate from the root SPF) | added 12 Nov, Resend pending |
 
 Not set on purpose:
 - Nothing on the root `koalacoffee.gr` or `www`: free for Koala's website later.
+- Resend's "Enable receiving" MX (`receive-euw1.forge.rmta.net`): not added, mail for the domain goes to GROW's server.
+- Contact address: `hello@koalacoffee.gr` (on GROW's server, 12 Nov) is `supportEmail` in the apps and the sign-in email.
+  Sign-in emails come from `app@koalacoffee.gr`: make `app@` an alias of `hello@` on the server, or replies bounce.
 - Mail: `koalacoffee.gr` must also be added as a mail domain on GROW's server (`cloud.growagency.online`), with the
   mailboxes Koala wants, or incoming mail is refused. The server's own DKIM key for `koalacoffee.gr`
   (`default._domainkey`), once it makes one, goes here too. The Resend records never collide with it: they live on
@@ -24,5 +29,6 @@ When the registry publishes the domain (new `.gr` domains take a few hours):
 1. Cloudflare marks the zone active; both Pages custom domains turn active and get certificates by themselves.
 2. `supabase/projects/koala.json`: `siteUrl` → `https://club.koalacoffee.gr`, `emailLogoUrl` →
    `https://club.koalacoffee.gr/email-logo.png` (also `apps/mobile/eas.json` `EXPO_PUBLIC_CLUB_URL`, kept in step by a test).
-3. Once Resend shows the domain verified: `email.senderEmail` → `app@koalacoffee.gr`, `email.enabled` → true. CI then
-   connects Supabase Auth to Resend SMTP (password: the `RESEND_API_KEY` GitHub secret).
+3. Once Resend shows the domain verified: a Resend API key with sending access to `koalacoffee.gr` only, saved by Dimos
+   as the GitHub secret `RESEND_API_KEY_KOALA`; then `email.enabled` → true (`senderEmail` is already
+   `app@koalacoffee.gr`). CI connects Supabase Auth to Resend SMTP with that key.
