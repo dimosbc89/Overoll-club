@@ -20,7 +20,7 @@ Legend: **D** = Dimos · **C** = Claude · ☐ open · ☑ done
 - ☑ D: Google Wallet API terms accepted: issuer `3388000000023239253` (demo mode)
 - ☑ C: demo loyalty class `overoll_club` (logo, Overoll pink) created: step 1 of 3 for publishing access
 - ☐ C: request publishing access as soon as the business profile is approved (step 3 of 3)
-- ☐ C + D: Google Cloud service account with the Wallet API, registered in the console (week 2, for creating passes from our server)
+- ◐ C + D: Google Cloud service account with the Wallet API, registered in the console: `wallet-issuer@grow-wallet-514520.iam.gserviceaccount.com` (project `grow-wallet-514520`, account ads@growdigital.gr, billing "My Billing Account"), Wallet API on, Developer in the Pay & Wallet Console (12 Nov 2026). Left: its JSON key into the GitHub secret `GOOGLE_WALLET_SERVICE_ACCOUNT` (D), then "Request publishing access" once the business profile review (sent 12 Nov) passes and a first test pass works
 - ☐ D: complete the Google business profile (legal name, address) so Google can approve it (step 2 of 3), and add a second admin
 - ☑ C: brand (logos, colours, fonts) from the website project → `docs/brand.md`, `assets/brand/`
 - ☑ C: store list (10 stores) from the website + Wolt → `data/overoll/stores.json`
