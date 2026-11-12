@@ -41,6 +41,8 @@ Koala Club for iOS and Android, from the same code (`apps/mobile`, `EXPO_PUBLIC_
 
 Builds: EAS project `koala-club` on GROW's Expo account (dimos@growagency.online), started from GitHub Actions ("Native builds", `apps/mobile/README.md`). Android first: the first test APK built on 12 Nov (version 0.1.0 (1), EAS build `1b32ac0c`, install link valid 13 days); next the Play Console app record (GROW's Google Play account). iOS needs GROW's Apple credentials on EAS once (App Store Connect API key or one interactive build).
 
+iOS: first store build 0.1.0 (4) uploaded to TestFlight on 12 Nov 2026 (EAS submission `47083539`); App Store Connect app "Koala Club", Apple ID `6834007568` (`eas.json` `submit.koala.ios.ascAppId`), so later submissions run from the workflow (`kind: submit`). Store builds hide the Wallet buttons and the "no app needed" copy (`apps/mobile/src/lib/platformFeatures.ts`); the next build for review needs that change (build 4 predates it).
+
 ## Before launch: needed from Koala
 
 - [ ] Approve the reward catalog and the in-store prices (we used efood prices).

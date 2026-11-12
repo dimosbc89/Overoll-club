@@ -45,7 +45,8 @@
         "appleTeamId": "JUVGRB24Q6",
         "language": "el",
         "appName": "Koala Club",
-        "sku": "koala-club"
+        "sku": "koala-club",
+        "ascAppId": "6834007568"
       }
     }
   }
