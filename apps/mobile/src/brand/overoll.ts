@@ -40,5 +40,7 @@ export const overoll: BrandDefinition = {
   },
   logo: { mark, wordmark, full: logo, wordmarkText: 'Overoll' },
   giftIcon: 'croissant',
+  // Legal entity to confirm with Overoll (copy deck, question 4).
+  legal: { tradeName: 'Overoll Croissanterie', company: null, address: null },
   copy: { el: {}, en: {} },
 };

@@ -45,5 +45,7 @@ export const koala: BrandDefinition = {
   },
   logo: { mark, wordmark, wordmarkText: 'koala coffee', widthScale: 1.75 },
   giftIcon: 'cup',
+  // Legal entity to confirm with Koala (vrisko lists "KOALA - ΔΗΜΟΓΕΡΟΝΤΑ ΕΕ" for Αργυρούπολη; docs/koala/README.md).
+  legal: { tradeName: 'Koala Coffee', company: null, address: null },
   copy: { el: koalaEl, en: koalaEn },
 };

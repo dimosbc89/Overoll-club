@@ -151,6 +151,12 @@ function MemberProfile({ bundle }: { bundle: MemberBundle }) {
         />
         <LinkButton label={t('profile.delete')} onPress={() => router.push('/delete-account')} />
       </View>
+
+      <View style={styles.section}>
+        <LinkButton label={t('support.title')} onPress={() => router.push('/support')} />
+        <LinkButton label={t('legal.terms.title')} onPress={() => router.push('/terms')} />
+        <LinkButton label={t('legal.privacy.title')} onPress={() => router.push('/privacy')} />
+      </View>
     </>
   );
 }

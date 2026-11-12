@@ -1,4 +1,4 @@
-import { Redirect, useLocalSearchParams, useRouter } from 'expo-router';
+import { Link, Redirect, useLocalSearchParams, useRouter } from 'expo-router';
 import { useEffect, useMemo, useState } from 'react';
 import { Platform, StyleSheet, Text, View } from 'react-native';
 
@@ -378,6 +378,14 @@ export function JoinFlow({ initialMode }: { initialMode: Mode }) {
           ) : null}
         </View>
         <Muted>{t('join.consents.terms')}</Muted>
+        <View style={styles.legalLinks}>
+          <Link href="/terms" style={[type.label, styles.legalLink]}>
+            {t('legal.terms.title')}
+          </Link>
+          <Link href="/privacy" style={[type.label, styles.legalLink]}>
+            {t('legal.privacy.title')}
+          </Link>
+        </View>
         {error ? <ErrorText message={error} /> : null}
         <Button label={t('join.consents.submit')} onPress={submitJoin} loading={busy} style={styles.bottom} />
       </Screen>
@@ -403,6 +411,8 @@ export function JoinFlow({ initialMode }: { initialMode: Mode }) {
 }
 
 const styles = StyleSheet.create({
+  legalLinks: { flexDirection: 'row', flexWrap: 'wrap', gap: space.md },
+  legalLink: { color: colors.accent, textDecorationLine: 'underline' },
   giftCard: { flexDirection: 'row', gap: space.md, alignItems: 'center', paddingVertical: space.md, paddingHorizontal: space.mdl },
   giftIcon: { width: 48, height: 48, borderRadius: 24, backgroundColor: colors.gift, alignItems: 'center', justifyContent: 'center' },
   giftText: { flex: 1, gap: 2 },

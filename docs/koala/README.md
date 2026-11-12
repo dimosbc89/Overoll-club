@@ -48,7 +48,7 @@ Builds: EAS project `koala-club` on GROW's Expo account (dimos@growagency.online
 - [ ] Opening hours of both stores (not published anywhere). Once known, HQ types them in the back office (Καταστήματα → Αλλαγή); reward prices likewise under Δώρα.
 - [ ] Programme and tier names (Koala Club, Joey, Koala, Eucalyptus).
 - [x] Domain: `koalacoffee.gr` (12 Nov 2026, Cloudflare in GROW's account): `club.` and `admin.`, sign-in emails from `app@koalacoffee.gr` (`docs/koala/dns-records.md`). Resend verified 12 Nov; sign-in emails go through Resend SMTP (key in the GitHub secret `RESEND_API_KEY_KOALA`).
-- [ ] Legal entity for the terms and privacy policy (vrisko lists "KOALA - ΔΗΜΟΓΕΡΟΝΤΑ ΕΕ" for Αργυρούπολη; confirm for both stores).
+- [ ] Legal entity for the terms and privacy policy (pages live on https://club.koalacoffee.gr/terms and /privacy since 12 Nov as drafts; set `legal.company` and `legal.address` in `apps/mobile/src/brand/koala.ts`, then a lawyer reads them) (vrisko lists "KOALA - ΔΗΜΟΓΕΡΟΝΤΑ ΕΕ" for Αργυρούπολη; confirm for both stores).
 - [ ] Official wordmark (we have the koala mark only).
 - [ ] Whether efood orders earn points; tablet or phone at each till.
 - [ ] Signed authorization letter for publishing the app from GROW AGENCY's store accounts.

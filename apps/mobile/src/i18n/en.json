@@ -193,5 +193,12 @@
   "redeem.cancel.bodyGift": "Your gift stays in Rewards, and you can get a new code when you're at the till.",
   "redeem.cancelledGift": "Cancelled. Your gift is waiting in Rewards.",
   "redeem.expiredGift": "The code expired, but your gift is still waiting in Rewards. Get a new one when you're at the till.",
-  "redeem.backToRewards": "Back to Rewards"
+  "redeem.backToRewards": "Back to Rewards",
+  "legal.privacy.title": "Privacy policy",
+  "legal.terms.title": "Programme terms",
+  "legal.draft": "Draft: the details of the company that runs the programme will be added before launch.",
+  "support.title": "Help and contact",
+  "support.intro": "A question about your card, your points or a reward? Ask us at the till or email us and we'll get back to you soon.",
+  "support.email": "Email us at {supportEmail}",
+  "support.legalTitle": "Terms and privacy"
 }

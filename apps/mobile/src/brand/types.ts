@@ -108,6 +108,12 @@ export interface BrandDefinition {
     widthScale?: number;
   };
   giftIcon: GiftIcon;
+  /**
+   * Who runs the programme, for the privacy policy and terms (src/legal):
+   * the trade name, and the legal entity and address once the brand confirms
+   * them (null until then: the pages show the trade name and a draft notice).
+   */
+  legal: { tradeName: string; company: string | null; address: string | null };
   /** Copy that differs from the shared el/en files (same keys). */
   copy: { el: Record<string, string>; en: Record<string, string> };
 }

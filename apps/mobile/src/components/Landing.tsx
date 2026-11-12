@@ -36,6 +36,21 @@ export function StepNumber({ n }: { n: number }) {
   );
 }
 
+/** The FAQ (copy deck §h3), on the landing page and the help page. */
+export function FaqList() {
+  const { t } = useI18n();
+  return (
+    <Card style={styles.faq}>
+      {faq.map((item, i) => (
+        <View key={item.q} style={[styles.faqItem, i > 0 && styles.divider]}>
+          <Text style={type.bodyStrong}>{t(item.q)}</Text>
+          <Body>{t(item.a)}</Body>
+        </View>
+      ))}
+    </Card>
+  );
+}
+
 /** The logged-out home (copy deck §h): what the club is, how it works, FAQ, join. */
 export function Landing({ notConfigured }: { notConfigured?: boolean }) {
   const { t } = useI18n();
@@ -73,14 +88,7 @@ export function Landing({ notConfigured }: { notConfigured?: boolean }) {
       <Text accessibilityRole="header" style={[type.heading, styles.section]}>
         {t('landing.faq.title')}
       </Text>
-      <Card style={styles.faq}>
-        {faq.map((item, i) => (
-          <View key={item.q} style={[styles.faqItem, i > 0 && styles.divider]}>
-            <Text style={type.bodyStrong}>{t(item.q)}</Text>
-            <Body>{t(item.a)}</Body>
-          </View>
-        ))}
-      </Card>
+      <FaqList />
 
       <View style={[styles.final, styles.section]}>
         <Text accessibilityRole="header" style={type.heading}>
@@ -88,6 +96,12 @@ export function Landing({ notConfigured }: { notConfigured?: boolean }) {
         </Text>
         <Body>{t('landing.final.body')}</Body>
         <Button label={t('landing.final.cta')} onPress={join} />
+      </View>
+
+      <View style={styles.footer}>
+        <LinkButton label={t('support.title')} onPress={() => router.push('/support')} />
+        <LinkButton label={t('legal.terms.title')} onPress={() => router.push('/terms')} />
+        <LinkButton label={t('legal.privacy.title')} onPress={() => router.push('/privacy')} />
       </View>
     </Screen>
   );
@@ -113,4 +127,5 @@ const styles = StyleSheet.create({
   faqItem: { padding: space.md, gap: space.xs },
   divider: { borderTopWidth: 1, borderTopColor: colors.line },
   final: { gap: space.ms },
+  footer: { marginTop: space.md, gap: space.xs },
 });

@@ -336,6 +336,20 @@ Texts the screens needed that §a–§b6 don't have: the welcome-gift variants o
 
 ---
 
+### b8. Help, terms and privacy (12 Nov 2026, draft, for Dimos to approve)
+
+Pages `/support`, `/terms`, `/privacy` of the member app (web and native), linked from Profile, the join screen and the landing page. The full texts of the terms and the privacy policy are in `apps/mobile/src/legal/` (one template per language for every brand; numbers come from the program config, the company from the brand file). They need the brand's legal entity and a lawyer's review before launch; until the entity is set, the pages show `legal.draft`. The FAQ on `/support` reuses `landing.faq.*` (§h3).
+
+| Key | Ελληνικά | English |
+| --- | --- | --- |
+| `legal.privacy.title` | Πολιτική απορρήτου | Privacy policy |
+| `legal.terms.title` | Όροι του προγράμματος | Programme terms |
+| `legal.draft` | Προσχέδιο: τα στοιχεία της εταιρείας που διοργανώνει το πρόγραμμα θα προστεθούν πριν την κυκλοφορία. | Draft: the details of the company that runs the programme will be added before launch. |
+| `support.title` | Βοήθεια και επικοινωνία | Help and contact |
+| `support.intro` | Έχεις ερώτηση για την κάρτα, τους πόντους ή ένα δώρο; Ρώτα μας στο ταμείο ή γράψε μας και θα σου απαντήσουμε σύντομα. | A question about your card, your points or a reward? Ask us at the till or email us and we'll get back to you soon. |
+| `support.email` | Γράψε μας στο {supportEmail} | Email us at {supportEmail} |
+| `support.legalTitle` | Όροι και απόρρητο | Terms and privacy |
+
 ## c. Tiers
 
 Names stay Classic / Gold / Club for now.
