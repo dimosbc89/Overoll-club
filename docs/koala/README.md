@@ -54,3 +54,7 @@ iOS: first store build 0.1.0 (4) uploaded to TestFlight on 12 Nov 2026 (EAS subm
 - [ ] Official wordmark (we have the koala mark only).
 - [ ] Whether efood orders earn points; tablet or phone at each till.
 - [ ] Signed authorization letter for publishing the app from GROW AGENCY's store accounts.
+
+## Wallet passes
+
+Built 12 Nov 2026 (API contract v0.7). Google Wallet: GROW's issuer `3388000000023239253` (shared by the brands, each with its own loyalty class), service account `wallet-issuer@grow-wallet-514520.iam.gserviceaccount.com`, key in the GitHub secret `GOOGLE_WALLET_SERVICE_ACCOUNT` (12 Nov). Publishing access: requested once the GROW business profile review passes and a test pass saved. Apple Wallet: waits for the Pass Type ID `pass.online.growagency.koala` and its certificate (`APPLE_PASS_P12_KOALA`, `APPLE_PASS_P12_PASSWORD_KOALA`).
