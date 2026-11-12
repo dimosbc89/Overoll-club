@@ -1,12 +1,12 @@
-import { Link, Redirect, useLocalSearchParams, useRouter } from 'expo-router';
-import { useEffect, useMemo, useState } from 'react';
-import { Platform, StyleSheet, Text, View } from 'react-native';
+import { Link, Redirect, useLocalSearchParams, useRouter } from "expo-router";
+import { useEffect, useMemo, useState } from "react";
+import { Platform, StyleSheet, Text, View } from "react-native";
 
-import { useI18n } from '../i18n/I18nProvider';
-import { ActionSlot } from '../lib/api';
-import { fetchStoreByCode } from '../lib/data';
-import { inLocale } from '../lib/storeNames';
-import { formatPoints } from '../lib/format';
+import { useI18n } from "../i18n/I18nProvider";
+import { ActionSlot } from "../lib/api";
+import { fetchStoreByCode } from "../lib/data";
+import { inLocale } from "../lib/storeNames";
+import { formatPoints } from "../lib/format";
 import {
   authProblem,
   isValidEmail,
@@ -17,29 +17,44 @@ import {
   RESEND_SECONDS,
   type AuthProblem,
   type ProfileProblem,
-} from '../lib/joinForm';
-import { useSession } from '../lib/session';
-import { getSupabase } from '../lib/supabase';
-import { useNow } from '../lib/useNow';
-import { type } from '../theme/fonts';
-import { brand } from '../brand';
-import { colors, space } from '../theme/tokens';
-import { Icon } from './Icon';
-import { StepNumber } from './Landing';
-import { Logo } from './Logo';
-import { LanguageToggle, PinkHeader } from './PinkHeader';
-import { Loading, NotConfigured } from './RemoteContent';
-import { Body, Button, Card, Checkbox, ErrorText, LinkButton, Muted, Screen, Tag, TextField, Title } from './ui';
+} from "../lib/joinForm";
+import { showsWalletCopy } from "../lib/platformFeatures";
+import { useSession } from "../lib/session";
+import { getSupabase } from "../lib/supabase";
+import { useNow } from "../lib/useNow";
+import { type } from "../theme/fonts";
+import { brand } from "../brand";
+import { colors, space } from "../theme/tokens";
+import { Icon } from "./Icon";
+import { StepNumber } from "./Landing";
+import { Logo } from "./Logo";
+import { LanguageToggle, PinkHeader } from "./PinkHeader";
+import { Loading, NotConfigured } from "./RemoteContent";
+import {
+  Body,
+  Button,
+  Card,
+  Checkbox,
+  ErrorText,
+  LinkButton,
+  Muted,
+  Screen,
+  Tag,
+  TextField,
+  Title,
+} from "./ui";
 
-type Step = 'start' | 'email' | 'code' | 'profile' | 'consents' | 'welcome';
-export type Mode = 'join' | 'signin';
+type Step = "start" | "email" | "code" | "profile" | "consents" | "welcome";
+export type Mode = "join" | "signin";
 
 function firstParam(value: string | string[] | undefined): string | undefined {
   return Array.isArray(value) ? value[0] : value;
 }
 
 type AuthError = { status?: number; code?: string; name?: string };
-const offline = (e: unknown) => ({ error: { name: 'AuthRetryableFetchError', status: 0, message: String(e) } });
+const offline = (e: unknown) => ({
+  error: { name: "AuthRetryableFetchError", status: 0, message: String(e) },
+});
 
 /**
  * Join and sign in (copy deck §a). The counter QR opens /join?store=<code>
@@ -56,20 +71,32 @@ export function JoinFlow({ initialMode }: { initialMode: Mode }) {
   const { auth, member, config, api, refresh, errorText } = useSession();
 
   const [mode, setMode] = useState<Mode>(initialMode);
-  const [step, setStep] = useState<Step>(initialMode === 'signin' ? 'email' : 'start');
-  const [store, setStore] = useState<{ name: string; name_en: string | null } | null>(null);
-  const [email, setEmail] = useState('');
-  const [code, setCode] = useState('');
-  const [firstName, setFirstName] = useState('');
+  const [step, setStep] = useState<Step>(
+    initialMode === "signin" ? "email" : "start",
+  );
+  const [store, setStore] = useState<{
+    name: string;
+    name_en: string | null;
+  } | null>(null);
+  const [email, setEmail] = useState("");
+  const [code, setCode] = useState("");
+  const [firstName, setFirstName] = useState("");
   const [ageConfirmed, setAgeConfirmed] = useState(false);
-  const [consents, setConsents] = useState({ email: false, sms: false, push: false });
+  const [consents, setConsents] = useState({
+    email: false,
+    sms: false,
+    push: false,
+  });
   const [problems, setProblems] = useState<ProfileProblem[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const [resendAt, setResendAt] = useState(0);
-  const now = useNow(step === 'code' ? 1000 : 60_000);
-  const joinSlot = useMemo(() => (api ? new ActionSlot<{ memberId: string }>(() => api) : null), [api]);
-  const configured = auth.status !== 'not_configured';
+  const now = useNow(step === "code" ? 1000 : 60_000);
+  const joinSlot = useMemo(
+    () => (api ? new ActionSlot<{ memberId: string }>(() => api) : null),
+    [api],
+  );
+  const configured = auth.status !== "not_configured";
 
   // Greet with the store from the counter QR, if it is an active store.
   useEffect(() => {
@@ -86,32 +113,41 @@ export function JoinFlow({ initialMode }: { initialMode: Mode }) {
 
   // Signed in but not a member yet (new, or came back later): ask for the details.
   useEffect(() => {
-    if (auth.status === 'signed_in' && member.status === 'none' && (step === 'start' || step === 'email' || step === 'code')) {
+    if (
+      auth.status === "signed_in" &&
+      member.status === "none" &&
+      (step === "start" || step === "email" || step === "code")
+    ) {
       setError(null);
-      setStep('profile');
+      setStep("profile");
     }
   }, [auth.status, member.status, step]);
 
   // Members go straight to their card.
-  if (auth.status === 'signed_in' && member.status === 'ready' && step !== 'welcome') return <Redirect href="/" />;
+  if (
+    auth.status === "signed_in" &&
+    member.status === "ready" &&
+    step !== "welcome"
+  )
+    return <Redirect href="/" />;
 
   const authMessage = (problem: AuthProblem) =>
-    problem === 'tooMany'
-      ? t('join.code.tooMany')
-      : problem === 'network'
-        ? errorText('network_error')
-        : problem === 'invalidEmail'
-          ? t('join.email.invalid')
-          : problem === 'wrongCode'
-            ? t('join.code.wrong')
-            : errorText('unknown');
+    problem === "tooMany"
+      ? t("join.code.tooMany")
+      : problem === "network"
+        ? errorText("network_error")
+        : problem === "invalidEmail"
+          ? t("join.email.invalid")
+          : problem === "wrongCode"
+            ? t("join.code.wrong")
+            : errorText("unknown");
 
   const sendCode = async () => {
     const client = getSupabase();
     if (!client) return;
     const address = email.trim();
     if (!isValidEmail(address)) {
-      setError(t('join.email.invalid'));
+      setError(t("join.email.invalid"));
       return;
     }
     setBusy(true);
@@ -124,9 +160,9 @@ export function JoinFlow({ initialMode }: { initialMode: Mode }) {
       setError(authMessage(authProblem(problem as AuthError)));
       return;
     }
-    setCode('');
+    setCode("");
     setResendAt(Date.now() + RESEND_SECONDS * 1000);
-    setStep('code');
+    setStep("code");
   };
 
   const verify = async () => {
@@ -134,12 +170,14 @@ export function JoinFlow({ initialMode }: { initialMode: Mode }) {
     if (!client) return;
     const token = normalizeOtp(code);
     if (!isValidOtp(token)) {
-      setError(t('join.code.wrong'));
+      setError(t("join.code.wrong"));
       return;
     }
     setBusy(true);
     setError(null);
-    const { error: problem } = await client.auth.verifyOtp({ email: email.trim(), token, type: 'email' }).catch(offline);
+    const { error: problem } = await client.auth
+      .verifyOtp({ email: email.trim(), token, type: "email" })
+      .catch(offline);
     setBusy(false);
     if (problem) setError(authMessage(authProblem(problem as AuthError)));
     // Success: the session arrives through onAuthStateChange; the member
@@ -147,26 +185,30 @@ export function JoinFlow({ initialMode }: { initialMode: Mode }) {
   };
 
   const continueProfile = () => {
-    const found = profileProblems({ firstName, ageConfirmed }, new Date(), config);
+    const found = profileProblems(
+      { firstName, ageConfirmed },
+      new Date(),
+      config,
+    );
     setProblems(found);
     if (found.length === 0) {
       setError(null);
-      setStep('consents');
+      setStep("consents");
     }
   };
 
   const submitJoin = async () => {
-    if (!joinSlot || auth.status !== 'signed_in') return;
+    if (!joinSlot || auth.status !== "signed_in") return;
     setBusy(true);
     setError(null);
     const result = await joinSlot.send(
-      'join',
+      "join",
       joinBody({
         firstName,
         email: auth.session.user.email ?? (email.trim() || null),
         locale,
         storeCode: store ? storeCode : null,
-        consents: { ...consents, push: Platform.OS !== 'web' && consents.push },
+        consents: { ...consents, push: Platform.OS !== "web" && consents.push },
       }),
     );
     if (!result.ok) {
@@ -174,34 +216,48 @@ export function JoinFlow({ initialMode }: { initialMode: Mode }) {
       setError(errorText(result.code));
       return;
     }
-    setStep('welcome');
+    setStep("welcome");
     await refresh();
     setBusy(false);
   };
 
   // The store's name in the current language (Greek until the English one is filled in).
-  const greeting = store ? t('join.hero.storeHello', { store: inLocale(store.name, store.name_en, locale) }) : null;
+  const greeting = store
+    ? t("join.hero.storeHello", {
+        store: inLocale(store.name, store.name_en, locale),
+      })
+    : null;
 
-  if (step === 'start') {
+  if (step === "start") {
     return (
-      <Screen title={t('join.hero.cta')} header={<PinkHeader kicker={greeting} title={t('join.hero.title')} />} gap={space.mdl}>
-        <Text style={type.lead}>{t('join.hero.intro')}</Text>
+      <Screen
+        title={t("join.hero.cta")}
+        header={<PinkHeader kicker={greeting} title={t("join.hero.title")} />}
+        gap={space.mdl}
+      >
+        <Text style={type.lead}>{t("join.hero.intro")}</Text>
 
         <Card style={styles.giftCard}>
           <View style={styles.giftIcon}>
             <Icon name={brand.giftIcon} size={24} color={colors.onGift} />
           </View>
           <View style={styles.giftText}>
-            <Tag tone="plum" label={t('rewards.welcome.badge')} />
-            <Text style={[type.bodyStrong, { marginTop: 6 }]}>{t('join.hero.gift')}</Text>
+            <Tag tone="plum" label={t("rewards.welcome.badge")} />
+            <Text style={[type.bodyStrong, { marginTop: 6 }]}>
+              {t("join.hero.gift")}
+            </Text>
           </View>
         </Card>
 
-        <View style={styles.steps} accessibilityLabel={t('landing.how.title')}>
-          {(['join.hero.step1', 'join.hero.step2', 'join.hero.step3'] as const).map((key, i) => (
+        <View style={styles.steps} accessibilityLabel={t("landing.how.title")}>
+          {(
+            ["join.hero.step1", "join.hero.step2", "join.hero.step3"] as const
+          ).map((key, i) => (
             <View key={key} style={styles.stepRow}>
               <StepNumber n={i + 1} />
-              <Body style={styles.stepText}>{t(key, { points: formatPoints(config.pointsPerEuro, locale) })}</Body>
+              <Body style={styles.stepText}>
+                {t(key, { points: formatPoints(config.pointsPerEuro, locale) })}
+              </Body>
             </View>
           ))}
         </View>
@@ -210,21 +266,21 @@ export function JoinFlow({ initialMode }: { initialMode: Mode }) {
 
         <View style={styles.bottom}>
           <Button
-            label={t('join.hero.cta')}
+            label={t("join.hero.cta")}
             disabled={!configured}
             onPress={() => {
-              setMode('join');
-              setStep('email');
+              setMode("join");
+              setStep("email");
             }}
           />
           <LinkButton
-            label={t('join.hero.signIn')}
+            label={t("join.hero.signIn")}
             onPress={() => {
-              setMode('signin');
-              setStep('email');
+              setMode("signin");
+              setStep("email");
             }}
           />
-          <Muted style={styles.center}>{t('join.hero.noApp')}</Muted>
+          <Muted style={styles.center}>{t("join.hero.noApp")}</Muted>
         </View>
       </Screen>
     );
@@ -239,23 +295,26 @@ export function JoinFlow({ initialMode }: { initialMode: Mode }) {
 
   if (!configured) {
     return (
-      <Screen title={t('join.hero.cta')}>
+      <Screen title={t("join.hero.cta")}>
         {topBar}
         <NotConfigured />
       </Screen>
     );
   }
 
-  if (step === 'email') {
-    const title = mode === 'signin' ? t('auth.signIn.title') : t('join.hero.cta');
+  if (step === "email") {
+    const title =
+      mode === "signin" ? t("auth.signIn.title") : t("join.hero.cta");
     return (
       <Screen title={title} gap={space.mdl}>
         {topBar}
         <Title>{title}</Title>
-        <Body>{mode === 'signin' ? t('auth.signIn.body') : t('join.method.body')}</Body>
+        <Body>
+          {mode === "signin" ? t("auth.signIn.body") : t("join.method.body")}
+        </Body>
         <TextField
-          label={t('join.email.label')}
-          placeholder={t('join.email.placeholder')}
+          label={t("join.email.label")}
+          placeholder={t("join.email.placeholder")}
           value={email}
           onChangeText={(text) => {
             setEmail(text);
@@ -272,25 +331,29 @@ export function JoinFlow({ initialMode }: { initialMode: Mode }) {
           onSubmitEditing={sendCode}
           editable={!busy}
         />
-        <Button label={t('join.send')} onPress={sendCode} loading={busy} />
-        {mode === 'join' ? <Muted>{t('join.hero.noApp')}</Muted> : null}
+        <Button label={t("join.send")} onPress={sendCode} loading={busy} />
+        {mode === "join" ? <Muted>{t("join.hero.noApp")}</Muted> : null}
       </Screen>
     );
   }
 
-  if (step === 'code') {
-    const waitSeconds = Math.max(0, Math.ceil((resendAt - now.getTime()) / 1000));
-    const verifying = auth.status === 'signed_in' && member.status === 'loading';
+  if (step === "code") {
+    const waitSeconds = Math.max(
+      0,
+      Math.ceil((resendAt - now.getTime()) / 1000),
+    );
+    const verifying =
+      auth.status === "signed_in" && member.status === "loading";
     return (
-      <Screen title={t('join.code.label')} gap={space.mdl}>
+      <Screen title={t("join.code.label")} gap={space.mdl}>
         {topBar}
-        <Title>{t('join.code.titleEmail', { email: email.trim() })}</Title>
+        <Title>{t("join.code.titleEmail", { email: email.trim() })}</Title>
         {verifying ? (
           <Loading />
         ) : (
           <>
             <TextField
-              label={t('join.code.label')}
+              label={t("join.code.label")}
               value={code}
               onChangeText={(text) => {
                 setCode(normalizeOtp(text));
@@ -306,18 +369,24 @@ export function JoinFlow({ initialMode }: { initialMode: Mode }) {
               onSubmitEditing={verify}
               editable={!busy}
             />
-            <Button label={t('join.code.submit')} onPress={verify} loading={busy} />
-            <Muted>{t('join.code.spam')}</Muted>
+            <Button
+              label={t("join.code.submit")}
+              onPress={verify}
+              loading={busy}
+            />
+            <Muted>{t("join.code.spam")}</Muted>
             {waitSeconds > 0 ? (
-              <Muted style={styles.center}>{t('join.code.resendIn', { seconds: waitSeconds })}</Muted>
+              <Muted style={styles.center}>
+                {t("join.code.resendIn", { seconds: waitSeconds })}
+              </Muted>
             ) : (
-              <LinkButton label={t('join.code.resend')} onPress={sendCode} />
+              <LinkButton label={t("join.code.resend")} onPress={sendCode} />
             )}
             <LinkButton
-              label={t('join.code.change')}
+              label={t("join.code.change")}
               onPress={() => {
                 setError(null);
-                setStep('email');
+                setStep("email");
               }}
             />
           </>
@@ -326,20 +395,24 @@ export function JoinFlow({ initialMode }: { initialMode: Mode }) {
     );
   }
 
-  if (step === 'profile') {
+  if (step === "profile") {
     return (
-      <Screen title={t('join.profile.title')} gap={space.mdl}>
+      <Screen title={t("join.profile.title")} gap={space.mdl}>
         {topBar}
-        <Title>{t('join.profile.title')}</Title>
+        <Title>{t("join.profile.title")}</Title>
         <TextField
-          label={t('join.profile.firstName')}
-          hint={t('join.profile.firstNameHint')}
+          label={t("join.profile.firstName")}
+          hint={t("join.profile.firstNameHint")}
           value={firstName}
           onChangeText={(text) => {
             setFirstName(text);
-            setProblems((p) => p.filter((x) => x !== 'firstName'));
+            setProblems((p) => p.filter((x) => x !== "firstName"));
           }}
-          error={problems.includes('firstName') ? t('join.profile.firstNameMissing') : null}
+          error={
+            problems.includes("firstName")
+              ? t("join.profile.firstNameMissing")
+              : null
+          }
           autoComplete="given-name"
           textContentType="givenName"
           autoCapitalize="words"
@@ -348,79 +421,130 @@ export function JoinFlow({ initialMode }: { initialMode: Mode }) {
         />
         <View style={styles.checkBlock}>
           <Checkbox
-            label={t('join.profile.age', { age: config.minimumAge })}
+            label={t("join.profile.age", { age: config.minimumAge })}
             checked={ageConfirmed}
             onChange={(next) => {
               setAgeConfirmed(next);
-              if (next) setProblems((p) => p.filter((x) => x !== 'age'));
+              if (next) setProblems((p) => p.filter((x) => x !== "age"));
             }}
           />
-          {problems.includes('age') ? <ErrorText message={t('join.profile.ageMissing', { age: config.minimumAge })} /> : null}
+          {problems.includes("age") ? (
+            <ErrorText
+              message={t("join.profile.ageMissing", { age: config.minimumAge })}
+            />
+          ) : null}
         </View>
-        <Button label={t('join.profile.continue')} onPress={continueProfile} style={styles.bottom} />
+        <Button
+          label={t("join.profile.continue")}
+          onPress={continueProfile}
+          style={styles.bottom}
+        />
       </Screen>
     );
   }
 
-  if (step === 'consents') {
+  if (step === "consents") {
     return (
-      <Screen title={t('join.consents.title')} gap={space.mdl}>
+      <Screen title={t("join.consents.title")} gap={space.mdl}>
         {topBar}
-        <Title>{t('join.consents.title')}</Title>
-        <Body>{t('join.consents.body')}</Body>
+        <Title>{t("join.consents.title")}</Title>
+        <Body>{t("join.consents.body")}</Body>
         {/* Three separate, optional, unticked choices (GDPR); none is needed to join. */}
         <View style={styles.checkBlock}>
-          <Checkbox label={t('join.consents.email')} checked={consents.email} onChange={(v) => setConsents((c) => ({ ...c, email: v }))} />
-          <Checkbox label={t('join.consents.sms')} checked={consents.sms} onChange={(v) => setConsents((c) => ({ ...c, sms: v }))} />
+          <Checkbox
+            label={t("join.consents.email")}
+            checked={consents.email}
+            onChange={(v) => setConsents((c) => ({ ...c, email: v }))}
+          />
+          <Checkbox
+            label={t("join.consents.sms")}
+            checked={consents.sms}
+            onChange={(v) => setConsents((c) => ({ ...c, sms: v }))}
+          />
           {/* Push only where the app can send it (native); the OS prompt comes with notifications. */}
-          {Platform.OS !== 'web' ? (
-            <Checkbox label={t('join.consents.push')} checked={consents.push} onChange={(v) => setConsents((c) => ({ ...c, push: v }))} />
+          {Platform.OS !== "web" ? (
+            <Checkbox
+              label={t("join.consents.push")}
+              checked={consents.push}
+              onChange={(v) => setConsents((c) => ({ ...c, push: v }))}
+            />
           ) : null}
         </View>
-        <Muted>{t('join.consents.terms')}</Muted>
+        <Muted>{t("join.consents.terms")}</Muted>
         <View style={styles.legalLinks}>
           <Link href="/terms" style={[type.label, styles.legalLink]}>
-            {t('legal.terms.title')}
+            {t("legal.terms.title")}
           </Link>
           <Link href="/privacy" style={[type.label, styles.legalLink]}>
-            {t('legal.privacy.title')}
+            {t("legal.privacy.title")}
           </Link>
         </View>
         {error ? <ErrorText message={error} /> : null}
-        <Button label={t('join.consents.submit')} onPress={submitJoin} loading={busy} style={styles.bottom} />
+        <Button
+          label={t("join.consents.submit")}
+          onPress={submitJoin}
+          loading={busy}
+          style={styles.bottom}
+        />
       </Screen>
     );
   }
 
   // welcome
   return (
-    <Screen title={t('join.welcome.title')} gap={space.mdl}>
+    <Screen title={t("join.welcome.title")} gap={space.mdl}>
       {topBar}
-      <Title>{t('join.welcome.title')}</Title>
-      <Body>{t('join.welcome.body')}</Body>
+      <Title>{t("join.welcome.title")}</Title>
+      <Body>{t("join.welcome.body")}</Body>
       <Card style={styles.giftCard}>
         <View style={styles.giftIcon}>
           <Icon name={brand.giftIcon} size={24} color={colors.onGift} />
         </View>
-        <Text style={[type.bodyStrong, styles.giftText]}>{t('join.welcome.croissant')}</Text>
+        <Text style={[type.bodyStrong, styles.giftText]}>
+          {t("join.welcome.croissant")}
+        </Text>
       </Card>
-      <Muted>{t('join.welcome.wallet')}</Muted>
-      <Button label={t('join.welcome.cta')} onPress={() => router.replace('/')} loading={busy} style={styles.bottom} />
+      {showsWalletCopy(Platform.OS) ? (
+        <Muted>{t("join.welcome.wallet")}</Muted>
+      ) : null}
+      <Button
+        label={t("join.welcome.cta")}
+        onPress={() => router.replace("/")}
+        loading={busy}
+        style={styles.bottom}
+      />
     </Screen>
   );
 }
 
 const styles = StyleSheet.create({
-  legalLinks: { flexDirection: 'row', flexWrap: 'wrap', gap: space.md },
-  legalLink: { color: colors.accent, textDecorationLine: 'underline' },
-  giftCard: { flexDirection: 'row', gap: space.md, alignItems: 'center', paddingVertical: space.md, paddingHorizontal: space.mdl },
-  giftIcon: { width: 48, height: 48, borderRadius: 24, backgroundColor: colors.gift, alignItems: 'center', justifyContent: 'center' },
+  legalLinks: { flexDirection: "row", flexWrap: "wrap", gap: space.md },
+  legalLink: { color: colors.accent, textDecorationLine: "underline" },
+  giftCard: {
+    flexDirection: "row",
+    gap: space.md,
+    alignItems: "center",
+    paddingVertical: space.md,
+    paddingHorizontal: space.mdl,
+  },
+  giftIcon: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    backgroundColor: colors.gift,
+    alignItems: "center",
+    justifyContent: "center",
+  },
   giftText: { flex: 1, gap: 2 },
   steps: { gap: space.ms },
-  stepRow: { flexDirection: 'row', gap: space.ms, alignItems: 'center' },
+  stepRow: { flexDirection: "row", gap: space.ms, alignItems: "center" },
   stepText: { flex: 1 },
-  bottom: { marginTop: 'auto', gap: 14 },
-  center: { textAlign: 'center' },
-  topBar: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
+  bottom: { marginTop: "auto", gap: 14 },
+  center: { textAlign: "center" },
+  topBar: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
   checkBlock: { gap: space.xs },
 });
