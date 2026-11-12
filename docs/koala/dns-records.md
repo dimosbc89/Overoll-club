@@ -25,6 +25,8 @@ Not set on purpose:
   (`default._domainkey`), once it makes one, goes here too. The Resend records never collide with it: they live on
   `send` and `resend._domainkey`, and the root SPF does not need Resend (its sending passes DMARC through its own DKIM).
 
+Live on 12 Nov 2026 (morning): the registry delegates to Cloudflare, both Pages custom domains answer over HTTPS (certificate `*.koalacoffee.gr`), and steps 1–2 below are done.
+
 When the registry publishes the domain (new `.gr` domains take a few hours):
 1. Cloudflare marks the zone active; both Pages custom domains turn active and get certificates by themselves.
 2. `supabase/projects/koala.json`: `siteUrl` → `https://club.koalacoffee.gr`, `emailLogoUrl` →

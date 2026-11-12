@@ -1,13 +1,13 @@
 {
-  "$comment": "Koala Coffee's Supabase project (created 11 Nov 2026, eu-central-1, GROW Agency org). Same rules as supabase/projects/overoll.json. Domain koalacoffee.gr (Cloudflare, GROW's account): club.koalacoffee.gr = member app, admin.koalacoffee.gr = back office + till (docs/koala/dns-records.md). siteUrl moves to club.koalacoffee.gr once that answers over HTTPS; the pages.dev names stay allowed. No secrets here.",
+  "$comment": "Koala Coffee's Supabase project (created 11 Nov 2026, eu-central-1, GROW Agency org). Same rules as supabase/projects/overoll.json. Domain koalacoffee.gr (Cloudflare, GROW's account): club.koalacoffee.gr = member app, admin.koalacoffee.gr = back office + till (docs/koala/dns-records.md). Live since 12 Nov 2026; the pages.dev names stay allowed. No secrets here.",
   "brand": "koala",
   "projectRef": "rkyoynrsimtotdirqkns",
   "publishableKey": "sb_publishable_tt5oLd6aU58k3l4xzF8bZA_sqahX_jw",
   "programName": "Koala Club",
   "brandName": "Koala",
   "supportEmail": "hello@koalacoffee.gr",
-  "siteUrl": "https://koala-club.pages.dev",
-  "emailLogoUrl": "https://koala-club.pages.dev/email-logo.png",
+  "siteUrl": "https://club.koalacoffee.gr",
+  "emailLogoUrl": "https://club.koalacoffee.gr/email-logo.png",
   "appScheme": "koalaclub",
   "redirectUrls": [
     "https://club.koalacoffee.gr/**",

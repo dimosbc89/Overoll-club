@@ -35,7 +35,7 @@ const koala: AdminBrand = {
   programName: 'Koala Club',
   brandName: 'Koala',
   supportEmail: 'hello@koalacoffee.gr',
-  clubUrl: 'koala-club.pages.dev',
+  clubUrl: 'club.koalacoffee.gr',
   wordmark: { onDark: '/koala-lockup-cream.svg', onLight: '/koala-lockup-green.svg', width: 206, height: 28 },
   themeColor: '#026852',
   copy: {

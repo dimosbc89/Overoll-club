@@ -9,7 +9,7 @@ Second brand on the platform. Dimos decided on 11 Nov 2026 to build it for launc
 | Data | `data/koala/` (brand, stores, menu, rewards) → `supabase/seed/koala.sql`, applied once (CI applies it to a project whose brand row is missing) |
 | Design | Figma `MHtMmw4vUc80oY5PuaBytx` (Koala Club — loyalty app concept), official logo mark `assets/brand/koala/` |
 | Pitch deck | https://claude.ai/artifact/3rpyBDM6n5R9CPucpx3TWH |
-| Web app / back office | `club.koalacoffee.gr` / `admin.koalacoffee.gr` once the domain is live (12 Nov: waiting for the `.gr` registry); `koala-club.pages.dev` / `koala-club-admin.pages.dev` always work |
+| Web app / back office | https://club.koalacoffee.gr / https://admin.koalacoffee.gr (live 12 Nov 2026); `koala-club.pages.dev` / `koala-club-admin.pages.dev` still work |
 
 ## Programme
 
