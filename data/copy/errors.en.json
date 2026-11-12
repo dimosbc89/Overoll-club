@@ -42,6 +42,8 @@
   "pin_too_simple": "That PIN is too easy to guess (like 1111 or 1234). Pick another one.",
   "device_in_other_store": "This till account already belongs to another store. Use a different email for this device.",
   "last_hq_admin": "There must always be at least one HQ admin. Add someone else first.",
+  "store_code_taken": "There's already a store with this code. Pick another one (Latin letters, digits and dashes only).",
+  "welcome_reward": "This is the welcome gift, so it can't be switched off. Ask the {programName} team to change the gift first.",
   "not_configured": "This isn't available yet. Let the team setting up {programName} know.",
   "unauthenticated": "You've been signed out. Sign in again to carry on.",
   "internal_error": "Something went wrong on our side. Try again in a moment.",

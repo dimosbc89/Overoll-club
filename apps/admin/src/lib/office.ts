@@ -159,6 +159,125 @@ export interface OfficeApi {
   ): Promise<ApiResponse<{ staff: StaffView; created: boolean }>>;
   removeStaff(staffId: string): Promise<ApiResponse<{ removed: StaffView }>>;
   adjustPoints(input: { memberId: string; points: number; reason: string; idempotencyKey: string }): Promise<ApiResponse<AdjustedPoints>>;
+  createStore(input: StoreInput & { brandId: string; code: string; name: string; idempotencyKey: string }): Promise<ApiResponse<{ store: Omit<CatalogStore, 'timeZone'> }>>;
+  updateStore(input: StoreInput & { storeId: string; active?: boolean }): Promise<ApiResponse<{ store: Omit<CatalogStore, 'timeZone'> }>>;
+  createReward(
+    input: RewardInput & { brandId: string; nameEl: string; nameEn: string; shelfPriceCents: number; idempotencyKey: string },
+  ): Promise<ApiResponse<{ reward: CatalogReward }>>;
+  updateReward(input: RewardInput & { rewardId: string; active?: boolean }): Promise<ApiResponse<{ reward: CatalogReward }>>;
+}
+
+// ---------------------------------------------------------------------------
+// Stores and reward catalog (HQ, v0.6): same shapes as packages/server/src/catalog.ts
+// ---------------------------------------------------------------------------
+
+export type OpeningHours = Partial<Record<'mon' | 'tue' | 'wed' | 'thu' | 'fri' | 'sat' | 'sun', string>>;
+
+export interface CatalogStore {
+  id: string;
+  brandId: string;
+  code: string;
+  name: string;
+  nameEn: string | null;
+  address: string | null;
+  addressEn: string | null;
+  city: string | null;
+  country: 'GR' | 'CY';
+  phone: string | null;
+  latitude: number | null;
+  longitude: number | null;
+  openingHours: OpeningHours;
+  active: boolean;
+  timeZone: string;
+}
+
+export interface StoreInput {
+  name?: string;
+  nameEn?: string | null;
+  address?: string | null;
+  addressEn?: string | null;
+  city?: string | null;
+  country?: 'GR' | 'CY';
+  phone?: string | null;
+  latitude?: number | null;
+  longitude?: number | null;
+  openingHours?: OpeningHours;
+}
+
+export type TierName = 'classic' | 'gold' | 'club';
+
+export interface CatalogReward {
+  id: string;
+  brandId: string;
+  nameEl: string;
+  nameEn: string;
+  descriptionEl: string | null;
+  descriptionEn: string | null;
+  category: string;
+  shelfPriceCents: number;
+  baseCost: number;
+  minTier: TierName | null;
+  active: boolean;
+  sortOrder: number;
+}
+
+export interface RewardInput {
+  nameEl?: string;
+  nameEn?: string;
+  descriptionEl?: string | null;
+  descriptionEn?: string | null;
+  category?: string;
+  shelfPriceCents?: number;
+  minTier?: TierName | null;
+  sortOrder?: number;
+}
+
+/** Every store of the brand, closed ones too (HQ reads them through row-level security). */
+export async function loadCatalogStores(client: SupabaseClient, brandId: string): Promise<CatalogStore[]> {
+  const { data, error } = await client.from('stores').select('*').eq('brand_id', brandId).order('name');
+  if (error) throw error;
+  return (data ?? []).map((r) => ({
+    id: r.id,
+    brandId: r.brand_id,
+    code: r.code,
+    name: r.name,
+    nameEn: r.name_en ?? null,
+    address: r.address ?? null,
+    addressEn: r.address_en ?? null,
+    city: r.city ?? null,
+    country: r.country,
+    phone: r.phone ?? null,
+    latitude: r.latitude ?? null,
+    longitude: r.longitude ?? null,
+    openingHours: (r.opening_hours ?? {}) as OpeningHours,
+    active: r.active,
+    timeZone: r.time_zone,
+  }));
+}
+
+/** The whole catalog in the members' order, switched-off rewards too. */
+export async function loadCatalogRewards(client: SupabaseClient, brandId: string): Promise<CatalogReward[]> {
+  const { data, error } = await client
+    .from('rewards')
+    .select('id, brand_id, name_el, name_en, description_el, description_en, category, shelf_price_cents, base_cost, min_tier, active, sort_order')
+    .eq('brand_id', brandId)
+    .order('sort_order')
+    .order('base_cost');
+  if (error) throw error;
+  return (data ?? []).map((r) => ({
+    id: r.id,
+    brandId: r.brand_id,
+    nameEl: r.name_el,
+    nameEn: r.name_en,
+    descriptionEl: r.description_el ?? null,
+    descriptionEn: r.description_en ?? null,
+    category: r.category,
+    shelfPriceCents: r.shelf_price_cents,
+    baseCost: r.base_cost,
+    minTier: r.min_tier ?? null,
+    active: r.active,
+    sortOrder: r.sort_order,
+  }));
 }
 
 export function createOfficeApi(client: SupabaseClient): OfficeApi | null {
@@ -175,6 +294,10 @@ export function createOfficeApi(client: SupabaseClient): OfficeApi | null {
     addStaff: (input) => post('staff/add', { ...input }),
     removeStaff: (staffId) => post('staff/remove', { staffId }),
     adjustPoints: (input) => post('points/adjust', { ...input }),
+    createStore: (input) => post('stores/create', { ...input }),
+    updateStore: (input) => post('stores/update', { ...input }),
+    createReward: (input) => post('rewards/create', { ...input }),
+    updateReward: (input) => post('rewards/update', { ...input }),
   };
 }
 

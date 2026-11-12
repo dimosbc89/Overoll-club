@@ -364,3 +364,38 @@ describe('back office routes (v0.5)', () => {
     expect(await member2.json()).toMatchObject({ ok: false, code: 'member_not_found' });
   });
 });
+
+describe('catalog routes (v0.6)', () => {
+  it('HQ opens a store and edits it; a store manager cannot; the code is fixed', async () => {
+    const created = await handle(
+      post('/api/stores/create', { brandId: ids.brand, code: 'marousi', name: 'Μαρούσι', openingHours: { mon: '08:00-20:00' }, idempotencyKey: key() }, tokenFor(ids.hq)),
+    );
+    expect(created.status).toBe(200);
+    const body = (await created.json()) as { ok: true; store: { id: string } };
+    expect(body).toMatchObject({ ok: true, store: { code: 'marousi', active: true, openingHours: { mon: '08:00-20:00' } } });
+    const again = await handle(post('/api/stores/create', { brandId: ids.brand, code: 'marousi', name: 'X', idempotencyKey: key() }, tokenFor(ids.hq)));
+    expect(again.status).toBe(409);
+    expect(await again.json()).toMatchObject({ ok: false, code: 'store_code_taken' });
+
+    const byManager = await handle(post('/api/stores/update', { storeId: body.store.id, name: 'Hacked' }, tokenFor(ids.managerA)));
+    expect(byManager.status).toBe(403);
+    const closed = await handle(post('/api/stores/update', { storeId: body.store.id, active: false }, tokenFor(ids.hq)));
+    expect(await closed.json()).toMatchObject({ ok: true, store: { active: false, name: 'Μαρούσι' } });
+    const recode = await handle(post('/api/stores/update', { storeId: body.store.id, code: 'other' }, tokenFor(ids.hq)));
+    expect(recode.status).toBe(400);
+  });
+
+  it('HQ adds and reprices a reward; the cost is the server\'s, not the body\'s', async () => {
+    const created = await handle(
+      post('/api/rewards/create', { brandId: ids.brand, nameEl: 'Τσάι', nameEn: 'Tea', shelfPriceCents: 200, baseCost: 1, idempotencyKey: key() }, tokenFor(ids.hq)),
+    );
+    const body = (await created.json()) as { ok: true; reward: { id: string; baseCost: number } };
+    expect(body).toMatchObject({ ok: true, reward: { nameEn: 'Tea', shelfPriceCents: 200 } });
+    expect(body.reward.baseCost).toBeGreaterThan(1);
+    const repriced = await handle(post('/api/rewards/update', { rewardId: body.reward.id, shelfPriceCents: 300 }, tokenFor(ids.hq)));
+    const after = (await repriced.json()) as { ok: true; reward: { baseCost: number } };
+    expect(after.reward.baseCost).toBeGreaterThan(body.reward.baseCost);
+    const byDevice = await handle(post('/api/rewards/update', { rewardId: body.reward.id, active: false }, tokenFor(ids.deviceA)));
+    expect(byDevice.status).toBe(403);
+  });
+});

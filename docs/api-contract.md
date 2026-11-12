@@ -1,4 +1,4 @@
-# Contract between the apps and the server (v0.5, 11 Nov 2026)
+# Contract between the apps and the server (v0.6, 12 Nov 2026)
 
 Three workstreams build against this page at the same time: the server (`packages/core`, `packages/server`, `packages/api`, `supabase/`), the member app (`apps/mobile`) and the staff console (`apps/admin` → `/console`). Change it only together with all three.
 
@@ -80,11 +80,28 @@ Reads (row-level security, nothing new to open):
 - `public.dashboard_stats(p_since timestamptz)` (new, `SECURITY INVOKER`, `rpc`): per store since `p_since`: `net_points` (earns minus undos), `purchases`, `rewards_used`, `members_joined` (HQ only; `store_id` null = joined without a store). Staff only: members and anonymous callers get nothing.
 - Member search: `members` of the brand by `member_code`, email, phone or name (HQ), balances from `member_balances`, history from `ledger_entries`.
 
+## New in v0.6 (HQ edits stores and the reward catalog)
+
+Migration `20261112090000_catalog_writes_via_api`: signed-in users no longer insert or update `stores` and `rewards` directly (the direct rights and their policies are gone); these routes are the only way, so every change is checked, audited and costed by core. Reading is unchanged.
+
+| Route | Who | Body | Returns |
+| --- | --- | --- | --- |
+| `stores/create` | HQ of the brand, platform admin | `brandId`, `code` (2–40: `a-z`, `0-9`, single dashes; unique per brand), `name`, optional `nameEn`, `address`, `addressEn`, `city`, `country` (`GR`/`CY`), `phone`, `latitude` + `longitude` (both or neither), `openingHours`, `idempotencyKey` | `store { id, brandId, code, name, nameEn, address, addressEn, city, country, phone, latitude, longitude, openingHours, active }` |
+| `stores/update` | same | `storeId`, any of the fields above except `code` (fixed: it is in the printed counter QR), `active`; `null` clears an optional field | `store` |
+| `rewards/create` | same | `brandId`, `nameEl`, `nameEn` (1–60), `shelfPriceCents` (1–50 000), optional `descriptionEl`, `descriptionEn` (≤200), `category`, `minTier` (`gold`/`club`/null), `sortOrder` (default: last), `idempotencyKey` | `reward { id, brandId, nameEl, nameEn, descriptionEl, descriptionEn, category, shelfPriceCents, baseCost, minTier, active, sortOrder }` |
+| `rewards/update` | same | `rewardId`, any of the fields above, `active` | `reward` |
+
+- `openingHours`: `{ "mon": "08:00-20:00", "sun": "closed" }`, keys `mon`…`sun`; a missing day is unknown; closing after opening, `24:00` at the latest.
+- `baseCost` is never taken from the body: core `rewardBaseCost(shelfPriceCents, brand config)`. A new price gives a new cost; codes already made keep the points they took.
+- Closing a store (`active: false`) hides it from members and the till can't earn there (`store_inactive`); cashiers, staff and history stay. A reward switched off leaves the app; codes already made stay valid until they expire. The brand's welcome gift (`config.welcome.rewardId`) can't be switched off (`welcome_reward`, 409).
+- Audit log: `store.create`, `store.update`, `reward.create`, `reward.update` (changed fields, old → new).
+- New error codes: `store_code_taken` (409), `welcome_reward` (409). Texts in `data/copy/errors.*.json`, copy deck §f2, to approve.
+
 ## What the apps read directly (Supabase client, row-level security)
 
 Member app (signed-in member): `members` (own row, not once deleted), `member_balances` (own), `member_secrets` (own: `qr_secret`, `pass_version` → core `createRotatingToken` for the QR, offline), `rewards` (active), `stores` (active; `name_en` / `address_en` from v0.4), `member_gifts` (own), `redemptions` (own; a `pending` one not past `expires_at` is the active code), `ledger_entries` (own, history). Costs per tier: core `rewardCostForTier`; progress: core `nextRewardProgress`, `tierProgress`.
 
-Back office (signed-in HQ admin or store manager, v0.5): `stores` (the brand's, inactive ones too), `employees` (id, name, active), `staff_roles` (with `email`), `members` and `member_balances` (HQ), `ledger_entries`, `dashboard_stats(p_since)`.
+Back office (signed-in HQ admin or store manager, v0.5): `stores` (the brand's, inactive ones too), `rewards` (HQ: inactive ones too, v0.6), `employees` (id, name, active), `staff_roles` (with `email`), `members` and `member_balances` (HQ), `ledger_entries`, `dashboard_stats(p_since)`.
 
 Staff console (signed-in device user with `store_device` for its store): `stores` (its store), `employees` (its store: id, display_name, active), `ledger_entries` and `redemptions` of its store (today's activity; not those of deleted members, from v0.4). Everything that writes goes through the routes above.
 

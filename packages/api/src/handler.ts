@@ -13,6 +13,8 @@ import {
   awardPoints,
   cancelRedemption,
   createEmployee,
+  createReward,
+  createStore,
   createRedemption,
   deleteMember,
   expirePoints,
@@ -22,6 +24,8 @@ import {
   resolveMemberToken,
   undoEarn,
   updateEmployee,
+  updateReward,
+  updateStore,
   useRedemption,
   verifyEmployeePin,
 } from '@grow-loyalty/server';
@@ -122,6 +126,23 @@ export const routes: Readonly<Record<string, Route>> = {
     auth: 'user',
     run: (sql, uid, b) => adjustPoints(sql, { ...(b as any), callerUserId: asUser(uid) }),
   },
+  // Back office (v0.6): HQ edits stores and the reward catalog.
+  'stores/create': {
+    auth: 'user',
+    run: (sql, uid, b) => createStore(sql, { ...(b as any), callerUserId: asUser(uid) }),
+  },
+  'stores/update': {
+    auth: 'user',
+    run: (sql, uid, b) => updateStore(sql, { ...(b as any), callerUserId: asUser(uid) }),
+  },
+  'rewards/create': {
+    auth: 'user',
+    run: (sql, uid, b) => createReward(sql, { ...(b as any), callerUserId: asUser(uid) }),
+  },
+  'rewards/update': {
+    auth: 'user',
+    run: (sql, uid, b) => updateReward(sql, { ...(b as any), callerUserId: asUser(uid) }),
+  },
   'jobs/expire-redemptions': {
     auth: 'service',
     run: (sql, _uid, b) => expireRedemptions(sql, batchOption(b)),
@@ -146,6 +167,8 @@ const STATUS: Record<string, number> = {
   idempotency_conflict: 409,
   device_in_other_store: 409,
   last_hq_admin: 409,
+  store_code_taken: 409,
+  welcome_reward: 409,
   not_configured: 501,
   payload_too_large: 413,
   unsupported_media_type: 415,

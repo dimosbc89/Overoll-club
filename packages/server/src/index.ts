@@ -13,3 +13,4 @@ export * from './delete-member.js';
 export * from './employees.js';
 export * from './store-staff.js';
 export * from './adjust-points.js';
+export * from './catalog.js';

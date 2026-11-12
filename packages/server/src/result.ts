@@ -61,7 +61,10 @@ export type ErrorCode =
   | 'pin_format'
   | 'pin_too_simple'
   | 'device_in_other_store'
-  | 'last_hq_admin';
+  | 'last_hq_admin'
+  // back office (v0.6): stores and reward catalog
+  | 'store_code_taken'
+  | 'welcome_reward';
 
 export interface Failure<C extends ErrorCode = ErrorCode> {
   ok: false;

@@ -80,7 +80,7 @@ Legend: **D** = Dimos · **C** = Claude · ☐ open · ☑ done
 ## Week 4 · 30 Nov – 6 Dec · Back office + test
 
 - ☑ C: back office v0.5 (11 Nov, both brands): HQ and store-manager sign-in, dashboard (today / 7 days, per store), cashiers with PIN, till devices and managers by email, HQ admins, member search with history and points correction with reason (`docs/api-contract.md` v0.5)
-- ☐ C: HQ admin: edit stores and the reward catalog from the back office (today: read-only lists)
+- ☑ C: HQ admin: edit stores and the reward catalog from the back office (v0.6, 12 Nov: details, opening hours, open/close a store; rewards with price → points from core, switch off/on; audited; the welcome gift can't be switched off)
 - ☐ C: store manager view: monthly redemption report (own store numbers and cashiers: done in v0.5)
 - ☐ C: send a message to members (push + Wallet), manual for now
 - ☐ C: print files: counter QR stand per store, cup/bag sticker

@@ -41,6 +41,10 @@ Each one is `fn(sql, input)` and returns `{ ok: true, ... }` or `{ ok: false, co
 | `addStaff` | HQ, platform (v0.5) | `callerUserId, role, storeId` (store roles) or `brandId` (`hq_admin`), `email`; deps `ensureAuthUser(email)` | `staff {id, userId, role, brandId, storeId, email}, created` | `forbidden, store_not_found, brand_not_found, device_in_other_store` |
 | `removeStaff` | HQ, platform (v0.5) | `callerUserId, staffId` | `removed` | `forbidden, not_found, last_hq_admin` |
 | `adjustPoints` | HQ, platform (v0.5) | `callerUserId, memberId, points, reason, idempotencyKey` | `entryId, memberId, points, balance` | `member_not_found` (also for callers outside the brand), `member_deleted` |
+| `createStore` | HQ, platform (v0.6) | `callerUserId, brandId, code, name`, optional details and `openingHours`, `idempotencyKey` | `store` | `forbidden, brand_not_found, store_code_taken` |
+| `updateStore` | HQ, platform (v0.6) | `callerUserId, storeId`, any details, `openingHours`, `active` (never `code`) | `store` | `forbidden, not_found` |
+| `createReward` | HQ, platform (v0.6) | `callerUserId, brandId, nameEl, nameEn, shelfPriceCents`, optional `descriptionEl/En, category, minTier, sortOrder`, `idempotencyKey` | `reward` (`baseCost` from core) | `forbidden, brand_not_found` |
+| `updateReward` | HQ, platform (v0.6) | `callerUserId, rewardId`, any of those fields, `active` | `reward` | `forbidden, not_found, welcome_reward` |
 
 `ErrorCode` is the union of every code; each operation also exports its own (`AwardPointsError`, ...).
 

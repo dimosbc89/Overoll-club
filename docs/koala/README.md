@@ -43,7 +43,7 @@ Koala Club for iOS and Android, from the same code (`apps/mobile`, `EXPO_PUBLIC_
 
 - [ ] Approve the reward catalog and the in-store prices (we used efood prices).
 - [ ] Confirm the welcome gift (cinnamon roll is on efood only for Αργυρούπολη).
-- [ ] Opening hours of both stores (not published anywhere).
+- [ ] Opening hours of both stores (not published anywhere). Once known, HQ types them in the back office (Καταστήματα → Αλλαγή); reward prices likewise under Δώρα.
 - [ ] Programme and tier names (Koala Club, Joey, Koala, Eucalyptus).
 - [x] Domain: `koalacoffee.gr` (12 Nov 2026, Cloudflare in GROW's account): `club.` and `admin.`, sign-in emails from `app@koalacoffee.gr` (`docs/koala/dns-records.md`). Resend verified 12 Nov; sign-in emails go through Resend SMTP (key in the GitHub secret `RESEND_API_KEY_KOALA`).
 - [ ] Legal entity for the terms and privacy policy (vrisko lists "KOALA - ΔΗΜΟΓΕΡΟΝΤΑ ΕΕ" for Αργυρούπολη; confirm for both stores).

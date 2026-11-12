@@ -62,6 +62,8 @@ Example: €6.40 receipt, Gold member → floor(640 × 10 × 125 / 10 000) = 80 
 - Gold pays 20% fewer points, Club 30% fewer (rounded to the nearest 10).
 - Some rewards can be limited to a tier ("Gold and above").
 - Catalog of 7 rewards (espresso → croissant box) in `docs/menu-and-rewards.md`, approved 9 Nov. Shelf prices are the Wolt prices; HQ can change them later.
+- HQ edits the catalog in the back office (v0.6): names, descriptions, in-store price, lowest tier, order, on/off. The point cost always follows the price through `rewardBaseCost` (never typed by hand); a new price leaves codes already made as they were. A reward switched off leaves the app at once; its codes stay valid until they expire. The welcome gift can't be switched off while it is the welcome gift.
+- HQ also edits stores (names in Greek and English, address, phone, coordinates, opening hours), opens new ones and closes them. A store's code is fixed: it is printed in the counter QR. A closed store disappears from the app and its till stops earning; its people and history stay.
 
 ## 5. Tiers
 

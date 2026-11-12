@@ -157,3 +157,86 @@
 .detail dd {
   margin: 0;
 }
+
+/* Store and reward editors (v0.6) */
+
+.editor {
+  flex-direction: column;
+  flex-wrap: nowrap;
+  align-items: stretch;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+  align-items: start;
+  align-content: start;
+  gap: var(--space-md);
+}
+
+.grid .input,
+.grid .select {
+  min-width: 0;
+  width: 100%;
+}
+
+.hours {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  margin: 0;
+  padding: var(--space-md);
+  border: 1px solid var(--butter);
+  border-radius: var(--radius-md);
+}
+
+.legend {
+  padding: 0 var(--space-xs);
+  font-weight: 700;
+}
+
+.hoursRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-md);
+}
+
+.hoursDay {
+  min-width: 7.5rem;
+  font-weight: 600;
+}
+
+.inline {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-xs);
+  font-weight: 400;
+}
+
+.inline input[type='checkbox'] {
+  width: 20px;
+  height: 20px;
+}
+
+.inputTime {
+  min-width: 0;
+  width: 10rem;
+}
+
+.textarea {
+  min-height: 4.5rem;
+  padding: var(--space-sm) var(--space-md);
+  resize: vertical;
+}
+
+.subline {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 400;
+}
+
+.preview {
+  margin: 0 0 var(--space-xs);
+  font-weight: 700;
+}
