@@ -124,5 +124,5 @@ Legend: **D** = Dimos · **C** = Claude · ☐ open · ☑ done
 - ☑ D: GitHub secret `SUPABASE_ACCESS_TOKEN_KOALA` (11 Nov)
 - ☑ C: CI deploys the API, Auth settings and scheduled jobs to `koala-club`; checked (11 Nov)
 - ☑ C: Cloudflare Pages `koala-club` (https://koala-club.pages.dev) and `koala-club-admin` (https://koala-club-admin.pages.dev), built from `main`
-- ☐ D + C: end-to-end test with a real sign-in: Dimos signs in to the Koala back office once, Claude gives that account the platform role, then a till device and a cashier from the Staff page; join, points at the till, reward code
+- ☐ D + C: end-to-end test with a real sign-in: ~~Dimos signs in to the Koala back office once, Claude gives that account the platform role~~ (done 12 Nov; sign-in code arrived through Resend), then a till device and a cashier from the Staff page; join, points at the till, reward code
 - ☐ D: answers from Koala (catalog and prices, opening hours, names, domain and sender email, legal entity, wordmark, efood, till device)
