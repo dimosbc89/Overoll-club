@@ -3,5 +3,7 @@
   "iosBundleId": "online.growagency.koala",
   "androidPackage": "online.growagency.koala",
   "iconBackground": "#026852",
-  "background": "#f8f1de"
+  "background": "#f8f1de",
+  "expoOwner": "grow-agency-lp",
+  "easProjectId": "97239d51-96d9-4c5c-861c-2575ee19f14b"
 }
