@@ -177,7 +177,7 @@ async function apply(cfg: ProjectConfig, desired: ReturnType<typeof buildDesired
   if (!Object.keys(patch).length) console.log('auth: already up to date');
 
   const existing = (await api(token, 'GET', `/projects/${ref}/secrets`)) as { name: string; value: string }[];
-  const secrets: Record<string, string> = { ...desired.secrets, ...walletSecrets(cfg) };
+  const secrets: Record<string, string> = { ...desired.secrets, ...walletSecrets(cfg), ...reviewSecrets(cfg) };
   const changed = Object.entries(secrets).filter(([name, value]) => {
     const now = existing.find((s) => s.name === name)?.value;
     return now !== value && now !== createHash('sha256').update(value).digest('hex');
@@ -211,6 +211,19 @@ function walletSecrets(cfg: ProjectConfig): Record<string, string> {
     out.GOOGLE_WALLET_ISSUER_ID = cfg.wallet.googleIssuerId;
   }
   return out;
+}
+
+/**
+ * App store review account (API contract v0.8): the review email from the
+ * project file, the 10-digit code from the brand's GitHub secret
+ * (REVIEW_SIGN_IN_CODE, passed by CI). Set only when both are there.
+ */
+function reviewSecrets(cfg: ProjectConfig): Record<string, string> {
+  const code = process.env.REVIEW_SIGN_IN_CODE?.trim();
+  const email = cfg.review?.email;
+  if (!code || !email) return {};
+  if (!/^\d{10}$/.test(code)) throw new Error('REVIEW_SIGN_IN_CODE must be exactly 10 digits');
+  return { REVIEW_SIGN_IN_EMAIL: email, REVIEW_SIGN_IN_CODE: code };
 }
 
 /**

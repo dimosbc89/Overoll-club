@@ -58,3 +58,7 @@ iOS: first store build 0.1.0 (4) uploaded to TestFlight on 12 Nov 2026 (EAS subm
 ## Wallet passes
 
 Built 12 Nov 2026 (API contract v0.7). Google Wallet: GROW's issuer `3388000000023239253` (shared by the brands, each with its own loyalty class), service account `wallet-issuer@grow-wallet-514520.iam.gserviceaccount.com`, key in the GitHub secret `GOOGLE_WALLET_SERVICE_ACCOUNT` (12 Nov). Publishing access requested on 12 Nov (2–3 days); until then only users of the Pay & Wallet Console (ads@growdigital.gr) can save a pass. Apple Wallet: waits for the Pass Type ID `pass.online.growagency.koala` and its certificate (`APPLE_PASS_P12_KOALA`, `APPLE_PASS_P12_PASSWORD_KOALA`).
+
+## App store review account
+
+Built 12 Nov 2026 (API contract v0.8). Reviewers sign in with `appreview@growagency.online` (`review.email` in `supabase/projects/koala.json`) and a fixed 10-digit code from the GitHub secret `REVIEW_SIGN_IN_CODE_KOALA`, typed where the emailed code goes. The account keeps at least 1,000 points so every screen can be tried; the till refuses its reward codes. The email and code go into App Store Connect → App Review information and Play Console → App access, never into the repo. Needs a store build made after this change (the app sends 10-digit codes to `auth/review-sign-in`).

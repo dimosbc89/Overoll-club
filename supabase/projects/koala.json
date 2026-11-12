@@ -33,6 +33,10 @@
   "wallet": {
     "googleIssuerId": "3388000000023239253"
   },
+  "review": {
+    "$comment": "App store review account (API contract v0.8): reviewers sign in with this email and the 10-digit code in the GitHub secret REVIEW_SIGN_IN_CODE_KOALA. Its reward codes are refused at the till.",
+    "email": "appreview@growagency.online"
+  },
   "email": {
     "$comment": "Resend domain koalacoffee.gr (team growagency, eu-west-1; records in docs/koala/dns-records.md), verified 12 Nov 2026. CI connects Supabase Auth to Resend SMTP with the GitHub secret RESEND_API_KEY_KOALA (Resend key koala-club: sending access, koalacoffee.gr only).",
     "enabled": true,

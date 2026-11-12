@@ -157,6 +157,14 @@ describe('ApiClient', () => {
     expect(calls).toHaveLength(0);
   });
 
+  it('calls the review sign-in without a token, even when signed out', async () => {
+    const { calls, impl } = fakeFetch([json(200, { ok: true, tokenHash: 'h' })]);
+    const result = await client(impl, null).post<{ tokenHash: string }>('auth/review-sign-in', { email: 'a@b.c', code: '1234567890' }, 'k');
+    expect(result).toEqual({ ok: true, data: { tokenHash: 'h' } });
+    expect(calls[0]?.url).toBe('https://example.supabase.co/functions/v1/api/auth/review-sign-in');
+    expect(calls[0]?.headers.authorization).toBeUndefined();
+  });
+
   it('cannot let the body override the idempotency key', async () => {
     const { calls, impl } = fakeFetch([json(200, { ok: true })]);
     const action = client(impl).action('join', { idempotencyKey: 'evil' });

@@ -1,4 +1,4 @@
-# Contract between the apps and the server (v0.6, 12 Nov 2026)
+# Contract between the apps and the server (v0.8, 12 Nov 2026)
 
 Three workstreams build against this page at the same time: the server (`packages/core`, `packages/server`, `packages/api`, `supabase/`), the member app (`apps/mobile`) and the staff console (`apps/admin` → `/console`). Change it only together with all three.
 
@@ -122,6 +122,18 @@ Both links answer `not_configured` (501) until the brand's certificate / service
 
 **Setup per brand** (the routes work without it, answering `not_configured`): GitHub secrets `APPLE_PASS_P12_<BRAND>` (the Pass Type ID certificate exported from Keychain as .p12, base64) and `APPLE_PASS_P12_PASSWORD_<BRAND>`; `GOOGLE_WALLET_SERVICE_ACCOUNT` (JSON key of a service account registered as a user in the Pay & Wallet Console) with `wallet.googleIssuerId` in `supabase/projects/<brand>.json`. CI hands them to the Edge Function (`project:apply`). Apple's WWDR G4 certificate is in `data/wallet/`.
 
+## New in v0.8 (app store review account)
+
+Apple and Google reviewers can't receive our sign-in emails, so each brand can have one review account that signs in with a fixed code.
+
+| Route | Who | What |
+| --- | --- | --- |
+| `auth/review-sign-in` | anyone (no access token) | Body `{ email, code }`. Only the brand's review email with its 10-digit code (real sign-in codes have 6 digits) gets `{ ok, tokenHash }`; anything else waits half a second and answers `wrong_code` (also when the brand has no review account). The app then calls `verifyOtp({ token_hash: tokenHash, type: 'email' })` and carries on as after any sign-in |
+
+Before answering, the server prepares the member (`packages/server/src/review-member.ts`): joins it the first time (name "App Review", English, no marketing consents), marks it `members.review_demo`, and when its balance is under 1,000 points adds an `adjust` up to 1,500 (once a day at most, audited), so reviewers can open every screen and make a reward code. **The till refuses that member's codes** (`redemptions/use` → `review_demo`), so the account never gives away anything in a store.
+
+**Setup per brand:** `review.email` in `supabase/projects/<brand>.json` and the GitHub secret `REVIEW_SIGN_IN_CODE_<BRAND>` (10 digits); CI hands both to the Edge Function. Without either the route always answers `wrong_code`. The email and code go only into App Store Connect (App Review information) and Play Console (App access).
+
 ## What the apps read directly (Supabase client, row-level security)
 
 Member app (signed-in member): `members` (own row, not once deleted), `member_balances` (own), `member_secrets` (own: `qr_secret`, `pass_version` → core `createRotatingToken` for the QR, offline), `rewards` (active), `stores` (active; `name_en` / `address_en` from v0.4), `member_gifts` (own), `redemptions` (own; a `pending` one not past `expires_at` is the active code), `ledger_entries` (own, history). Costs per tier: core `rewardCostForTier`; progress: core `nextRewardProgress`, `tierProgress`.
@@ -132,4 +144,4 @@ Staff console (signed-in device user with `store_device` for its store): `stores
 
 ## Sign-in
 
-Supabase Auth, passwordless one-time code to email (SMS later, provider to be chosen). Members: `signInWithOtp({ email, options: { shouldCreateUser: true } })` then `verifyOtp({ email, token, type: 'email' })`, then `POST join` (first time). Store devices: a Supabase user per device, created by HQ; signs in once with email + one-time code by the store manager.
+Supabase Auth, passwordless one-time code to email (SMS later, provider to be chosen). Members: `signInWithOtp({ email, options: { shouldCreateUser: true } })` then `verifyOtp({ email, token, type: 'email' })`, then `POST join` (first time). The review account (v0.8) types a 10-digit code instead: `auth/review-sign-in`, then `verifyOtp({ token_hash, type: 'email' })`. Store devices: a Supabase user per device, created by HQ; signs in once with email + one-time code by the store manager.

@@ -436,4 +436,39 @@ describe('catalog routes (v0.6)', () => {
     const run = await handle(post('/api/jobs/wallet-updates', {}, SERVICE));
     expect(await run.json()).toMatchObject({ ok: true, members: 0 });
   });
+  it('auth/review-sign-in: only the review email with its 10-digit code gets a token; the member is prepared', async () => {
+    // Without a review account: always wrong_code.
+    const none = await handle(post('/api/auth/review-sign-in', { email: 'review@example.com', code: '1234567890' }));
+    expect(none.status).toBe(422);
+    expect(await none.json()).toMatchObject({ ok: false, code: 'wrong_code' });
+
+    const reviewUser = await newUser(db.admin);
+    const issued: string[] = [];
+    const reviewHandle = createHandler({
+      sql: db.server,
+      authenticate: async () => null,
+      isServiceToken: async () => false,
+      ensureAuthUser: async () => reviewUser,
+      review: {
+        email: 'Review@Example.com',
+        code: '1234567890',
+        brandSlug: 'overoll',
+        tokenHash: async (email) => {
+          issued.push(email);
+          return 'hashed-token';
+        },
+      },
+    });
+    const wrong = await reviewHandle(post('/api/auth/review-sign-in', { email: 'review@example.com', code: '123456' }));
+    expect(await wrong.json()).toMatchObject({ ok: false, code: 'wrong_code' });
+    const otherEmail = await reviewHandle(post('/api/auth/review-sign-in', { email: 'someone@example.com', code: '1234567890' }));
+    expect(await otherEmail.json()).toMatchObject({ ok: false, code: 'wrong_code' });
+    expect(issued).toEqual([]);
+
+    const ok = await reviewHandle(post('/api/auth/review-sign-in', { email: ' review@example.com ', code: '123 456 7890' }));
+    expect(await ok.json()).toEqual({ ok: true, tokenHash: 'hashed-token' });
+    expect(issued).toEqual(['review@example.com']);
+    const [member] = await db.admin<{ review_demo: boolean }[]>`select review_demo from public.members where user_id = ${reviewUser}`;
+    expect(member?.review_demo).toBe(true);
+  });
 });

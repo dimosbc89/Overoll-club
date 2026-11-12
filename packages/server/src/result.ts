@@ -66,7 +66,9 @@ export type ErrorCode =
   | 'store_code_taken'
   | 'welcome_reward'
   // Wallet passes (v0.7): no Wallet set up for this brand or platform yet
-  | 'not_configured';
+  | 'not_configured'
+  // App store review account (v0.8): its codes are refused at the till
+  | 'review_demo';
 
 export interface Failure<C extends ErrorCode = ErrorCode> {
   ok: false;

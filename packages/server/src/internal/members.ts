@@ -9,6 +9,8 @@ export interface LockedMember {
   first_name: string;
   tier: TierId;
   deleted_at: Date | null;
+  /** App store review account (v0.8). */
+  review_demo: boolean;
 }
 
 /**
@@ -18,7 +20,7 @@ export interface LockedMember {
  */
 export async function lockMember(tx: Tx, memberId: string): Promise<LockedMember | null> {
   const [row] = await tx<LockedMember[]>`
-    select id, brand_id, user_id, member_code, first_name, tier, deleted_at
+    select id, brand_id, user_id, member_code, first_name, tier, deleted_at, review_demo
     from public.members
     where id = ${memberId}
     for update

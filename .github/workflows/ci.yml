@@ -63,6 +63,8 @@ jobs:
       APPLE_PASS_P12: ${{ secrets[format('APPLE_PASS_P12_{0}', matrix.brand)] }}
       APPLE_PASS_P12_PASSWORD: ${{ secrets[format('APPLE_PASS_P12_PASSWORD_{0}', matrix.brand)] }}
       GOOGLE_WALLET_SERVICE_ACCOUNT: ${{ secrets[format('GOOGLE_WALLET_SERVICE_ACCOUNT_{0}', matrix.brand)] || secrets.GOOGLE_WALLET_SERVICE_ACCOUNT }}
+      # App store review account (optional): the brand's fixed 10-digit review code.
+      REVIEW_SIGN_IN_CODE: ${{ secrets[format('REVIEW_SIGN_IN_CODE_{0}', matrix.brand)] }}
     steps:
       - name: Skip when no token is set for this brand
         if: env.SUPABASE_ACCESS_TOKEN == ''

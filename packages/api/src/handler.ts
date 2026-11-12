@@ -38,6 +38,7 @@ import {
   walletAppleLink,
   walletGoogleLink,
   walletUpdates,
+  prepareReviewMember,
 } from '@grow-loyalty/server';
 
 export interface HandlerDeps {
@@ -67,13 +68,21 @@ export interface HandlerDeps {
    * `not_configured`.
    */
   wallet?: WalletServices;
+  /**
+   * App store review account (v0.8): the brand's review email and its fixed
+   * 10-digit code, and how to turn the email into a one-time sign-in token
+   * (Auth admin API `generateLink`, magic link `hashed_token`). Without it,
+   * `auth/review-sign-in` refuses every attempt.
+   */
+  review?: { email: string; code: string; brandSlug?: string; tokenHash(email: string): Promise<string> };
 }
 
 type Body = Record<string, unknown>;
 type Outcome = { ok: true } | { ok: false; code: string; message?: string };
 
 interface Route {
-  auth: 'user' | 'service';
+  /** `public`: no token (the app store review sign-in, which checks its own code). */
+  auth: 'user' | 'service' | 'public';
   run(sql: Db, userId: string | null, body: Body, deps: HandlerDeps): Promise<Outcome>;
 }
 
@@ -184,9 +193,49 @@ export const routes: Readonly<Record<string, Route>> = {
     auth: 'service',
     run: (sql, _uid, b, deps) => walletUpdates(sql, deps.wallet ?? NO_WALLET, batchOption(b)),
   },
+  // App store review account (v0.8).
+  'auth/review-sign-in': { auth: 'public', run: (sql, _uid, b, deps) => reviewSignIn(sql, b, deps) },
 };
 
 const NO_WALLET: WalletServices = { designs: {} };
+
+function sameText(a: string, b: string): boolean {
+  if (a.length !== b.length) return false;
+  let diff = 0;
+  for (let i = 0; i < a.length; i++) diff |= a.charCodeAt(i) ^ b.charCodeAt(i);
+  return diff === 0;
+}
+
+/**
+ * auth/review-sign-in (v0.8): the review email and its fixed 10-digit code
+ * (normal sign-in codes are 6 digits) give a one-time token the app turns into
+ * a session (`verifyOtp({ token_hash })`). The review member is prepared first
+ * (packages/server `prepareReviewMember`). Anything else waits half a second
+ * and answers `wrong_code`, whether or not a review account is set up.
+ */
+async function reviewSignIn(sql: Db, body: Body, deps: HandlerDeps): Promise<Outcome & { tokenHash?: string }> {
+  const review = deps.review;
+  const email = typeof body.email === 'string' ? body.email.trim().toLowerCase() : '';
+  const code = typeof body.code === 'string' ? body.code.replace(/\D/g, '') : '';
+  const matches =
+    !!review &&
+    !!deps.ensureAuthUser &&
+    /^\d{10}$/.test(review.code) &&
+    sameText(email, review.email.trim().toLowerCase()) &&
+    sameText(code, review.code);
+  if (!matches) {
+    await new Promise((resolve) => setTimeout(resolve, 500));
+    return { ok: false, code: 'wrong_code' };
+  }
+  const userId = await deps.ensureAuthUser!(email);
+  const prepared = await prepareReviewMember(sql, {
+    userId,
+    email,
+    ...(review!.brandSlug ? { brandSlug: review!.brandSlug } : {}),
+  });
+  if (!prepared.ok) return prepared;
+  return { ok: true, tokenHash: await review!.tokenHash(email) };
+}
 /* eslint-enable @typescript-eslint/no-explicit-any */
 
 /** Fields a client may never set: identity and clock come from the server. */
@@ -341,9 +390,13 @@ export function createHandler(deps: HandlerDeps): (req: Request) => Promise<Resp
     if (!route) return failure('route_not_found');
 
     const token = bearer(req);
-    if (!token) return failure('unauthenticated');
+    if (!token && route.auth !== 'public') return failure('unauthenticated');
     let userId: string | null = null;
-    if (route.auth === 'service') {
+    if (route.auth === 'public') {
+      // No identity: the route checks its own secret.
+    } else if (!token) {
+      return failure('unauthenticated');
+    } else if (route.auth === 'service') {
       if (!(await deps.isServiceToken(token))) return failure('forbidden');
     } else {
       userId = await deps.authenticate(token);

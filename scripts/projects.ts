@@ -35,6 +35,8 @@ export interface ProjectConfig {
   signInCode: { minutes: number; length: number };
   /** Wallet passes: Google Wallet issuer id (not secret). The Apple certificate and Google key are GitHub secrets. */
   wallet?: { googleIssuerId?: string };
+  /** App store review account: its email (the code is the GitHub secret REVIEW_SIGN_IN_CODE_<BRAND>). */
+  review?: { email: string };
   email: {
     enabled: boolean;
     senderName: string;

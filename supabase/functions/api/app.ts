@@ -30,6 +30,10 @@
  *   service account's JSON key).
  * The pass designs of every brand are bundled (`virtual:wallet-designs`, built
  * from the brand files); the function uses its own brand's.
+ *
+ * App store review account (API contract v0.8, optional): REVIEW_SIGN_IN_EMAIL
+ * and REVIEW_SIGN_IN_CODE (10 digits). `auth/review-sign-in` then hands the
+ * app a magic-link token hash from the Auth admin API.
  */
 import type { createClient as CreateClient } from '@supabase/supabase-js';
 import type forgeType from 'node-forge';
@@ -118,6 +122,27 @@ function walletServices(forge: typeof forgeType | undefined, supabaseUrl: string
     }
   }
   return services;
+}
+
+/** The app store review account, when both env values are set (else undefined: the route refuses). */
+function reviewSetup(admin: Pick<ReturnType<typeof CreateClient>, 'auth'>) {
+  const email = Deno.env.get('REVIEW_SIGN_IN_EMAIL')?.trim();
+  const code = Deno.env.get('REVIEW_SIGN_IN_CODE')?.trim();
+  if (!email || !code) return undefined;
+  if (!/^\d{10}$/.test(code)) {
+    console.error('REVIEW_SIGN_IN_CODE must be 10 digits; review sign-in is off');
+    return undefined;
+  }
+  return {
+    email,
+    code,
+    async tokenHash(address: string): Promise<string> {
+      const { data, error } = await admin.auth.admin.generateLink({ type: 'magiclink', email: address });
+      const hash = data?.properties?.hashed_token;
+      if (error || !hash) throw error ?? new Error('generateLink returned no token');
+      return hash;
+    },
+  };
 }
 
 /**
@@ -223,6 +248,7 @@ export function start({ postgres, createClient, forge }: Libraries): void {
       throw error ?? new Error('Auth user not created');
     },
     wallet: walletServices(forge, required('SUPABASE_URL')),
+    review: reviewSetup(admin),
     allowedOrigins: (Deno.env.get('ALLOWED_ORIGINS') ?? '*')
       .split(',')
       .map((o) => o.trim())

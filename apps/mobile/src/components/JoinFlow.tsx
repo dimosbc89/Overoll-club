@@ -140,6 +140,22 @@ export function JoinFlow({ initialMode }: { initialMode: Mode }) {
     }
     setBusy(true);
     setError(null);
+    // App store review account (API contract v0.8): its fixed code has 10
+    // digits (real sign-in codes have 6); the server swaps it for a one-time token.
+    if (token.length === 10 && api) {
+      const review = await api.action<{ tokenHash: string }>('auth/review-sign-in', { email: email.trim(), code: token }).send();
+      if (!review.ok) {
+        setBusy(false);
+        setError(review.code === 'network_error' ? authMessage('network') : t('join.code.wrong'));
+        return;
+      }
+      const { error: problem } = await client.auth
+        .verifyOtp({ token_hash: review.data.tokenHash, type: 'email' })
+        .catch(offline);
+      setBusy(false);
+      if (problem) setError(authMessage(authProblem(problem as AuthError)));
+      return;
+    }
     const { error: problem } = await client.auth.verifyOtp({ email: email.trim(), token, type: 'email' }).catch(offline);
     setBusy(false);
     if (problem) setError(authMessage(authProblem(problem as AuthError)));

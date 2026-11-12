@@ -97,6 +97,8 @@ Legend: **D** = Dimos · **C** = Claude · ☐ open · ☑ done
 
 - ☐ C: fixes from pilot
 - ☐ C: build and submit iOS and Android apps (**by 14 Dec**, reviews slow down 20–26 Dec)
+- ☑ C: app store review account (12 Nov: fixed 10-digit code for the review email, at least 1,000 points, codes refused at the till; API contract v0.8)
+- ☐ D: GitHub secret `REVIEW_SIGN_IN_CODE_<BRAND>` (10 digits) and the `appreview@growagency.online` mailbox; then the review details in App Store Connect and Play Console
 - ☐ D: staff training card + video for all stores; print QR stands for every store
 
 ## 21 Dec – 3 Jan · Holiday freeze

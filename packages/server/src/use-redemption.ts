@@ -30,7 +30,8 @@ export type UseRedemptionError =
   | 'not_found'
   | 'expired'
   | 'already_used'
-  | 'cancelled';
+  | 'cancelled'
+  | 'review_demo';
 
 export interface UsedRedemption {
   redemptionId: string;
@@ -99,6 +100,8 @@ export async function useRedemption(sql: Db, raw: UseRedemptionInput): Promise<U
         if (!found) return fail('not_found');
         const member = await lockMember(tx, found.member_id);
         if (!member) throw new Error(`Redemption ${found.id} has no member`);
+        // The app store review account can make codes but never take a real reward.
+        if (member.review_demo) return fail('review_demo');
         const [redemption] = await tx<
           {
             status: string;

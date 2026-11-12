@@ -33,6 +33,10 @@
   "wallet": {
     "googleIssuerId": "3388000000023239253"
   },
+  "review": {
+    "$comment": "App store review account (API contract v0.8): reviewers sign in with this email and the 10-digit code in the GitHub secret REVIEW_SIGN_IN_CODE_OVEROLL. Its reward codes are refused at the till.",
+    "email": "appreview@growagency.online"
+  },
   "email": {
     "$comment": "Switch `enabled` to true once Resend shows loyalty.overoll.gr as verified and RESEND_API_KEY is set. Until then Supabase's built-in sender only delivers to members of the Supabase org.",
     "enabled": false,

@@ -35,6 +35,7 @@
   "already_used": "This code has already been used, so it won't work again.",
   "cancelled": "This code was cancelled and the points went back on the card. The reward needs a new code from the app.",
   "expired": "This code has expired and the points go back on the card. The reward needs a new code from the app.",
+  "review_demo": "This is the app store review account, so its codes can't be used at the till.",
   "gift_not_found": "We can't find this gift. Refresh the screen and try again.",
   "gift_used": "You already have a code for this gift, or you've already had it. If the code is still valid, you'll find it in Rewards.",
   "gift_expired": "This gift has expired, so it can't be redeemed any more. Keep collecting points for the next one!",

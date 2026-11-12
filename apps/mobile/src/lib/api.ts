@@ -82,7 +82,11 @@ export type ApiRoute =
   | 'redemptions/cancel'
   | 'account/delete'
   | 'wallet/apple/link'
-  | 'wallet/google/link';
+  | 'wallet/google/link'
+  | 'auth/review-sign-in';
+
+/** Routes called before signing in (no access token). */
+const PUBLIC_ROUTES: ReadonlySet<ApiRoute> = new Set<ApiRoute>(['auth/review-sign-in']);
 
 export type ApiResult<T> = { ok: true; data: T } | { ok: false; code: ErrorCode };
 
@@ -118,18 +122,19 @@ export class ApiClient {
   async post<T>(route: ApiRoute, body: ApiBody, idempotencyKey: string): Promise<ApiResult<T>> {
     const { baseUrl, getAccessToken, apiKey, fetchImpl = globalThis.fetch, timeoutMs = 20_000 } = this.options;
 
-    let token: string | null;
-    try {
-      token = await getAccessToken();
-    } catch {
-      token = null;
+    const isPublic = PUBLIC_ROUTES.has(route);
+    let token: string | null = null;
+    if (!isPublic) {
+      try {
+        token = await getAccessToken();
+      } catch {
+        token = null;
+      }
+      if (!token) return { ok: false, code: 'unauthenticated' };
     }
-    if (!token) return { ok: false, code: 'unauthenticated' };
 
-    const headers: Record<string, string> = {
-      authorization: `Bearer ${token}`,
-      'content-type': 'application/json',
-    };
+    const headers: Record<string, string> = { 'content-type': 'application/json' };
+    if (token) headers.authorization = `Bearer ${token}`;
     if (apiKey) headers.apikey = apiKey;
 
     const controller = typeof AbortController === 'function' ? new AbortController() : null;
