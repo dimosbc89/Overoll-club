@@ -22,16 +22,25 @@ import { font, type } from '../../theme/fonts';
 import { raised } from '../../theme/surface';
 import { colors, minTouch, qr, radius, space } from '../../theme/tokens';
 import { brand } from '../../brand';
+import { AppScreen } from '../../v2/chrome';
+import { CardScreen } from '../../v2/screens/CardScreen';
+import { IntroScreen } from '../../v2/screens/IntroScreen';
+import { isV2 } from '../../v2/theme';
 
 /** Home: the member card when signed in, the landing page otherwise (copy deck §h). */
 export default function CardTab() {
   const { auth, member, refresh } = useSession();
   const { t } = useI18n();
 
-  if (auth.status === 'not_configured') return <Landing notConfigured />;
-  if (auth.status === 'signed_out') return <Landing />;
+  if (auth.status === 'not_configured') return isV2 ? <IntroScreen notConfigured /> : <Landing notConfigured />;
+  if (auth.status === 'signed_out') return isV2 ? <IntroScreen /> : <Landing />;
   if (member.status === 'none') return <Redirect href="/join" />;
-  if (member.status === 'ready') return <MemberCard bundle={member.data} offline={member.offline} />;
+  if (member.status === 'ready') {
+    return isV2 ? <CardScreen bundle={member.data} offline={member.offline} /> : <MemberCard bundle={member.data} offline={member.offline} />;
+  }
+  if (isV2) {
+    return <AppScreen title={t('tabs.card')}>{member.status === 'error' ? <LoadError onRetry={refresh} /> : <Loading />}</AppScreen>;
+  }
   return (
     <Screen title={t('tabs.card')}>
       {member.status === 'error' ? <LoadError onRetry={refresh} /> : <Loading />}

@@ -27,5 +27,13 @@
   "join.hero.step3": "Swap them for coffee and bakes",
   "join.hero.title": "Every coffee counts. Literally.",
   "landing.hero.title": "Every coffee counts. Literally.",
-  "landing.final.title": "#freshcupsandbakes since 1993."
+  "landing.final.title": "#freshcupsandbakes since 1993.",
+  "v2.gift.ready.title": "Your cinnamon roll is waiting!",
+  "v2.gift.locked.title": "First purchase? A cinnamon roll on us!",
+  "v2.stores.intro": "Your points count at both Koalas. Collect at one, treat yourself at the other.",
+  "v2.stores.signoff": "Drop by for a coffee, we have fresh bakes every morning.",
+  "v2.welcome.title": "Your coffee just got sweeter.",
+  "v2.welcome.body": "{programName} is Koala's new loyalty programme. Collect points with every purchase and turn them into coffee, bakes and treats.",
+  "v2.how.2": "You get {points} points for every €1, at both Koalas.",
+  "v2.join.storeBody": "Join in a minute, collect points and treat yourself to coffee and bakes."
 }

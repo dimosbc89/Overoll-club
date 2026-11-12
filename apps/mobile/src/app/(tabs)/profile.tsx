@@ -1,5 +1,5 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
-import { useRouter } from 'expo-router';
+import { Redirect, useRouter } from 'expo-router';
 import { useCallback } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
@@ -14,12 +14,21 @@ import { inLocale } from '../../lib/storeNames';
 import { useRemote } from '../../lib/useRemote';
 import { type } from '../../theme/fonts';
 import { colors, space } from '../../theme/tokens';
+import { AppScreen } from '../../v2/chrome';
+import { ProfileScreen } from '../../v2/screens/ProfileScreen';
+import { isV2 } from '../../v2/theme';
 
 /** Profile: language, history, sign out, account deletion (`/delete-account`). */
 export default function ProfileTab() {
   const { auth, member, refresh } = useSession();
   const { t } = useI18n();
   const router = useRouter();
+
+  if (isV2) {
+    if (member.status === 'ready') return <ProfileScreen bundle={member.data} />;
+    if (auth.status === 'signed_out' || auth.status === 'not_configured') return <Redirect href="/" />;
+    return <AppScreen title={t('profile.title')}>{member.status === 'error' ? <LoadError onRetry={refresh} /> : <Loading />}</AppScreen>;
+  }
 
   return (
     <Screen title={t('profile.title')}>

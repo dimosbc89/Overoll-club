@@ -85,6 +85,60 @@ export interface BrandFonts {
 
 export type GiftIcon = 'croissant' | 'cup';
 
+/** Accent fills of the v2 design (tiles, stickers, thumbs). */
+export type AccentColor = 'sun' | 'coral' | 'mint' | 'berry' | 'cream' | 'brand';
+
+/**
+ * The v2 design (fixed header with the logo, bottom navigation with an active
+ * pill, onboarding in steps, sticker-style cards): colours, the sticker font,
+ * the brand's illustrations and what each tier and reward looks like. A brand
+ * without it keeps the classic screens.
+ */
+export interface BrandV2 {
+  colors: {
+    /** Page background. */
+    app: string;
+    /** White cards, inputs, the bottom bar. */
+    surface: string;
+    /** Locked rewards, dividers. */
+    sunken: string;
+    ink: string;
+    muted: string;
+    brand: string;
+    brandPressed: string;
+    onBrand: string;
+    onBrandSoft: string;
+    /** Input borders (3:1). */
+    border: string;
+    /** Bottom bar top line, history dividers. */
+    borderSubtle: string;
+    sun: string;
+    sunSoft: string;
+    coral: string;
+    coralSoft: string;
+    mint: string;
+    mintSoft: string;
+    berry: string;
+    error: string;
+    disabled: string;
+    onDisabled: string;
+    /** Placeholder "Add to Wallet" buttons. */
+    wallet: string;
+    scrim: string;
+  };
+  fonts: {
+    /** Sticker / handwritten face by weight (600 hand, 700 small, 800 stickers). */
+    sticker: Record<600 | 700 | 800, string>;
+    webStickerStack: string;
+    /** Heaviest display weight (the big points number). */
+    displayBlack: string;
+  };
+  /** Tier sticker per tier: fill and icon. */
+  tiers: Record<'classic' | 'gold' | 'club', { color: AccentColor; icon: 'sparkle' | 'leaf' }>;
+  /** Illustration for a reward without its own `icon`, by category; and the tile colour of each illustration. */
+  art: { byCategory: Record<string, string>; fallback: string; tile: Record<string, AccentColor>; gift: string };
+}
+
 export interface BrandDefinition {
   /** Matches supabase/projects/<slug>.json and `brands.slug`. */
   slug: string;
@@ -114,6 +168,8 @@ export interface BrandDefinition {
    * them (null until then: the pages show the trade name and a draft notice).
    */
   legal: { tradeName: string; company: string | null; address: string | null };
+  /** The v2 screens (src/v2); without it the classic ones. */
+  v2?: BrandV2;
   /** Copy that differs from the shared el/en files (same keys). */
   copy: { el: Record<string, string>; en: Record<string, string> };
 }

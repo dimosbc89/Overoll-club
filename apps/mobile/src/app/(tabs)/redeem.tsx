@@ -3,20 +3,22 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import QRCode from 'react-native-qrcode-svg';
 
-import { Icon } from '../components/Icon';
-import { Loading } from '../components/RemoteContent';
-import { Body, Button, ErrorText, Muted, ProgressBar, Screen, Sheet, Tag } from '../components/ui';
-import { useI18n } from '../i18n/I18nProvider';
-import { ActionSlot } from '../lib/api';
-import { fetchRedemption, type MemberBundle, type RedemptionRow } from '../lib/data';
-import { formatCountdown, formatPoints, groupCode, remainingMs } from '../lib/format';
-import { useSession } from '../lib/session';
-import { getSupabase } from '../lib/supabase';
-import { useNow } from '../lib/useNow';
-import { type } from '../theme/fonts';
-import { brand } from '../brand';
-import { raised } from '../theme/surface';
-import { colors, qr, radius, space } from '../theme/tokens';
+import { Icon } from '../../components/Icon';
+import { Loading } from '../../components/RemoteContent';
+import { Body, Button, ErrorText, Muted, ProgressBar, Screen, Sheet, Tag } from '../../components/ui';
+import { useI18n } from '../../i18n/I18nProvider';
+import { ActionSlot } from '../../lib/api';
+import { fetchRedemption, type MemberBundle, type RedemptionRow } from '../../lib/data';
+import { formatCountdown, formatPoints, groupCode, remainingMs } from '../../lib/format';
+import { useSession } from '../../lib/session';
+import { getSupabase } from '../../lib/supabase';
+import { useNow } from '../../lib/useNow';
+import { type } from '../../theme/fonts';
+import { brand } from '../../brand';
+import { raised } from '../../theme/surface';
+import { colors, qr, radius, space } from '../../theme/tokens';
+import { RedeemScreen as RedeemV2 } from '../../v2/screens/RedeemScreen';
+import { isV2 } from '../../v2/theme';
 
 type Outcome = 'used' | 'cancelled' | 'expired';
 
@@ -37,7 +39,7 @@ export default function RedeemScreen() {
       </Screen>
     );
   }
-  return <CodeScreen bundle={member.data} />;
+  return isV2 ? <RedeemV2 bundle={member.data} /> : <CodeScreen bundle={member.data} />;
 }
 
 interface CancelResult {

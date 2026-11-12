@@ -32,17 +32,18 @@ on conflict (brand_id, code) do update set
   latitude = excluded.latitude, longitude = excluded.longitude, phone = excluded.phone,
   opening_hours = excluded.opening_hours;
 
-insert into public.rewards (id, brand_id, name_el, name_en, description_el, description_en, category, shelf_price_cents, base_cost, min_tier, sort_order)
+insert into public.rewards (id, brand_id, name_el, name_en, description_el, description_en, category, shelf_price_cents, base_cost, min_tier, sort_order, icon)
 values
-  (md5('overoll:reward:espresso')::uuid, (select id from public.brands where slug = 'overoll'), 'Espresso ή διπλός ελληνικός', 'Espresso or double Greek coffee', 'Ένας espresso ή ένας διπλός ελληνικός καφές.', 'One espresso or one double Greek coffee.', 'coffee', 220, 300, null, 10),
-  (md5('overoll:reward:any-coffee')::uuid, (select id from public.brands where slug = 'overoll'), 'Καφές της επιλογής σου', 'Any coffee', 'Οποιοσδήποτε καφές από τον κατάλογο, ζεστός ή κρύος (εκτός matcha).', 'Any coffee on the menu, hot or iced (matcha not included).', 'coffee', 270, 400, null, 20),
-  (md5('overoll:reward:butter-croissant')::uuid, (select id from public.brands where slug = 'overoll'), 'Croissant βουτύρου', 'Butter croissant', 'Το κλασικό Overoll croissant με γαλλικό βούτυρο 82%.', 'The classic Overoll croissant with 82% French butter.', 'croissants', 300, 400, null, 30),
-  (md5('overoll:reward:any-croissant')::uuid, (select id from public.brands where slug = 'overoll'), 'Κρουασάν της επιλογής σου', 'Croissant of your choice', 'Γλυκό ή αλμυρό κρουασάν έως €4,00: praline, φιστίκι, αμυγδάλου, φουντουκιού, cheesecake, σοκολάτας, ζαμπόν-τυρί, τυρόπιτα, sausage roll κ.ά.', 'Any sweet or savoury croissant up to €4.00: praline, pistachio, almond, hazelnut, cheesecake, chocolate, ham & cheese, cheese pie, sausage roll and more.', 'croissants', 400, 550, null, 40),
-  (md5('overoll:reward:sandwich')::uuid, (select id from public.brands where slug = 'overoll'), 'Σάντουιτς της επιλογής σου', 'Sandwich of your choice', 'Οποιοδήποτε σάντουιτς από τα Sandwiches by Overoll.', 'Any sandwich from Sandwiches by Overoll.', 'food', 580, 800, null, 50),
-  (md5('overoll:reward:daily-habit')::uuid, (select id from public.brands where slug = 'overoll'), 'Croissant + καφές', 'Croissant + coffee', 'Το Daily Habit: ένα κρουασάν και ένας καφές της επιλογής σου.', 'The Daily Habit: one croissant and one coffee of your choice.', 'combos', 610, 850, null, 60),
-  (md5('overoll:reward:croissant-box')::uuid, (select id from public.brands where slug = 'overoll'), 'Overoll Croissant Box', 'Overoll Croissant Box', 'Κουτί με 4 κρουασάν, για να κεράσεις την παρέα.', 'A box of 4 croissants to share.', 'boxes', 1400, 1950, null, 70)
+  (md5('overoll:reward:espresso')::uuid, (select id from public.brands where slug = 'overoll'), 'Espresso ή διπλός ελληνικός', 'Espresso or double Greek coffee', 'Ένας espresso ή ένας διπλός ελληνικός καφές.', 'One espresso or one double Greek coffee.', 'coffee', 220, 300, null, 10, null),
+  (md5('overoll:reward:any-coffee')::uuid, (select id from public.brands where slug = 'overoll'), 'Καφές της επιλογής σου', 'Any coffee', 'Οποιοσδήποτε καφές από τον κατάλογο, ζεστός ή κρύος (εκτός matcha).', 'Any coffee on the menu, hot or iced (matcha not included).', 'coffee', 270, 400, null, 20, null),
+  (md5('overoll:reward:butter-croissant')::uuid, (select id from public.brands where slug = 'overoll'), 'Croissant βουτύρου', 'Butter croissant', 'Το κλασικό Overoll croissant με γαλλικό βούτυρο 82%.', 'The classic Overoll croissant with 82% French butter.', 'croissants', 300, 400, null, 30, null),
+  (md5('overoll:reward:any-croissant')::uuid, (select id from public.brands where slug = 'overoll'), 'Κρουασάν της επιλογής σου', 'Croissant of your choice', 'Γλυκό ή αλμυρό κρουασάν έως €4,00: praline, φιστίκι, αμυγδάλου, φουντουκιού, cheesecake, σοκολάτας, ζαμπόν-τυρί, τυρόπιτα, sausage roll κ.ά.', 'Any sweet or savoury croissant up to €4.00: praline, pistachio, almond, hazelnut, cheesecake, chocolate, ham & cheese, cheese pie, sausage roll and more.', 'croissants', 400, 550, null, 40, null),
+  (md5('overoll:reward:sandwich')::uuid, (select id from public.brands where slug = 'overoll'), 'Σάντουιτς της επιλογής σου', 'Sandwich of your choice', 'Οποιοδήποτε σάντουιτς από τα Sandwiches by Overoll.', 'Any sandwich from Sandwiches by Overoll.', 'food', 580, 800, null, 50, null),
+  (md5('overoll:reward:daily-habit')::uuid, (select id from public.brands where slug = 'overoll'), 'Croissant + καφές', 'Croissant + coffee', 'Το Daily Habit: ένα κρουασάν και ένας καφές της επιλογής σου.', 'The Daily Habit: one croissant and one coffee of your choice.', 'combos', 610, 850, null, 60, null),
+  (md5('overoll:reward:croissant-box')::uuid, (select id from public.brands where slug = 'overoll'), 'Overoll Croissant Box', 'Overoll Croissant Box', 'Κουτί με 4 κρουασάν, για να κεράσεις την παρέα.', 'A box of 4 croissants to share.', 'boxes', 1400, 1950, null, 70, null)
 on conflict (id) do update set
   name_el = excluded.name_el, name_en = excluded.name_en,
   description_el = excluded.description_el, description_en = excluded.description_en,
   category = excluded.category, shelf_price_cents = excluded.shelf_price_cents,
-  base_cost = excluded.base_cost, min_tier = excluded.min_tier, sort_order = excluded.sort_order;
+  base_cost = excluded.base_cost, min_tier = excluded.min_tier, sort_order = excluded.sort_order,
+  icon = excluded.icon;

@@ -16,6 +16,7 @@
     {
       "id": "espresso",
       "category": "coffee",
+      "icon": "espresso",
       "name_el": "Espresso ή ελληνικός",
       "name_en": "Espresso or Greek coffee",
       "description_el": "Ένας espresso ή ένας ελληνικός καφές.",
@@ -29,6 +30,7 @@
     {
       "id": "any-coffee",
       "category": "coffee",
+      "icon": "freddo-espresso",
       "name_el": "Καφές της επιλογής σου",
       "name_en": "Coffee of your choice",
       "description_el": "Freddo, cappuccino, frappe, φίλτρου ή όποιον καφέ θες από τον βασικό κατάλογο.",
@@ -49,6 +51,7 @@
     {
       "id": "handmade-pie",
       "category": "pies",
+      "icon": "pie",
       "name_el": "Χειροποίητη πίτα",
       "name_en": "Handmade pie",
       "description_el": "Τυρόπιτα, κασερόπιτα, ζαμπονοτυρόπιτα ή κουρού, φρέσκια από τον φούρνο μας.",
@@ -66,6 +69,7 @@
     {
       "id": "cookie-muffin",
       "category": "sweets",
+      "icon": "muffin",
       "name_el": "Cookie ή muffin",
       "name_en": "Cookie or muffin",
       "description_el": "Ένα cookie 100 g ή ένα muffin, όποια γεύση θες.",
@@ -80,6 +84,7 @@
     {
       "id": "praline-croissant",
       "category": "sweets",
+      "icon": "croissant",
       "name_el": "Κρουασάν με πραλίνα",
       "name_en": "Praline croissant",
       "description_el": "Κρουασάν με πραλίνα φουντουκιού ή φυστικιού.",
@@ -94,6 +99,7 @@
     {
       "id": "cinnamon-roll",
       "category": "sweets",
+      "icon": "cinnamon-roll",
       "name_el": "Cinnamon roll",
       "name_en": "Cinnamon roll",
       "description_el": "Το cinnamon roll μας, φρέσκο κάθε πρωί.",
@@ -106,6 +112,7 @@
     {
       "id": "sandwich",
       "category": "food",
+      "icon": "toastie",
       "name_el": "Sandwich ή τορτίγια",
       "name_en": "Sandwich or tortilla",
       "description_el": "Όποιο sandwich ή τορτίγια θες από τη βιτρίνα.",
@@ -126,6 +133,7 @@
     {
       "id": "cake-bowl",
       "category": "sweets",
+      "icon": "cake",
       "name_el": "Κέικ ή yogurt bowl",
       "name_en": "Cake or yogurt bowl",
       "description_el": "Ένα κομμάτι red velvet ή carrot cake, ή ένα yogurt bowl.",
@@ -140,6 +148,7 @@
     {
       "id": "coffee-and-pie",
       "category": "combos",
+      "icon": "takeaway-cup",
       "name_el": "Καφές + χειροποίητη πίτα",
       "name_en": "Coffee + handmade pie",
       "description_el": "Ο καφές της επιλογής σου μαζί με μια χειροποίητη πίτα.",

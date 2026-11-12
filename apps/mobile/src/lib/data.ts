@@ -24,6 +24,10 @@ export interface RewardRow {
   base_cost: number;
   min_tier: TierId | null;
   sort_order: number;
+  /** Menu category, e.g. 'coffee'; picks an illustration when `icon` is empty. */
+  category: string | null;
+  /** Illustration key of the v2 screens (src/brand/<brand>Art.ts), or null. */
+  icon: string | null;
 }
 
 export interface StoreRow {
@@ -39,6 +43,8 @@ export interface StoreRow {
   longitude: number | null;
   opening_hours: unknown;
   time_zone: string;
+  /** International format, e.g. +302109765594; null when unknown. */
+  phone: string | null;
 }
 
 export interface MemberRow {
@@ -124,7 +130,7 @@ export async function fetchBrand(client: SupabaseClient): Promise<BrandInfo> {
   return { id: data.id, config };
 }
 
-const rewardColumns = 'id, name_el, name_en, description_el, description_en, base_cost, min_tier, sort_order';
+const rewardColumns = 'id, name_el, name_en, description_el, description_en, base_cost, min_tier, sort_order, category, icon';
 
 /** Active rewards of this brand, in catalog order. Readable without signing in. */
 export async function fetchRewards(client: SupabaseClient): Promise<RewardRow[]> {
@@ -145,6 +151,8 @@ export async function fetchRewards(client: SupabaseClient): Promise<RewardRow[]>
     base_cost: row.base_cost,
     min_tier: row.min_tier ?? null,
     sort_order: row.sort_order,
+    category: row.category ?? null,
+    icon: row.icon ?? null,
   }));
 }
 
@@ -170,6 +178,7 @@ export async function fetchStores(client: SupabaseClient): Promise<StoreRow[]> {
     longitude: row.longitude,
     opening_hours: row.opening_hours,
     time_zone: row.time_zone,
+    phone: row.phone ?? null,
   }));
 }
 

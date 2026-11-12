@@ -13,9 +13,20 @@ const files: Record<string, number> = {
   // M PLUS Rounded 1c (OFL), subset to Latin + Greek: assets/fonts/MPLUSRounded1c-OFL.txt
   MPLUSRounded1c_700Bold: require('../../assets/fonts/MPLUSRounded1c_700Bold_latin-greek.ttf'),
   MPLUSRounded1c_800ExtraBold: require('../../assets/fonts/MPLUSRounded1c_800ExtraBold_latin-greek.ttf'),
+  MPLUSRounded1c_900Black: require('../../assets/fonts/MPLUSRounded1c_900Black_latin-greek.ttf'),
+  // Playpen Sans (OFL), subset to Latin + Greek: assets/fonts/PlaypenSans-OFL.txt
+  PlaypenSans_600SemiBold: require('../../assets/fonts/PlaypenSans_600SemiBold_latin-greek.ttf'),
+  PlaypenSans_700Bold: require('../../assets/fonts/PlaypenSans_700Bold_latin-greek.ttf'),
+  PlaypenSans_800ExtraBold: require('../../assets/fonts/PlaypenSans_800ExtraBold_latin-greek.ttf'),
 };
 
-export const fontFamilies = [...new Set([...Object.values(brand.fonts.body), ...Object.values(brand.fonts.display)])];
+export const fontFamilies = [
+  ...new Set([
+    ...Object.values(brand.fonts.body),
+    ...Object.values(brand.fonts.display),
+    ...(brand.v2 ? [...Object.values(brand.v2.fonts.sticker), brand.v2.fonts.displayBlack] : []),
+  ]),
+];
 
 export const fontAssets: Record<string, number> = Object.fromEntries(
   fontFamilies.map((family) => {

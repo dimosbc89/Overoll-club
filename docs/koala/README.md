@@ -62,3 +62,13 @@ Built 12 Nov 2026 (API contract v0.7). Google Wallet: GROW's issuer `33880000000
 ## App store review account
 
 Built 12 Nov 2026 (API contract v0.8). Reviewers sign in with `appreview@growagency.online` (`review.email` in `supabase/projects/koala.json`) and a fixed 10-digit code from the GitHub secret `REVIEW_SIGN_IN_CODE_KOALA`, typed where the emailed code goes. The account keeps at least 1,000 points so every screen can be tried; the till refuses its reward codes. The email and code go into App Store Connect → App Review information and Play Console → App access, never into the repo. Needs a store build made after this change (the app sends 10-digit codes to `auth/review-sign-in`).
+
+## App design (v2 screens)
+
+From 13 Nov 2026 the Koala app uses the screens of the Figma concept (`MHtMmw4vUc80oY5PuaBytx`) that the client saw in the presentation: fixed header with the logo, bottom bar with the active pill, three intro steps, sign-up in three steps, card with the framed QR and two progress bars, reward cards with illustrations, stores, profile with contact choices and data download, points history. Code: `apps/mobile/src/v2` (brand-neutral; Koala's colours, fonts, tier stickers and reward illustrations are in `src/brand/koala.ts` and `koalaArt.ts`). A brand without `v2` keeps the classic screens, so Overoll is unchanged.
+
+- Fonts: Playpen Sans (stickers) and M PLUS Rounded 1c Black, subset to Latin + Greek (OFL, `apps/mobile/assets/fonts`).
+- Reward illustrations: `rewards.icon` (migration `20261113000000_reward_icon.sql`, seed from `data/koala/rewards.json`); pie, muffin and cake drawn in the Figma style for Koala's menu.
+- The welcome photo is the Figma placeholder (AI-generated, generic): replace with Koala's own shot (`apps/mobile/brands/koala/welcome-photo.jpg`).
+- Sign-in by mobile (the segmented control in Figma) waits for an SMS provider; the screens show email only.
+

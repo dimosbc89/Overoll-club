@@ -12,8 +12,11 @@ import { useRemote } from '../../lib/useRemote';
 import { type } from '../../theme/fonts';
 import { raised } from '../../theme/surface';
 import { colors, minTouch, radius, space } from '../../theme/tokens';
+import { StoresScreen as StoresV2 } from '../../v2/screens/StoresScreen';
+import { isV2 } from '../../v2/theme';
 
 const shadow = raised;
+
 
 function hoursLabel(store: StoreRow, t: Translate, now: Date): string {
   const today = todayHours(store.opening_hours, now, store.time_zone);
@@ -23,7 +26,11 @@ function hoursLabel(store: StoreRow, t: Translate, now: Date): string {
 }
 
 /** Store list: name, address, today's hours; tap opens the maps app. */
-export default function StoresScreen() {
+export default function StoresTab() {
+  return isV2 ? <StoresV2 /> : <ClassicStores />;
+}
+
+function ClassicStores() {
   const { t, locale } = useI18n();
   const { state, reload } = useRemote(fetchStores);
   const now = new Date();

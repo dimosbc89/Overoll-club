@@ -136,7 +136,7 @@ Before answering, the server prepares the member (`packages/server/src/review-me
 
 ## What the apps read directly (Supabase client, row-level security)
 
-Member app (signed-in member): `members` (own row, not once deleted), `member_balances` (own), `member_secrets` (own: `qr_secret`, `pass_version` → core `createRotatingToken` for the QR, offline), `rewards` (active), `stores` (active; `name_en` / `address_en` from v0.4), `member_gifts` (own), `redemptions` (own; a `pending` one not past `expires_at` is the active code), `ledger_entries` (own, history). Costs per tier: core `rewardCostForTier`; progress: core `nextRewardProgress`, `tierProgress`.
+Member app (signed-in member): `members` (own row, not once deleted), `member_balances` (own), `member_secrets` (own: `qr_secret`, `pass_version` → core `createRotatingToken` for the QR, offline), `rewards` (active; `category`, and `icon` from 13 Nov 2026 for the v2 illustrations), `stores` (active; `name_en` / `address_en` from v0.4, `phone`), `member_gifts` (own), `redemptions` (own; a `pending` one not past `expires_at` is the active code), `ledger_entries` (own, history). Costs per tier: core `rewardCostForTier`; progress: core `nextRewardProgress`, `tierProgress`.
 
 Back office (signed-in HQ admin or store manager, v0.5): `stores` (the brand's, inactive ones too), `rewards` (HQ: inactive ones too, v0.6), `employees` (id, name, active), `staff_roles` (with `email`), `members` and `member_balances` (HQ), `ledger_entries`, `dashboard_stats(p_since)`.
 

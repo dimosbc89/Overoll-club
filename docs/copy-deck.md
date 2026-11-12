@@ -896,6 +896,82 @@ The owner asked for something "more social". **Overoll Club stays the default** 
 
 ---
 
+## l. v2 screens (Figma concept: header, bottom bar, onboarding in steps)
+
+Texts of the v2 screens (`apps/mobile/src/v2`), first used by Koala Club from 13 Nov 2026. Shared text below (Overoll wording); Koala's own lines are in `apps/mobile/src/brand/koala.*.json` and listed after the table.
+
+| Key | Ελληνικά | English |
+| --- | --- | --- |
+| `v2.back` | Πίσω | Back |
+| `v2.skip` | Παράλειψη | Skip |
+| `v2.next` | Επόμενο | Next |
+| `v2.steps` | {current} από {total} | {current} of {total} |
+| `v2.wallet.addTo` | Προσθήκη στο | Add to |
+| `v2.card.qrHint` | Δείξ’ το στο ταμείο πριν πληρώσεις. | Show it at the till before you pay. |
+| `v2.card.active` | Ενεργός κωδικός · λήγει σε {time} | Active code · expires in {time} |
+| `v2.card.next.title` | Επόμενος στόχος: {reward} | Next up: {reward} |
+| `v2.card.next.toGo.one` | Ακόμα 1 πόντος | 1 point to go |
+| `v2.card.next.toGo.other` | Ακόμα {points} πόντοι | {points} points to go |
+| `v2.card.next.canHave.one` | Ήδη σου φτάνει για 1 δώρο. Ρίξε μια ματιά στα Δώρα! | You can already have 1 reward. Take a look in Rewards! |
+| `v2.card.next.canHave.other` | Ήδη σου φτάνουν για {count} δώρα. Ρίξε μια ματιά στα Δώρα! | You can already have {count} rewards. Take a look in Rewards! |
+| `v2.gift.ready.title` | Το κρουασάν σου σε περιμένει! | Your croissant is waiting! |
+| `v2.gift.ready.body` | Δώρο καλωσορίσματος στα Δώρα · έως {date} | Welcome gift in Rewards · until {date} |
+| `v2.gift.locked.title` | Πρώτη αγορά; Κρουασάν βουτύρου κερασμένο! | First purchase? A butter croissant on us! |
+| `v2.gift.locked.body` | Ισχύει {days} μέρες από την πρώτη σου αγορά. | Valid for {days} days after your first purchase. |
+| `v2.gift.locked.inRewards` | Το βρίσκεις στα Δώρα, ισχύει {days} μέρες. | You'll find it in Rewards, valid for {days} days. |
+| `v2.rewardsIntro.title` | Πόντοι μέσα, κεράσματα έξω. | Points in, treats out. |
+| `v2.rewardsIntro.giftBody` | Σε περιμένει στα Δώρα για {days} μέρες. | It waits for you in Rewards for {days} days. |
+| `v2.rewards.intro` | Διάλεξε τι θα σε κεράσουμε. Στα {gold} και {club} θέλουν ακόμα λιγότερους πόντους. | Pick your treat. At {gold} and {club} they take even fewer points. |
+| `v2.rewards.take` | Πάρ’ το τώρα | Get it now |
+| `v2.rewards.soon` | Σε λίγο δικό σου | Almost yours |
+| `v2.redeem.summary` | {cost} πόντοι · θα σου μείνουν {left} | {cost} points · {left} left after |
+| `v2.redeem.manual` | Δεν σκανάρεται; Ο κωδικός πληκτρολογείται και με το χέρι. | Won't scan? The code can be typed in by hand. |
+| `v2.redeem.valid` | Ο κωδικός ισχύει {minutes} λεπτά. | The code is valid for {minutes} minutes. |
+| `v2.stores.intro` | Οι πόντοι σου μετράνε σε όλα τα Overoll. Μάζευε σε ένα, κεράσου σε άλλο. | Your points count at every Overoll. Collect at one, treat yourself at another. |
+| `v2.stores.signoff` | Πέρνα για κρουασάν, βγαίνουν φρέσκα κάθε πρωί. | Drop by for a croissant, fresh out of the oven every morning. |
+| `v2.stores.call` | Κλήση στο {store} | Call {store} |
+| `v2.stores.directions` | Οδηγίες για το {store} | Directions to {store} |
+| `v2.profile.tierReview` | Το επίπεδό σου ελέγχεται μία φορά τον χρόνο, στην επέτειο της εγγραφής σου ({date}). | Your level is reviewed once a year, on your joining anniversary ({date}). |
+| `v2.profile.history` | Ιστορικό πόντων | Points history |
+| `v2.profile.details` | Στοιχεία | Your details |
+| `v2.profile.languageHint` | Αλλάζει τη γλώσσα | Switches the language |
+| `v2.profile.contact` | Να τα λέμε | Staying in touch |
+| `v2.profile.consentEmail` | Email με προσφορές | Emails with offers |
+| `v2.profile.consentSms` | SMS με προσφορές | Texts with offers |
+| `v2.profile.consentPush` | Ειδοποιήσεις στο κινητό | Phone notifications |
+| `v2.profile.help` | Βοήθεια και όροι | Help and terms |
+| `v2.profile.download` | Κατέβασε τα δεδομένα μου | Download my data |
+| `v2.history.total` | Σύνολο {points} πόντοι. | Total {points} points. |
+| `v2.welcome.sticker` | Νέο! {programName} | New! {programName} |
+| `v2.welcome.title` | Κάθε επίσκεψη προσθέτει μια στρώση. | Every visit adds a layer. |
+| `v2.welcome.body` | Το {programName} είναι το νέο πρόγραμμα επιβράβευσης του Overoll. Μαζεύεις πόντους σε κάθε αγορά και τους κάνεις καφέ, κρουασάν και καλούδια. | {programName} is Overoll's new loyalty programme. Collect points with every purchase and turn them into coffee, croissants and treats. |
+| `v2.welcome.go` | Πάμε! | Let's go! |
+| `v2.how.title` | Δείχνεις. Μαζεύεις. Κερνιέσαι. | Show. Collect. Treat yourself. |
+| `v2.how.1` | Δείχνεις την κάρτα σου στο ταμείο, σε κάθε αγορά. | Show your card at the till with every purchase. |
+| `v2.how.2` | Παίρνεις {points} πόντους για κάθε 1 €, σε όλα τα Overoll. | You get {points} points for every €1, at every Overoll. |
+| `v2.how.3` | Όσο έρχεσαι, τόσο ανεβαίνεις (πόντοι σε 12 μήνες): | The more you come, the higher you go (points in 12 months): |
+| `v2.how.tier.start` | Από την αρχή | From the start |
+| `v2.how.tier.perk` | ×{multiplier} πόντοι | ×{multiplier} points |
+| `v2.how.tier.perkDiscount` | ×{multiplier} πόντοι · δώρα −{discount} % | ×{multiplier} points · rewards −{discount}% |
+| `v2.join.title` | Πού να σου στείλουμε κωδικό; | Where should we send your code? |
+| `v2.join.emailHelper` | Σου στέλνουμε κωδικό, όχι spam. | We send you a code, not spam. |
+| `v2.join.storeBody` | Γίνε μέλος σε ένα λεπτό, μάζευε πόντους και κερνιέσαι καφέ και κρουασάν. | Join in a minute, collect points and treat yourself to coffee and croissants. |
+| `v2.signin.title` | Καλώς ήρθες ξανά! | Welcome back! |
+| `v2.signin.join` | Δεν είσαι μέλος; Γίνε τώρα | Not a member? Join now |
+| `v2.code.body` | Γράψε εδώ τους 6 αριθμούς που σου ήρθαν. | Type the 6 digits we sent you. |
+| `v2.details.age` | Είμαι {age}+ (απαραίτητο για να γίνεις μέλος) | I'm {age} or older (needed to join) |
+
+Koala Club overrides:
+
+- `v2.gift.ready.title`: «Το cinnamon roll σου σε περιμένει!» / “Your cinnamon roll is waiting!”
+- `v2.gift.locked.title`: «Πρώτη αγορά; Cinnamon roll κερασμένο!» / “First purchase? A cinnamon roll on us!”
+- `v2.stores.intro`: «Οι πόντοι σου μετράνε και στα δύο Koala. Μάζευε στο ένα, κεράσου στο άλλο.» / “Your points count at both Koalas. Collect at one, treat yourself at the other.”
+- `v2.stores.signoff`: «Πέρνα για καφέ, έχουμε φρέσκα bakes κάθε πρωί.» / “Drop by for a coffee, we have fresh bakes every morning.”
+- `v2.welcome.title`: «Ο καφές σου μόλις έγινε πιο γλυκός.» / “Your coffee just got sweeter.”
+- `v2.welcome.body`: «Το {programName} είναι το νέο πρόγραμμα επιβράβευσης του Koala. Μαζεύεις πόντους σε κάθε αγορά και τους κάνεις καφέ, bakes και καλούδια.» / “{programName} is Koala's new loyalty programme. Collect points with every purchase and turn them into coffee, bakes and treats.”
+- `v2.how.2`: «Παίρνεις {points} πόντους για κάθε 1 €, και στα δύο Koala.» / “You get {points} points for every €1, at both Koalas.”
+- `v2.join.storeBody`: «Γίνε μέλος σε ένα λεπτό, μάζευε πόντους και κερνιέσαι καφέ και bakes.» / “Join in a minute, collect points and treat yourself to coffee and bakes.”
+
 ## Questions for Dimos
 
 1. **Welcome croissant: how is it given?** The schema can't hold it yet: a redemption needs `points_spent > 0`, and a points bonus would count towards tiers (the spec says it doesn't). The copy assumes it appears in Rewards as a free item, redeemed with a 15-minute code like the others. Confirm, and say whether it expires.

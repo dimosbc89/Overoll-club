@@ -13,6 +13,8 @@ const reward = (id: string, base_cost: number, min_tier: RewardRow['min_tier'] =
   base_cost,
   min_tier,
   sort_order: 0,
+  category: null,
+  icon: null,
 });
 
 const catalog = [reward('espresso', 300), reward('coffee', 400), reward('box', 1950), reward('gold-only', 500, 'gold')];

@@ -24,19 +24,20 @@ on conflict (brand_id, code) do update set
   latitude = excluded.latitude, longitude = excluded.longitude, phone = excluded.phone,
   opening_hours = excluded.opening_hours;
 
-insert into public.rewards (id, brand_id, name_el, name_en, description_el, description_en, category, shelf_price_cents, base_cost, min_tier, sort_order)
+insert into public.rewards (id, brand_id, name_el, name_en, description_el, description_en, category, shelf_price_cents, base_cost, min_tier, sort_order, icon)
 values
-  (md5('koala:reward:espresso')::uuid, (select id from public.brands where slug = 'koala'), 'Espresso ή ελληνικός', 'Espresso or Greek coffee', 'Ένας espresso ή ένας ελληνικός καφές.', 'One espresso or one Greek coffee.', 'coffee', 220, 300, null, 10),
-  (md5('koala:reward:any-coffee')::uuid, (select id from public.brands where slug = 'koala'), 'Καφές της επιλογής σου', 'Coffee of your choice', 'Freddo, cappuccino, frappe, φίλτρου ή όποιον καφέ θες από τον βασικό κατάλογο.', 'Freddo, cappuccino, frappe, filter or any coffee from the main list.', 'coffee', 280, 400, null, 20),
-  (md5('koala:reward:handmade-pie')::uuid, (select id from public.brands where slug = 'koala'), 'Χειροποίητη πίτα', 'Handmade pie', 'Τυρόπιτα, κασερόπιτα, ζαμπονοτυρόπιτα ή κουρού, φρέσκια από τον φούρνο μας.', 'Cheese, kasseri, ham-and-cheese or kourou pie, fresh from our oven.', 'pies', 310, 450, null, 30),
-  (md5('koala:reward:cookie-muffin')::uuid, (select id from public.brands where slug = 'koala'), 'Cookie ή muffin', 'Cookie or muffin', 'Ένα cookie 100 g ή ένα muffin, όποια γεύση θες.', 'One 100 g cookie or one muffin, any flavour.', 'sweets', 330, 450, null, 40),
-  (md5('koala:reward:praline-croissant')::uuid, (select id from public.brands where slug = 'koala'), 'Κρουασάν με πραλίνα', 'Praline croissant', 'Κρουασάν με πραλίνα φουντουκιού ή φυστικιού.', 'Croissant with hazelnut or pistachio praline.', 'sweets', 340, 500, null, 50),
-  (md5('koala:reward:cinnamon-roll')::uuid, (select id from public.brands where slug = 'koala'), 'Cinnamon roll', 'Cinnamon roll', 'Το cinnamon roll μας, φρέσκο κάθε πρωί.', 'Our cinnamon roll, fresh every morning.', 'sweets', 400, 550, null, 60),
-  (md5('koala:reward:sandwich')::uuid, (select id from public.brands where slug = 'koala'), 'Sandwich ή τορτίγια', 'Sandwich or tortilla', 'Όποιο sandwich ή τορτίγια θες από τη βιτρίνα.', 'Any sandwich or tortilla from the counter.', 'food', 510, 700, null, 70),
-  (md5('koala:reward:cake-bowl')::uuid, (select id from public.brands where slug = 'koala'), 'Κέικ ή yogurt bowl', 'Cake or yogurt bowl', 'Ένα κομμάτι red velvet ή carrot cake, ή ένα yogurt bowl.', 'A slice of red velvet or carrot cake, or a yogurt bowl.', 'sweets', 530, 750, null, 80),
-  (md5('koala:reward:coffee-and-pie')::uuid, (select id from public.brands where slug = 'koala'), 'Καφές + χειροποίητη πίτα', 'Coffee + handmade pie', 'Ο καφές της επιλογής σου μαζί με μια χειροποίητη πίτα.', 'Your coffee of choice with a handmade pie.', 'combos', 590, 850, null, 90)
+  (md5('koala:reward:espresso')::uuid, (select id from public.brands where slug = 'koala'), 'Espresso ή ελληνικός', 'Espresso or Greek coffee', 'Ένας espresso ή ένας ελληνικός καφές.', 'One espresso or one Greek coffee.', 'coffee', 220, 300, null, 10, 'espresso'),
+  (md5('koala:reward:any-coffee')::uuid, (select id from public.brands where slug = 'koala'), 'Καφές της επιλογής σου', 'Coffee of your choice', 'Freddo, cappuccino, frappe, φίλτρου ή όποιον καφέ θες από τον βασικό κατάλογο.', 'Freddo, cappuccino, frappe, filter or any coffee from the main list.', 'coffee', 280, 400, null, 20, 'freddo-espresso'),
+  (md5('koala:reward:handmade-pie')::uuid, (select id from public.brands where slug = 'koala'), 'Χειροποίητη πίτα', 'Handmade pie', 'Τυρόπιτα, κασερόπιτα, ζαμπονοτυρόπιτα ή κουρού, φρέσκια από τον φούρνο μας.', 'Cheese, kasseri, ham-and-cheese or kourou pie, fresh from our oven.', 'pies', 310, 450, null, 30, 'pie'),
+  (md5('koala:reward:cookie-muffin')::uuid, (select id from public.brands where slug = 'koala'), 'Cookie ή muffin', 'Cookie or muffin', 'Ένα cookie 100 g ή ένα muffin, όποια γεύση θες.', 'One 100 g cookie or one muffin, any flavour.', 'sweets', 330, 450, null, 40, 'muffin'),
+  (md5('koala:reward:praline-croissant')::uuid, (select id from public.brands where slug = 'koala'), 'Κρουασάν με πραλίνα', 'Praline croissant', 'Κρουασάν με πραλίνα φουντουκιού ή φυστικιού.', 'Croissant with hazelnut or pistachio praline.', 'sweets', 340, 500, null, 50, 'croissant'),
+  (md5('koala:reward:cinnamon-roll')::uuid, (select id from public.brands where slug = 'koala'), 'Cinnamon roll', 'Cinnamon roll', 'Το cinnamon roll μας, φρέσκο κάθε πρωί.', 'Our cinnamon roll, fresh every morning.', 'sweets', 400, 550, null, 60, 'cinnamon-roll'),
+  (md5('koala:reward:sandwich')::uuid, (select id from public.brands where slug = 'koala'), 'Sandwich ή τορτίγια', 'Sandwich or tortilla', 'Όποιο sandwich ή τορτίγια θες από τη βιτρίνα.', 'Any sandwich or tortilla from the counter.', 'food', 510, 700, null, 70, 'toastie'),
+  (md5('koala:reward:cake-bowl')::uuid, (select id from public.brands where slug = 'koala'), 'Κέικ ή yogurt bowl', 'Cake or yogurt bowl', 'Ένα κομμάτι red velvet ή carrot cake, ή ένα yogurt bowl.', 'A slice of red velvet or carrot cake, or a yogurt bowl.', 'sweets', 530, 750, null, 80, 'cake'),
+  (md5('koala:reward:coffee-and-pie')::uuid, (select id from public.brands where slug = 'koala'), 'Καφές + χειροποίητη πίτα', 'Coffee + handmade pie', 'Ο καφές της επιλογής σου μαζί με μια χειροποίητη πίτα.', 'Your coffee of choice with a handmade pie.', 'combos', 590, 850, null, 90, 'takeaway-cup')
 on conflict (id) do update set
   name_el = excluded.name_el, name_en = excluded.name_en,
   description_el = excluded.description_el, description_en = excluded.description_en,
   category = excluded.category, shelf_price_cents = excluded.shelf_price_cents,
-  base_cost = excluded.base_cost, min_tier = excluded.min_tier, sort_order = excluded.sort_order;
+  base_cost = excluded.base_cost, min_tier = excluded.min_tier, sort_order = excluded.sort_order,
+  icon = excluded.icon;

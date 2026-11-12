@@ -1,4 +1,4 @@
-import { useRouter } from 'expo-router';
+import { Redirect, useRouter } from 'expo-router';
 import { useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
@@ -19,12 +19,20 @@ import { font, type } from '../../theme/fonts';
 import { brand as appBrand } from '../../brand';
 import { raised } from '../../theme/surface';
 import { colors, radius, space } from '../../theme/tokens';
+import { AppScreen } from '../../v2/chrome';
+import { RewardsScreen } from '../../v2/screens/RewardsScreen';
+import { isV2 } from '../../v2/theme';
 
 export default function RewardsTab() {
   const { auth, member, refresh } = useSession();
   const { t } = useI18n();
 
-  if (member.status === 'ready') return <MemberRewards bundle={member.data} />;
+  if (member.status === 'ready') return isV2 ? <RewardsScreen bundle={member.data} /> : <MemberRewards bundle={member.data} />;
+  // v2: signed out, the intro at "/" shows the catalog.
+  if (isV2) {
+    if (auth.status === 'signed_out' || auth.status === 'not_configured') return <Redirect href="/" />;
+    return <AppScreen title={t('rewards.title')}>{member.status === 'error' ? <LoadError onRetry={refresh} /> : <Loading />}</AppScreen>;
+  }
   if (auth.status === 'not_configured') {
     return (
       <Screen title={t('rewards.title')}>

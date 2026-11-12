@@ -27,5 +27,13 @@
   "join.hero.step3": "Τους εξαργυρώνεις σε καφέ και bakes",
   "join.hero.title": "Κάθε καφές μετράει. Κυριολεκτικά.",
   "landing.hero.title": "Κάθε καφές μετράει. Κυριολεκτικά.",
-  "landing.final.title": "#freshcupsandbakes από το 1993."
+  "landing.final.title": "#freshcupsandbakes από το 1993.",
+  "v2.gift.ready.title": "Το cinnamon roll σου σε περιμένει!",
+  "v2.gift.locked.title": "Πρώτη αγορά; Cinnamon roll κερασμένο!",
+  "v2.stores.intro": "Οι πόντοι σου μετράνε και στα δύο Koala. Μάζευε στο ένα, κεράσου στο άλλο.",
+  "v2.stores.signoff": "Πέρνα για καφέ, έχουμε φρέσκα bakes κάθε πρωί.",
+  "v2.welcome.title": "Ο καφές σου μόλις έγινε πιο γλυκός.",
+  "v2.welcome.body": "Το {programName} είναι το νέο πρόγραμμα επιβράβευσης του Koala. Μαζεύεις πόντους σε κάθε αγορά και τους κάνεις καφέ, bakes και καλούδια.",
+  "v2.how.2": "Παίρνεις {points} πόντους για κάθε 1 €, και στα δύο Koala.",
+  "v2.join.storeBody": "Γίνε μέλος σε ένα λεπτό, μάζευε πόντους και κερνιέσαι καφέ και bakes."
 }
