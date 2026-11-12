@@ -1,4 +1,4 @@
-import { existsSync, readdirSync } from 'node:fs';
+import { existsSync, readFileSync, readdirSync } from 'node:fs';
 import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
 
@@ -44,6 +44,22 @@ describe('back office brands', () => {
         const css = readFileSync(join(app, 'src/app/brands.css'), 'utf8');
         expect(css).toContain(`html[data-brand='${b.slug}'] {`);
         expect(css).toContain(`html[data-brand='${b.slug}'] [data-console] {`);
+      });
+    }
+  }
+});
+
+describe('tier names match the member app', () => {
+  for (const b of Object.values(brands)) {
+    for (const lang of ['el', 'en'] as const) {
+      const file = join(root, `apps/mobile/src/brand/${b.slug}.${lang}.json`);
+      if (!existsSync(file)) continue;
+      it(`${b.slug} (${lang}): tier.* = the app's tiers.*.name`, () => {
+        const app = JSON.parse(readFileSync(file, 'utf8')) as Record<string, string>;
+        for (const tier of ['classic', 'gold', 'club']) {
+          const name = app[`tiers.${tier}.name`];
+          if (name) expect(b.copy[lang][`tier.${tier}`], `${b.slug} ${lang} ${tier}`).toBe(name);
+        }
       });
     }
   }

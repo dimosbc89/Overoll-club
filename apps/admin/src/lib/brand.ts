@@ -45,6 +45,13 @@ const koala: AdminBrand = {
       'meta.pageTitle': '{page} · Koala Club',
       'dashboard.intro': 'Όλο το δίκτυο του Koala Club με μια ματιά.',
       'console.award.firstPurchase': 'Πρώτη αγορά! Το cinnamon roll καλωσορίσματος ξεκλειδώθηκε. Πες το στον πελάτη.',
+      // Tier names as in the member app (apps/mobile/src/brand/koala.*.json; test/brand.test.ts keeps them in step).
+      'tier.classic': 'Joey',
+      'tier.gold': 'Koala',
+      'tier.club': 'Eucalyptus',
+      'rewards.colClassic': 'Joey (βάση)',
+      'rewards.colGold': 'Koala',
+      'rewards.colClub': 'Eucalyptus',
     },
     en: {
       'brand.wordmark': 'Koala Coffee',
@@ -52,6 +59,12 @@ const koala: AdminBrand = {
       'meta.pageTitle': '{page} · Koala Club',
       'dashboard.intro': 'The whole Koala Club network at a glance.',
       'console.award.firstPurchase': 'First purchase! The welcome cinnamon roll is now unlocked. Let them know.',
+      'tier.classic': 'Joey',
+      'tier.gold': 'Koala',
+      'tier.club': 'Eucalyptus',
+      'rewards.colClassic': 'Joey (base)',
+      'rewards.colGold': 'Koala',
+      'rewards.colClub': 'Eucalyptus',
     },
   },
 };
