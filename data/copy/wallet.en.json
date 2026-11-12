@@ -1,0 +1,14 @@
+{
+  "$comment": "Wallet pass texts (copy deck d2). Placeholders: {programName}, {clubUrl}, {supportEmail}, {termsUrl}, {expiryMonths}. Apple writes the new value of a field as %@ in change.*.",
+  "label.points": "POINTS",
+  "label.tier": "TIER",
+  "label.member": "MEMBER",
+  "label.nextReward": "NEXT TREAT",
+  "change.points": "Your points are now %@.",
+  "change.tier": "New tier: %@!",
+  "change.nextReward": "Next treat: %@",
+  "back.howTo": "Show this code at the till every time you buy. Your points here update by themselves.",
+  "back.rewards": "Redeem your rewards at {clubUrl}.",
+  "back.expiry": "Points are valid for {expiryMonths} months after your last purchase.",
+  "back.help": "Help: {supportEmail} · Terms: {termsUrl}"
+}

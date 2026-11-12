@@ -76,7 +76,13 @@ export function errorMessage(code: ErrorCode, locale: Locale, ctx: ErrorContext)
   return template.replace(/\{(\w+)\}/g, (match, name: string) => params[name] ?? match);
 }
 
-export type ApiRoute = 'join' | 'redemptions/create' | 'redemptions/cancel' | 'account/delete';
+export type ApiRoute =
+  | 'join'
+  | 'redemptions/create'
+  | 'redemptions/cancel'
+  | 'account/delete'
+  | 'wallet/apple/link'
+  | 'wallet/google/link';
 
 export type ApiResult<T> = { ok: true; data: T } | { ok: false; code: ErrorCode };
 

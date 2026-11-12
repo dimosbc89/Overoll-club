@@ -15,3 +15,4 @@ export * from './store-staff.js';
 export * from './adjust-points.js';
 export * from './catalog.js';
 export * from './review-tiers.js';
+export * from './wallet/index.js';

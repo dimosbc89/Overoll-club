@@ -104,6 +104,24 @@ Monthly store report (migration `20261112110000_store_report`, read only):
 - `public.store_report(p_store_id uuid, p_from timestamptz, p_to timestamptz)` (`rpc`, `SECURITY INVOKER`): codes used at the store in `[p_from, p_to)`, one row per reward and cashier: `reward_id, reward_name_el, reward_name_en, employee_id, employee_name, used, gifts, points, value_cents`. For the store's manager, HQ and platform admins; till devices, members and anyone else get no rows (anonymous: refused).
 - Store staff (managers, till devices) now also read their brand's switched-off rewards, so older codes keep their names; members and visitors still see active rewards only.
 
+## New in v0.7 (Apple Wallet and Google Wallet passes)
+
+The member's store card in Wallet: points, tier, first name, next reward, and the static Wallet QR the till already accepts (`OCW.<code>.<passVersion>.<sig>`, core `createWalletToken`). Passes only show the card; nothing in Wallet moves points. Texts: `data/copy/wallet.*.json` (copy deck d2), Greek and English; tier names from the app's brand copy; colours and images from `data/<brand>/wallet*`. Code: `packages/server/src/wallet/`.
+
+| Route | Who | What |
+| --- | --- | --- |
+| `wallet/apple/link` | member | `{ ok, url }`: a link valid 10 minutes that downloads the member's signed `.pkpass` (`GET …/wallet/apple/download/<token>`). Opening it on an iPhone offers "Add to Apple Wallet" |
+| `wallet/google/link` | member | `{ ok, url }`: `https://pay.google.com/gp/v/save/<jwt>`; saving creates the brand's loyalty class (first time) and the member's object. From then on the member's Google object gets updates |
+| `jobs/wallet-updates` | service (every minute) | For members whose pass changed (`member_secrets.wallet_changed_at` > `wallet_sent_at`): an APNs push to each registered Apple device (Wallet then fetches the new pass) and a PATCH of the Google object. `{ ok, members, applePushes, googleUpdates, failed }` |
+
+Both links answer `not_configured` (501) until the brand's certificate / service account is set up, and `member_not_found` for a caller who isn't a member.
+
+**PassKit web service** (Apple calls it; `webServiceURL` = `https://<ref>.supabase.co/functions/v1/api/wallet/apple`, header `Authorization: ApplePass <authenticationToken>`): `POST`/`DELETE v1/devices/<device>/registrations/<passTypeId>/<serial>` (201 new, 200 known, 401), `GET v1/devices/<device>/registrations/<passTypeId>?passesUpdatedSince=<tag>` (200 `{ serialNumbers, lastUpdated }` or 204), `GET v1/passes/<passTypeId>/<serial>` (the latest `.pkpass`, 304 with `If-Modified-Since`), `POST v1/log`. The serial number is the member id; the authentication token is derived from the member's QR secret and pass version, so reissuing the pass (new version) drops the old one.
+
+**Database:** `member_secrets.wallet_changed_at` (moved by triggers on a new ledger entry and on a new tier or first name), `wallet_sent_at`, `google_wallet_at`; `wallet_apple_devices` (device, member, push token; server only, no client access).
+
+**Setup per brand** (the routes work without it, answering `not_configured`): GitHub secrets `APPLE_PASS_P12_<BRAND>` (the Pass Type ID certificate exported from Keychain as .p12, base64) and `APPLE_PASS_P12_PASSWORD_<BRAND>`; `GOOGLE_WALLET_SERVICE_ACCOUNT` (JSON key of a service account registered as a user in the Pay & Wallet Console) with `wallet.googleIssuerId` in `supabase/projects/<brand>.json`. CI hands them to the Edge Function (`project:apply`). Apple's WWDR G4 certificate is in `data/wallet/`.
+
 ## What the apps read directly (Supabase client, row-level security)
 
 Member app (signed-in member): `members` (own row, not once deleted), `member_balances` (own), `member_secrets` (own: `qr_secret`, `pass_version` → core `createRotatingToken` for the QR, offline), `rewards` (active), `stores` (active; `name_en` / `address_en` from v0.4), `member_gifts` (own), `redemptions` (own; a `pending` one not past `expires_at` is the active code), `ledger_entries` (own, history). Costs per tier: core `rewardCostForTier`; progress: core `nextRewardProgress`, `tierProgress`.

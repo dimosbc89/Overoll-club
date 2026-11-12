@@ -29,6 +29,15 @@ import {
   updateStore,
   useRedemption,
   verifyEmployeePin,
+  type WalletServices,
+  applePassForDevice,
+  appleSerialsUpdatedSince,
+  registerAppleDevice,
+  unregisterAppleDevice,
+  walletAppleDownload,
+  walletAppleLink,
+  walletGoogleLink,
+  walletUpdates,
 } from '@grow-loyalty/server';
 
 export interface HandlerDeps {
@@ -52,6 +61,12 @@ export interface HandlerDeps {
    * rights are checked. Without it, `staff/add` answers `not_configured`.
    */
   ensureAuthUser?(email: string): Promise<string>;
+  /**
+   * Wallet passes (v0.7): designs per brand, and the Apple / Google setups when
+   * their certificates are configured. Without it the Wallet routes answer
+   * `not_configured`.
+   */
+  wallet?: WalletServices;
 }
 
 type Body = Record<string, unknown>;
@@ -156,7 +171,22 @@ export const routes: Readonly<Record<string, Route>> = {
     auth: 'service',
     run: (sql, _uid, b) => reviewTiers(sql, batchOption(b)),
   },
+  // Wallet passes (v0.7): links for the member app, and the job that sends pass updates.
+  'wallet/apple/link': {
+    auth: 'user',
+    run: (sql, uid, _b, deps) => walletAppleLink(sql, { callerUserId: asUser(uid) }, deps.wallet ?? NO_WALLET),
+  },
+  'wallet/google/link': {
+    auth: 'user',
+    run: (sql, uid, _b, deps) => walletGoogleLink(sql, { callerUserId: asUser(uid) }, deps.wallet ?? NO_WALLET),
+  },
+  'jobs/wallet-updates': {
+    auth: 'service',
+    run: (sql, _uid, b, deps) => walletUpdates(sql, deps.wallet ?? NO_WALLET, batchOption(b)),
+  },
 };
+
+const NO_WALLET: WalletServices = { designs: {} };
 /* eslint-enable @typescript-eslint/no-explicit-any */
 
 /** Fields a client may never set: identity and clock come from the server. */
@@ -214,6 +244,79 @@ function json(status: number, body: unknown, extra: Record<string, string>): Res
   });
 }
 
+const passHeaders = (lastModified: Date, fileName: string): Record<string, string> => ({
+  'content-type': 'application/vnd.apple.pkpass',
+  'content-disposition': `attachment; filename="${fileName}"`,
+  'last-modified': lastModified.toUTCString(),
+  'cache-control': 'no-store',
+});
+
+/**
+ * Apple Wallet over plain HTTP (not the JSON routes):
+ * - GET  wallet/apple/download/<token>: the .pkpass behind a wallet/apple/link link;
+ * - the PassKit web service under wallet/apple/v1/ (Wallet calls it with
+ *   `Authorization: ApplePass <token>`): device (un)registration, changed
+ *   passes, the latest pass, and Wallet's error log.
+ */
+async function appleWalletHttp(req: Request, name: string, deps: HandlerDeps): Promise<Response> {
+  const wallet = deps.wallet ?? NO_WALLET;
+  const parts = name.split('/').slice(2).map((p) => decodeURIComponent(p));
+  const url = new URL(req.url);
+  const auth = /^ApplePass\s+(\S+)$/.exec(req.headers.get('authorization') ?? '')?.[1] ?? null;
+  const empty = (status: number) => new Response(null, { status });
+
+  if (parts[0] === 'download' && parts.length === 2 && req.method === 'GET') {
+    const file = await walletAppleDownload(deps.sql, parts[1]!, wallet);
+    if (file.kind === 'pass') return new Response(file.pkpass as Uint8Array<ArrayBuffer>, { status: 200, headers: passHeaders(file.lastModified, file.fileName) });
+    return empty(file.kind === 'expired' ? 410 : 404);
+  }
+  if (parts[0] !== 'v1') return empty(404);
+
+  // v1/devices/<device>/registrations/<passType>[/<serial>]
+  if (parts[1] === 'devices' && parts[3] === 'registrations' && parts.length === 6) {
+    const args = { deviceLibraryId: parts[2]!, passTypeId: parts[4]!, serial: parts[5]!, authToken: auth };
+    if (req.method === 'POST') {
+      const text = await req.text();
+      if (text.length > 4096) return empty(413);
+      let pushToken: unknown;
+      try {
+        pushToken = (JSON.parse(text) as { pushToken?: unknown }).pushToken;
+      } catch {
+        return empty(400);
+      }
+      return empty(await registerAppleDevice(deps.sql, { ...args, pushToken }, wallet));
+    }
+    if (req.method === 'DELETE') return empty(await unregisterAppleDevice(deps.sql, args, wallet));
+    return empty(405);
+  }
+  if (parts[1] === 'devices' && parts[3] === 'registrations' && parts.length === 5 && req.method === 'GET') {
+    const list = await appleSerialsUpdatedSince(
+      deps.sql,
+      { deviceLibraryId: parts[2]!, passTypeId: parts[4]!, since: url.searchParams.get('passesUpdatedSince') },
+      wallet,
+    );
+    if (!list) return empty(204);
+    return new Response(JSON.stringify(list), { status: 200, headers: { 'content-type': 'application/json' } });
+  }
+  // v1/passes/<passType>/<serial>
+  if (parts[1] === 'passes' && parts.length === 4 && req.method === 'GET') {
+    const file = await applePassForDevice(
+      deps.sql,
+      { passTypeId: parts[2]!, serial: parts[3]!, authToken: auth, ifModifiedSince: req.headers.get('if-modified-since') },
+      wallet,
+    );
+    if (file.kind === 'pass') return new Response(file.pkpass as Uint8Array<ArrayBuffer>, { status: 200, headers: passHeaders(file.lastModified, file.fileName) });
+    return empty(file.kind === 'not_modified' ? 304 : 401);
+  }
+  // v1/log: Wallet reports problems with our passes; keep a short trace.
+  if (parts[1] === 'log' && parts.length === 2 && req.method === 'POST') {
+    const text = (await req.text()).slice(0, 2000);
+    console.warn('apple wallet log', text);
+    return empty(200);
+  }
+  return empty(404);
+}
+
 export function createHandler(deps: HandlerDeps): (req: Request) => Promise<Response> {
   const allowed = deps.allowedOrigins ?? ['*'];
 
@@ -223,9 +326,18 @@ export function createHandler(deps: HandlerDeps): (req: Request) => Promise<Resp
       json(status ?? STATUS[code] ?? 422, { ok: false, code, ...(message ? { message } : {}) }, cors);
 
     if (req.method === 'OPTIONS') return new Response(null, { status: 204, headers: cors });
+    const name = routeName(new URL(req.url).pathname);
+    if (name.startsWith('wallet/apple/') && name !== 'wallet/apple/link') {
+      try {
+        return await appleWalletHttp(req, name, deps);
+      } catch (error) {
+        console.error('wallet error', name.split('/').slice(0, 4).join('/'), error);
+        return new Response(null, { status: 500 });
+      }
+    }
     if (req.method !== 'POST') return failure('method_not_allowed');
 
-    const route = routes[routeName(new URL(req.url).pathname)];
+    const route = routes[name];
     if (!route) return failure('route_not_found');
 
     const token = bearer(req);

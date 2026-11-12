@@ -30,6 +30,9 @@
     "minutes": 10,
     "length": 6
   },
+  "wallet": {
+    "googleIssuerId": "3388000000023239253"
+  },
   "email": {
     "$comment": "Resend domain koalacoffee.gr (team growagency, eu-west-1; records in docs/koala/dns-records.md), verified 12 Nov 2026. CI connects Supabase Auth to Resend SMTP with the GitHub secret RESEND_API_KEY_KOALA (Resend key koala-club: sending access, koalacoffee.gr only).",
     "enabled": true,

@@ -464,6 +464,44 @@ select tst.refused($$select * from public.store_report('20000000-0000-0000-0000-
 select tst.eq((select count(*) from public.rewards where not active), 0, 'visitors see active rewards only');
 reset role;
 
+-- --------------------------------------------------- Wallet passes (v0.7)
+-- Apple device registrations (push tokens) are server-only; a ledger entry or a
+-- new tier moves the member's wallet_changed_at.
+insert into public.wallet_apple_devices (device_library_id, member_id, brand_id, push_token)
+  values ('device-eleni', '40000000-0000-0000-0000-000000000001', '10000000-0000-0000-0000-000000000001', 'push-token-eleni');
+select tst.refused($$insert into public.wallet_apple_devices (device_library_id, member_id, brand_id, push_token)
+  values ('device-x', '40000000-0000-0000-0000-000000000003', '10000000-0000-0000-0000-000000000001', 'x')$$,
+  'a device registration cannot point at a member of another brand', '23503');
+update public.member_secrets set wallet_changed_at = now() - interval '1 day', wallet_sent_at = now() - interval '1 day'
+  where member_id = '40000000-0000-0000-0000-000000000001';
+insert into public.ledger_entries (brand_id, member_id, kind, points, reason, idempotency_key)
+  values ('10000000-0000-0000-0000-000000000001', '40000000-0000-0000-0000-000000000001', 'bonus', 5, 'wallet test', 'k-wallet-bonus');
+select tst.eq((select count(*) from public.member_secrets where member_id = '40000000-0000-0000-0000-000000000001'
+               and wallet_changed_at > wallet_sent_at), 1, 'a ledger entry marks the Wallet pass as changed');
+update public.member_secrets set wallet_sent_at = wallet_changed_at where member_id = '40000000-0000-0000-0000-000000000001';
+update public.members set consent_email = not consent_email where id = '40000000-0000-0000-0000-000000000001';
+select tst.eq((select count(*) from public.member_secrets where member_id = '40000000-0000-0000-0000-000000000001'
+               and wallet_changed_at > wallet_sent_at), 0, 'a change the pass does not show leaves it alone');
+update public.members set tier = 'gold' where id = '40000000-0000-0000-0000-000000000001';
+select tst.eq((select count(*) from public.member_secrets where member_id = '40000000-0000-0000-0000-000000000001'
+               and wallet_changed_at > wallet_sent_at), 1, 'a new tier marks the Wallet pass as changed');
+update public.members set tier = 'classic' where id = '40000000-0000-0000-0000-000000000001';
+select set_config('request.jwt.claim.sub', '00000000-0000-0000-0000-0000000000a1', false);
+set role authenticated;
+select tst.refused($$select * from public.wallet_apple_devices$$, 'a member cannot read Wallet device registrations');
+select tst.refused($$insert into public.wallet_apple_devices (device_library_id, member_id, brand_id, push_token)
+  values ('mine', '40000000-0000-0000-0000-000000000001', '10000000-0000-0000-0000-000000000001', 't')$$, 'a member cannot register a device');
+select tst.eq((select count(*) from public.member_secrets where wallet_changed_at is not null), 1, 'the member reads their own pass timestamps only');
+reset role;
+select set_config('request.jwt.claim.sub', '00000000-0000-0000-0000-0000000000b1', false);
+set role authenticated;
+select tst.refused($$select * from public.wallet_apple_devices$$, 'HQ cannot read Wallet device registrations');
+reset role;
+select set_config('request.jwt.claim.sub', '', false);
+set role anon;
+select tst.refused($$select * from public.wallet_apple_devices$$, 'anonymous cannot read Wallet device registrations');
+reset role;
+
 select tst.eq((select count(*) from pg_class c join pg_namespace n on n.oid = c.relnamespace
                where n.nspname in ('public', 'private') and c.relkind = 'r' and not c.relrowsecurity), 0,
               'every table in public and private has row-level security on');

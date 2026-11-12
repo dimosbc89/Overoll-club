@@ -33,6 +33,8 @@ export interface ProjectConfig {
   redirectUrls: string[];
   allowedOrigins: string[];
   signInCode: { minutes: number; length: number };
+  /** Wallet passes: Google Wallet issuer id (not secret). The Apple certificate and Google key are GitHub secrets. */
+  wallet?: { googleIssuerId?: string };
   email: {
     enabled: boolean;
     senderName: string;

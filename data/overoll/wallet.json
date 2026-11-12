@@ -1,0 +1,8 @@
+{
+  "$comment": "Wallet pass colours (Apple storeCard and Google), docs/brand.md: pink pass, cocoa values, ink labels. Images: data/overoll/wallet/ (Apple), apps/mobile/public-brands/overoll/wallet/logo.png (Google program logo). Tier names come from the app's copy.",
+  "colors": {
+    "background": "#ebabc5",
+    "foreground": "#321c1b",
+    "label": "#402927"
+  }
+}

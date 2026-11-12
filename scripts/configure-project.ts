@@ -177,7 +177,8 @@ async function apply(cfg: ProjectConfig, desired: ReturnType<typeof buildDesired
   if (!Object.keys(patch).length) console.log('auth: already up to date');
 
   const existing = (await api(token, 'GET', `/projects/${ref}/secrets`)) as { name: string; value: string }[];
-  const changed = Object.entries(desired.secrets).filter(([name, value]) => {
+  const secrets: Record<string, string> = { ...desired.secrets, ...walletSecrets(cfg) };
+  const changed = Object.entries(secrets).filter(([name, value]) => {
     const now = existing.find((s) => s.name === name)?.value;
     return now !== value && now !== createHash('sha256').update(value).digest('hex');
   });
@@ -187,6 +188,29 @@ async function apply(cfg: ProjectConfig, desired: ReturnType<typeof buildDesired
   } else {
     console.log('function secrets: already up to date');
   }
+}
+
+/**
+ * Wallet passes (API contract v0.7): the Edge Function reads these. CI passes the
+ * brand's GitHub secrets as env (APPLE_PASS_P12, APPLE_PASS_P12_PASSWORD,
+ * GOOGLE_WALLET_SERVICE_ACCOUNT); the Google issuer id comes from the project
+ * file. Each is set only when present, so a brand without Wallet keeps working.
+ */
+function walletSecrets(cfg: ProjectConfig): Record<string, string> {
+  const out: Record<string, string> = {};
+  const p12 = process.env.APPLE_PASS_P12?.replace(/\s+/g, '');
+  if (p12) {
+    out.APPLE_PASS_P12 = p12;
+    out.APPLE_PASS_P12_PASSWORD = process.env.APPLE_PASS_P12_PASSWORD ?? '';
+  }
+  const account = process.env.GOOGLE_WALLET_SERVICE_ACCOUNT?.trim();
+  if (account && cfg.wallet?.googleIssuerId) {
+    const parsed = JSON.parse(account) as { client_email?: string; private_key?: string };
+    if (!parsed.client_email || !parsed.private_key) throw new Error('GOOGLE_WALLET_SERVICE_ACCOUNT is not a service account JSON key');
+    out.GOOGLE_WALLET_SERVICE_ACCOUNT = JSON.stringify(parsed);
+    out.GOOGLE_WALLET_ISSUER_ID = cfg.wallet.googleIssuerId;
+  }
+  return out;
 }
 
 /**

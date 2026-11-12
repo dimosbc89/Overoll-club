@@ -58,7 +58,7 @@ Legend: **D** = Dimos · **C** = Claude · ☐ open · ☑ done
 - ☑ C: scaffold `apps/mobile` (Expo: iOS, Android, web) and `apps/admin` (Next.js)
 - ☑ C: sign-up / login with an email one-time code, Greek + English (`apps/mobile`: join from the counter QR, sign-in, consents); SMS when the provider is chosen
 - ☑ C: member card with rotating QR, points, progress to next reward and tier; rewards with tier prices and the redeem flow (code, countdown, cancel), history, profile
-- ☐ C: Apple Wallet + Google Wallet passes with live updates
+- ◐ C: Apple Wallet + Google Wallet passes with live updates: built and tested on 12 Nov 2026 (API contract v0.7: pass, links, PassKit web service, update job); waiting for the Pass Type ID certificates and the Google service account (D) to go live, then a check on a real iPhone and Android phone
 - ☑ C: design v2 in Figma (9 Nov, from the client brief; `docs/design-v2.md`): design system, components, 7-step onboarding, Card, Rewards, Redeem, Stores, Profile, History
 - ☐ D: designer + Overoll review v2; decide coloured headings (plum, or pink only as decoration: pink text fails contrast on white) and approve the draft texts (copy deck §a0)
 - ☐ C: build v2 into the member app (web + iOS + Android) once approved

@@ -1,0 +1,8 @@
+{
+  "$comment": "Wallet pass colours (Apple storeCard and Google). Images: data/koala/wallet/ (Apple), apps/mobile/public-brands/koala/wallet/logo.png (Google program logo, served by the web app). Tier names come from the app's brand copy.",
+  "colors": {
+    "background": "#026852",
+    "foreground": "#f8f1de",
+    "label": "#ffc93c"
+  }
+}

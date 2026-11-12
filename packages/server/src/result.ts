@@ -64,7 +64,9 @@ export type ErrorCode =
   | 'last_hq_admin'
   // back office (v0.6): stores and reward catalog
   | 'store_code_taken'
-  | 'welcome_reward';
+  | 'welcome_reward'
+  // Wallet passes (v0.7): no Wallet set up for this brand or platform yet
+  | 'not_configured';
 
 export interface Failure<C extends ErrorCode = ErrorCode> {
   ok: false;

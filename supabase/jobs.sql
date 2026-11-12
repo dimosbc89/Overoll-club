@@ -59,3 +59,7 @@ select cron.schedule('club-expire-points', '15 1 * * *', $cmd$select private.cal
 
 -- Yearly tier review on each member's join anniversary, daily at 01:45 UTC (after the points expiry).
 select cron.schedule('club-review-tiers', '45 1 * * *', $cmd$select private.call_api_job('review-tiers')$cmd$);
+
+-- Wallet passes (v0.7): tell Apple and Google about changed passes, every minute.
+-- Only members who added a pass are looked at; without Wallet set up it does nothing.
+select cron.schedule('club-wallet-updates', '* * * * *', $cmd$select private.call_api_job('wallet-updates')$cmd$);

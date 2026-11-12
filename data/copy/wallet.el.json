@@ -1,0 +1,14 @@
+{
+  "$comment": "Wallet pass texts (copy deck d2). Placeholders: {programName}, {clubUrl}, {supportEmail}, {termsUrl}, {expiryMonths}. Apple writes the new value of a field as %@ in change.*.",
+  "label.points": "ΠΟΝΤΟΙ",
+  "label.tier": "ΕΠΙΠΕΔΟ",
+  "label.member": "ΜΕΛΟΣ",
+  "label.nextReward": "ΕΠΟΜΕΝΟ ΚΕΡΑΣΜΑ",
+  "change.points": "Οι πόντοι σου είναι τώρα %@.",
+  "change.tier": "Νέο επίπεδο: %@!",
+  "change.nextReward": "Επόμενο κέρασμα: %@",
+  "back.howTo": "Δείξε αυτόν τον κωδικό στο ταμείο σε κάθε αγορά. Οι πόντοι εδώ ενημερώνονται μόνοι τους.",
+  "back.rewards": "Τα δώρα σου τα εξαργυρώνεις στο {clubUrl}.",
+  "back.expiry": "Οι πόντοι ισχύουν {expiryMonths} μήνες από την τελευταία σου αγορά.",
+  "back.help": "Βοήθεια: {supportEmail} · Όροι: {termsUrl}"
+}

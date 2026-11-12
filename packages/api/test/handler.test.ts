@@ -406,4 +406,34 @@ describe('catalog routes (v0.6)', () => {
     const byDevice = await handle(post('/api/rewards/update', { rewardId: body.reward.id, active: false }, tokenFor(ids.deviceA)));
     expect(byDevice.status).toBe(403);
   });
+  it('Wallet: links answer not_configured until set up; the PassKit web service refuses unknown passes', async () => {
+    const member = await newMember(db.server, db.admin);
+    const apple = await handle(post('/functions/v1/api/wallet/apple/link', {}, tokenFor(member.userId)));
+    expect(apple.status).toBe(501);
+    expect(await apple.json()).toMatchObject({ ok: false, code: 'not_configured' });
+    const google = await handle(post('/api/wallet/google/link', {}, tokenFor(member.userId)));
+    expect(google.status).toBe(501);
+    expect((await handle(post('/api/wallet/apple/link', {}))).status).toBe(401);
+
+    const ws = (path: string, init: RequestInit = {}) => handle(new Request(`https://x.supabase.co/functions/v1/api/wallet/apple${path}`, init));
+    const register = await ws(`/v1/devices/dev1/registrations/pass.x/${member.memberId}`, {
+      method: 'POST',
+      headers: { authorization: 'ApplePass nope', 'content-type': 'application/json' },
+      body: JSON.stringify({ pushToken: 'abc' }),
+    });
+    expect(register.status).toBe(401);
+    expect((await ws(`/v1/devices/dev1/registrations/pass.x/${member.memberId}`, { method: 'DELETE', headers: { authorization: 'ApplePass nope' } })).status).toBe(401);
+    expect((await ws('/v1/devices/dev1/registrations/pass.x')).status).toBe(204);
+    expect((await ws(`/v1/passes/pass.x/${member.memberId}`, { headers: { authorization: 'ApplePass nope' } })).status).toBe(401);
+    expect((await ws('/v1/log', { method: 'POST', body: JSON.stringify({ logs: ['x'] }) })).status).toBe(200);
+    expect((await ws('/download/not-a-token')).status).toBe(404);
+    expect((await ws('/v1/unknown')).status).toBe(404);
+    expect((await ws(`/v1/devices/dev1/registrations/pass.x/${member.memberId}`, { method: 'PUT' })).status).toBe(405);
+  });
+
+  it('jobs/wallet-updates: service token only', async () => {
+    expect((await handle(post('/api/jobs/wallet-updates', {}, tokenFor(ids.hq)))).status).toBe(403);
+    const run = await handle(post('/api/jobs/wallet-updates', {}, SERVICE));
+    expect(await run.json()).toMatchObject({ ok: true, members: 0 });
+  });
 });
