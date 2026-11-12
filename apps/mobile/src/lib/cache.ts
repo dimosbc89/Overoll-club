@@ -2,40 +2,16 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import { brand } from '../brand';
 import type { MemberBundle } from './data';
+import { createMemberCache } from './memberCache';
+import { secretVault } from './secretVault';
 
 /**
- * The last member data seen on this device, so the card and its rotating QR
- * open without a connection. Holds the member's QR secret: it never leaves
- * the device and is removed on sign-out. (Native: move it to the keychain
- * with expo-secure-store when the native apps ship.)
+ * The member's card cached on the device for offline use (see `memberCache.ts`).
+ * Native apps keep the QR secret in the Keychain / Keystore; the web keeps it
+ * in the browser's storage. Removed on sign-out.
  */
-const prefix = `${brand.slug}.member.`;
-const VERSION = 1;
+const cache = createMemberCache({ kv: AsyncStorage, vault: secretVault, prefix: `${brand.slug}.` });
 
-export async function loadCachedBundle(userId: string): Promise<MemberBundle | null> {
-  try {
-    const raw = await AsyncStorage.getItem(prefix + userId);
-    if (!raw) return null;
-    const parsed = JSON.parse(raw) as { v: number; bundle: MemberBundle };
-    return parsed.v === VERSION ? parsed.bundle : null;
-  } catch {
-    return null;
-  }
-}
-
-export async function saveCachedBundle(userId: string, bundle: MemberBundle): Promise<void> {
-  try {
-    await AsyncStorage.setItem(prefix + userId, JSON.stringify({ v: VERSION, bundle }));
-  } catch {
-    // Storage full or unavailable: the app still works online.
-  }
-}
-
-export async function clearCachedBundles(): Promise<void> {
-  try {
-    const keys = await AsyncStorage.getAllKeys();
-    await AsyncStorage.multiRemove(keys.filter((k) => k.startsWith(prefix)));
-  } catch {
-    // Nothing to clear.
-  }
-}
+export const loadCachedBundle = (userId: string): Promise<MemberBundle | null> => cache.load(userId);
+export const saveCachedBundle = (userId: string, bundle: MemberBundle): Promise<void> => cache.save(userId, bundle);
+export const clearCachedBundles = (): Promise<void> => cache.clear();

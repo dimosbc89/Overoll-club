@@ -54,6 +54,8 @@ export function appConfig(slug: string, base: Partial<ExpoConfig> = {}): ExpoCon
         'expo-splash-screen',
         { image: `${assets}/splash-icon.png`, imageWidth: 160, resizeMode: 'contain', backgroundColor: native.iconBackground },
       ],
+      // Member QR secret in the Keychain / Keystore; kept out of Android backups (a restored key can't decrypt it).
+      ['expo-secure-store', { configureAndroidBackup: true }],
     ],
     extra: { ...(base.extra ?? {}), brand: slug },
   };

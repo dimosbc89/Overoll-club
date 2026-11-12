@@ -78,7 +78,7 @@ Data the app reads directly (row-level security): `brands` (config), `members`, 
 | `src/components` | UI kit (`ui.tsx`: pill buttons, tags, cards, sheet, progress bar, checkbox, text field), `Logo` (shapes from `assets/brand`, pink or white), `Icon`, `Landing`, `JoinFlow`, `RedeemSheet` |
 | `src/i18n` | `el.json` (reference) and `en.json` with the copy-deck keys, typed `t()`, `pluralKey()`, `I18nProvider` (choice saved on the device; fills `{programName}`, `{clubUrl}`, `{supportEmail}`) |
 | `src/theme` | Design-system tokens (`tokens.ts`) and Manrope 500/700/800 (`fonts.ts`) |
-| `src/lib` | Supabase client, session + member data (`session.tsx`), reads (`data.ts`), API client, rules for the screens via core (`memberView.ts`, `joinForm.ts`), QR ticker, formatting |
+| `src/lib` | Supabase client, session + member data (`session.tsx`), reads (`data.ts`), API client, rules for the screens via core (`memberView.ts`, `joinForm.ts`), QR ticker, formatting, offline card (`memberCache.ts`: the QR secret goes to `secretVault.native.ts`, Keychain / Keystore, in the native apps; the web keeps it in browser storage) |
 | `metro.config.js` | Lets Metro resolve the workspace packages' `./x.js` imports to `x.ts` |
 | `test` | Unit tests |
 
@@ -86,7 +86,7 @@ Rules: no user-facing text in components (add keys to both message files **and**
 
 ## Tests
 
-`npm test -w @grow-loyalty/mobile`: API client (error mapping, network errors, timeout, idempotency key reuse), countdown and formatting, QR refresh timing (fake timers), member view (tier prices, next reward/tier, welcome banner), join form (age via core, email, OTP, Supabase errors), i18n (parity, placeholders, every text word for word from the copy deck, no emoji), logo shapes match `assets/brand`.
+`npm test -w @grow-loyalty/mobile`: API client (error mapping, network errors, timeout, idempotency key reuse), countdown and formatting, QR refresh timing (fake timers), member view (tier prices, next reward/tier, welcome banner), join form (age via core, email, OTP, Supabase errors), i18n (parity, placeholders, every text word for word from the copy deck, no emoji), logo shapes match `assets/brand`, offline card (secret only in the vault on native, cleared on sign-out, unreadable secret after a restore).
 
 ## Placeholders and next steps
 
@@ -94,5 +94,4 @@ Rules: no user-facing text in components (add keys to both message files **and**
 - **Push**: the consent is saved; the OS permission prompt and notifications come later (expo-notifications).
 - **Terms / privacy links**: the terms line is shown; the links wait for `{termsUrl}` / `{privacyUrl}`.
 - **SMS sign-in**: email only until the SMS provider is chosen.
-- QR secret on native: move from AsyncStorage to the keychain (expo-secure-store) before the native release.
 - App icons and splash are drafts made from the brand marks (`brands/<brand>/`); the designer's versions replace them before the store release.

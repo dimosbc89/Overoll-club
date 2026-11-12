@@ -95,7 +95,7 @@ Example: €6.40 receipt, Gold member → floor(640 × 10 × 125 / 10 000) = 80 
 
 | Limit | Value |
 | --- | --- |
-| Member QR in app / web | Rotates every 30 seconds, works offline; codes one step (30 s) either side are accepted for clock differences |
+| Member QR in app / web | Rotates every 30 seconds, works offline; codes one step (30 s) either side are accepted for clock differences. The secret behind it stays on the member's device: Keychain / Keystore in the iOS and Android apps (this device only, never in backups), browser storage on the web; removed on sign-out |
 | Wallet pass QR | Static but signed member code (Wallet can't rotate offline); reissuing the pass kills the old code; staff see the member's first name |
 | Typed member code | When the card won't scan, the cashier types the 8-character member code printed under the QR (groups of 4; case, spaces, dashes and Greek look-alike capitals don't matter). It only identifies the member for points: staff check the first name shown, and rewards always need a redemption code from the member's app |
 | Max receipt total per transaction | €80. For a bigger receipt the cashier enters €80: points up to the limit, no override |
