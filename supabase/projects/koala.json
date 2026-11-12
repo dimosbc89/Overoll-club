@@ -31,8 +31,8 @@
     "length": 6
   },
   "email": {
-    "$comment": "Resend domain koalacoffee.gr added 12 Nov 2026 (team growagency, eu-west-1; records in docs/koala/dns-records.md). Switch `enabled` to true once Resend shows it verified and the GitHub secret RESEND_API_KEY_KOALA (a Resend key with sending access to koalacoffee.gr only) is set. Until then Supabase's built-in sender only delivers to members of the Supabase org.",
-    "enabled": false,
+    "$comment": "Resend domain koalacoffee.gr (team growagency, eu-west-1; records in docs/koala/dns-records.md), verified 12 Nov 2026. CI connects Supabase Auth to Resend SMTP with the GitHub secret RESEND_API_KEY_KOALA (Resend key koala-club: sending access, koalacoffee.gr only).",
+    "enabled": true,
     "senderName": "Koala Club",
     "senderEmail": "app@koalacoffee.gr",
     "smtpHost": "smtp.resend.com",
