@@ -148,6 +148,13 @@ export interface BrandDefinition {
   brandName: string;
   /** Support address until the brand's own goes live; fills {supportEmail}. */
   supportEmail: string;
+  /**
+   * Wallet passes that work for this brand, so the store apps may show the
+   * button (each its own platform's: Apple on iOS, Google on Android). Switch
+   * one on only after its pass downloads for real: store review refuses
+   * "coming soon" buttons. The web app always shows both.
+   */
+  walletInApp?: { apple?: boolean; google?: boolean };
   colors: BrandColors;
   shape: BrandShapeStyle;
   fonts: BrandFonts;

@@ -71,6 +71,20 @@ What the app collects, checked in the code: email, first name, account/member ID
 
 Built 12 Nov 2026 (API contract v0.7). Google Wallet: GROW's issuer `3388000000023239253` (shared by the brands, each with its own loyalty class), service account `wallet-issuer@grow-wallet-514520.iam.gserviceaccount.com`, key in the GitHub secret `GOOGLE_WALLET_SERVICE_ACCOUNT` (12 Nov). Publishing access requested on 12 Nov (2–3 days); until then only users of the Pay & Wallet Console (ads@growdigital.gr) can save a pass. Apple Wallet: waits for the Pass Type ID `pass.online.growagency.koala` and its certificate (`APPLE_PASS_P12_KOALA`, `APPLE_PASS_P12_PASSWORD_KOALA`).
 
+## Push notifications
+
+Built 13 Nov 2026 (API contract v0.9): server live on Koala the same day (migration `push_notifications`, jobs `club-push-send` every minute and `club-push-reminders` daily 08:30 UTC). The app asks for permission once, registers the phone, and opens the card or the rewards on a tap; HQ writes offers in the back office (Μηνύματα). Texts: copy deck §d1 (title = "Koala Club").
+
+Delivery goes through Expo's push service, which holds the credentials of each platform on expo.dev (project `koala-club`):
+
+- **iOS:** an APNs key on expo.dev (Credentials → iOS → online.growagency.koala → Push Notifications Key). The team's key "GROW CRM push" (Key ID `YMKGLPS3M8`, team `JUVGRB24Q6`, all apps) can be used if its `.p8` is at hand.
+- **Android:** Firebase project `koala-club-83e47` (GROW's Google Cloud organisation growagency.online, no Analytics, no Gemini), Android app `online.growagency.koala`. Its `google-services.json` goes in `apps/mobile/brands/koala/` (not secret: it ships inside the app); the FCM V1 service account key goes on expo.dev (Credentials → Android → FCM V1 service account key), never in the repo.
+- Both need a new store build (the push entitlement and Firebase come with the build).
+
+## Apple Wallet
+
+Pass Type ID `pass.online.growagency.koala` ("Koala Club loyalty card") registered 13 Nov 2026 in GROW's Apple Developer account. Its certificate is made on Dimos's Mac (Keychain → Certificate Assistant request → Apple Developer → Certificates → Pass Type ID Certificate → export as .p12) and goes into the GitHub secrets `APPLE_PASS_P12_KOALA` (base64) and `APPLE_PASS_P12_PASSWORD_KOALA`; CI hands it to the Edge Function. Once `wallet/apple/link` downloads a pass, switch on `walletInApp: { apple: true }` in `apps/mobile/src/brand/koala.ts` so the iOS app shows the Apple Wallet button (store review refuses "coming soon" buttons, so not before).
+
 ## App store review account
 
 Built 12 Nov 2026 (API contract v0.8). Reviewers sign in with `appreview@growagency.online` (`review.email` in `supabase/projects/koala.json`) and a fixed 10-digit code from the GitHub secret `REVIEW_SIGN_IN_CODE_KOALA`, typed where the emailed code goes. The account keeps at least 1,000 points so every screen can be tried; the till refuses its reward codes. The email and code go into App Store Connect → App Review information and Play Console → App access, never into the repo. Needs a store build made after this change (the app sends 10-digit codes to `auth/review-sign-in`).
