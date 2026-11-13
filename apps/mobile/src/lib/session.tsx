@@ -10,6 +10,7 @@ import { clearCachedBundles, loadCachedBundle, saveCachedBundle } from './cache'
 import { fetchBrand, fetchMemberBundle, type MemberBundle, type RedemptionRow } from './data';
 import { apiBaseUrl, supabaseEnv } from './env';
 import { clubUrl, PROGRAM_NAME, SUPPORT_EMAIL } from './program';
+import { forgetPush, onPushReceived, syncPush } from './push';
 import { getSupabase } from './supabase';
 
 export type AuthState =
@@ -53,6 +54,8 @@ export function SessionProvider({ children }: { children: ReactNode }) {
   const [member, setMember] = useState<MemberState>({ status: 'idle' });
   const [brandConfig, setBrandConfig] = useState<ProgramConfig | null>(null);
   const loadSeq = useRef(0);
+  /** The user this phone last registered for push (once per sign-in). */
+  const pushSynced = useRef<string | null>(null);
   const memberRef = useRef(member);
   memberRef.current = member;
 
@@ -121,14 +124,44 @@ export function SessionProvider({ children }: { children: ReactNode }) {
 
   const refresh = useCallback(() => (userId ? load(userId, false) : Promise.resolve()), [userId, load]);
 
+  // Never touch the Supabase client during render: static web rendering runs
+  // in Node without storage. The token is read only when a call is made.
+  const api = useMemo(() => {
+    const env = supabaseEnv();
+    if (!env) return null;
+    return new ApiClient({
+      baseUrl: apiBaseUrl(env.url),
+      apiKey: env.publishableKey,
+      newKey: () => Crypto.randomUUID(),
+      getAccessToken: async () => {
+        const client = getSupabase();
+        return client ? ((await client.auth.getSession()).data.session?.access_token ?? null) : null;
+      },
+    });
+  }, []);
+
   const signOut = useCallback(async () => {
     const client = getSupabase();
+    // While still signed in: this phone stops getting the member's notifications.
+    if (api) await forgetPush(api);
     await clearCachedBundles();
     setMember({ status: 'idle' });
     // Local scope: works offline; the refresh token is dropped from this device.
     await client?.auth.signOut({ scope: 'local' }).catch(() => {});
     setAuth({ status: 'signed_out' });
-  }, []);
+    pushSynced.current = null;
+  }, [api]);
+
+  // Push (v0.9): once the member's data is in from the server, register this
+  // phone (asks for permission once per install); a message that arrives while
+  // the app is open means the points changed.
+  const memberOnline = member.status === 'ready' && !member.offline;
+  useEffect(() => {
+    if (!memberOnline || !userId || !api || pushSynced.current === userId) return;
+    pushSynced.current = userId;
+    void syncPush(api);
+  }, [memberOnline, userId, api]);
+  useEffect(() => onPushReceived(() => void refresh()), [refresh]);
 
   const updateBundle = useCallback(
     (change: (bundle: MemberBundle) => MemberBundle) => {
@@ -163,22 +196,6 @@ export function SessionProvider({ children }: { children: ReactNode }) {
   );
 
   const config = (member.status === 'ready' ? member.data.brand.config : brandConfig) ?? defaultConfig;
-
-  // Never touch the Supabase client during render: static web rendering runs
-  // in Node without storage. The token is read only when a call is made.
-  const api = useMemo(() => {
-    const env = supabaseEnv();
-    if (!env) return null;
-    return new ApiClient({
-      baseUrl: apiBaseUrl(env.url),
-      apiKey: env.publishableKey,
-      newKey: () => Crypto.randomUUID(),
-      getAccessToken: async () => {
-        const client = getSupabase();
-        return client ? ((await client.auth.getSession()).data.session?.access_token ?? null) : null;
-      },
-    });
-  }, []);
 
   const errorText = useCallback(
     (code: ErrorCode, tier?: string) =>

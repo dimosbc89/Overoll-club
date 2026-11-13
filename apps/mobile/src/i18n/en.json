@@ -258,5 +258,7 @@
   "v2.signin.title": "Welcome back!",
   "v2.signin.join": "Not a member? Join now",
   "v2.code.body": "Type the 6 digits we sent you.",
-  "v2.details.age": "I'm {age} or older (needed to join)"
+  "v2.details.age": "I'm {age} or older (needed to join)",
+  "notifications.off": "Notifications are off on this phone: you won't hear when you get points and rewards.",
+  "notifications.turnOn": "Turn on notifications"
 }

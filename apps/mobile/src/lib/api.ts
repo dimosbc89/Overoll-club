@@ -83,7 +83,9 @@ export type ApiRoute =
   | 'account/delete'
   | 'wallet/apple/link'
   | 'wallet/google/link'
-  | 'auth/review-sign-in';
+  | 'auth/review-sign-in'
+  | 'push/register'
+  | 'push/unregister';
 
 /** Routes called before signing in (no access token). */
 const PUBLIC_ROUTES: ReadonlySet<ApiRoute> = new Set<ApiRoute>(['auth/review-sign-in']);

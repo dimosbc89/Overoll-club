@@ -3,11 +3,12 @@
  * scripts/build-web.ts, and by EAS builds) picks
  *   - supabase/projects/<brand>.json  programName (app name) and appScheme (sign-in links),
  *   - brands/<brand>/native.json      store identity (bundle id, package, slug, icon colour),
- *   - brands/<brand>/*.png            icon, Android adaptive icon, splash image,
+ *   - brands/<brand>/*.png            icon, Android adaptive icon, splash image, Android notification icon (white),
+ *   - brands/<brand>/google-services.json  Firebase (Android push), when the brand has one,
  *   (native.json background must equal src/brand/<brand>.ts colors.background: test/app-config.test.ts)
  * Bundle ids can still change until the app record exists in App Store Connect / Play Console.
  */
-import { readFileSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import type { ConfigContext, ExpoConfig } from 'expo/config';
 
@@ -35,6 +36,10 @@ export function appConfig(slug: string, base: Partial<ExpoConfig> = {}): ExpoCon
   const project = read<{ programName: string; appScheme: string }>(`../../supabase/projects/${slug}.json`);
   const native = read<NativeIdentity>(`brands/${slug}/native.json`);
   const assets = `./brands/${slug}`;
+  // Android push needs the brand's Firebase app (FCM); without the file the app builds and just gets no push.
+  const googleServices = existsSync(join(__dirname, `brands/${slug}/google-services.json`))
+    ? { googleServicesFile: `${assets}/google-services.json` }
+    : {};
   return {
     ...base,
     name: project.programName,
@@ -56,6 +61,7 @@ export function appConfig(slug: string, base: Partial<ExpoConfig> = {}): ExpoCon
       package: native.androidPackage,
       predictiveBackGestureEnabled: false,
       adaptiveIcon: { foregroundImage: `${assets}/adaptive-icon.png`, backgroundColor: native.iconBackground },
+      ...googleServices,
     },
     web: { output: 'static', bundler: 'metro' },
     plugins: [
@@ -67,6 +73,8 @@ export function appConfig(slug: string, base: Partial<ExpoConfig> = {}): ExpoCon
       ],
       // Member QR secret in the Keychain / Keystore; kept out of Android backups (a restored key can't decrypt it).
       ['expo-secure-store', { configureAndroidBackup: true }],
+      // Push (API v0.9): white mark in the Android status bar, tinted with the icon colour.
+      ['expo-notifications', { icon: `${assets}/notification-icon.png`, color: native.iconBackground }],
     ],
     extra: {
       ...(base.extra ?? {}),

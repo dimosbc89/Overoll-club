@@ -392,6 +392,13 @@ Title = `{programName}`; the text below is the body (≤ 100 characters). Counts
 Sent from 13 Nov 2026 (push v0.9; texts in `data/copy/push.*.json`). Changed for brand-neutral use, to approve: `push.welcomeReady` names the brand's gift instead of the butter croissant; tier lines take the brand's tier name `{tier}` and today's numbers from the config (`{morePct}`, `{fewerPct}`); expiry lines take `{days}` and `{months}` from the config (the first reminder uses `push.expiry30`, the last `push.expiry7`); `push.giftCodeExpired` and `push.giftCodeLapsed` are new (a gift code, which returns no points). HQ's own messages (offers, news) are written in the back office: title and text by HQ, sent only to members who said yes to offers by notification.
 
 
+In the app (Profile, on a phone where notifications are off), new on 13 Nov 2026, to approve:
+
+| Key | Ελληνικά | English |
+| --- | --- | --- |
+| `notifications.off` | Οι ειδοποιήσεις είναι κλειστές σε αυτό το κινητό: δεν θα μαθαίνεις πότε παίρνεις πόντους και δώρα. | Notifications are off on this phone: you won't hear when you get points and rewards. |
+| `notifications.turnOn` | Άνοιξε τις ειδοποιήσεις | Turn on notifications |
+
 ### d2. Wallet pass
 
 Apple: each field's `changeMessage` shows on the lock screen when the field changes; Apple writes the new value as `%@`, which stands in for `{balance}`, `{tier}` and `{reward}` below. Google Wallet: the points field updates silently; for the events in d1, send a pass message with header `{programName}` and the push line as body. Labels are typed in caps without accents.
@@ -567,7 +574,7 @@ Labels the screens needed beyond the table above (device sign-in, PIN pad, late 
 
 ### f1c. Back office (v0.5, draft, for Dimos to approve)
 
-The HQ and store-manager screens (sign-in, dashboard, members, staff) are staff-facing. Their texts live in `apps/admin/src/i18n/el.json` and `en.json` under `nav.*`, `office.*`, `signIn.*`, `dashboard.*`, `staff.*` and `members.*`, Greek first. Not reviewed yet.
+The HQ and store-manager screens (sign-in, dashboard, members, staff) are staff-facing. Their texts live in `apps/admin/src/i18n/el.json` and `en.json` under `nav.*`, `office.*`, `signIn.*`, `dashboard.*`, `staff.*`, `members.*` and (from 13 Nov 2026, the Μηνύματα page for HQ notifications) `messages.*`, Greek first. Not reviewed yet.
 
 ### f2. Error messages
 

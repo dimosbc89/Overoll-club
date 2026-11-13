@@ -18,6 +18,7 @@ export function Header() {
   const items = [
     { href: '/', label: t('nav.dashboard') },
     ...(user?.hq ? [{ href: '/members', label: t('nav.members') }] : []),
+    ...(user?.hq ? [{ href: '/messages', label: t('nav.messages') }] : []),
     ...(user ? [{ href: '/staff', label: t('nav.staff') }] : []),
     ...(user ? [{ href: '/reports', label: t('nav.reports') }] : []),
     { href: '/stores', label: t('nav.stores') },

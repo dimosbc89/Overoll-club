@@ -165,6 +165,38 @@ export interface OfficeApi {
     input: RewardInput & { brandId: string; nameEl: string; nameEn: string; shelfPriceCents: number; idempotencyKey: string },
   ): Promise<ApiResponse<{ reward: CatalogReward }>>;
   updateReward(input: RewardInput & { rewardId: string; active?: boolean }): Promise<ApiResponse<{ reward: CatalogReward }>>;
+  /** HQ notification to members who said yes to offers (v0.9); `dryRun` only counts them. */
+  sendMessage(input: MessageInput & ({ dryRun: true } | { idempotencyKey: string })): Promise<
+    ApiResponse<{ recipients: number; campaignId: string | null }>
+  >;
+}
+
+export interface MessageInput {
+  brandId: string;
+  titleEl: string;
+  bodyEl: string;
+  titleEn?: string | null;
+  bodyEn?: string | null;
+}
+
+export interface SentMessage {
+  id: string;
+  titleEl: string;
+  bodyEl: string;
+  recipients: number;
+  createdAt: string;
+}
+
+/** The brand's last messages (HQ reads push_campaigns, v0.9). */
+export async function loadSentMessages(client: SupabaseClient, brandId: string): Promise<SentMessage[]> {
+  const { data, error } = await client
+    .from('push_campaigns')
+    .select('id, title_el, body_el, recipients, created_at')
+    .eq('brand_id', brandId)
+    .order('created_at', { ascending: false })
+    .limit(30);
+  if (error) throw error;
+  return (data ?? []).map((r) => ({ id: r.id, titleEl: r.title_el, bodyEl: r.body_el, recipients: r.recipients, createdAt: r.created_at }));
 }
 
 // ---------------------------------------------------------------------------
@@ -298,6 +330,7 @@ export function createOfficeApi(client: SupabaseClient): OfficeApi | null {
     updateStore: (input) => post('stores/update', { ...input }),
     createReward: (input) => post('rewards/create', { ...input }),
     updateReward: (input) => post('rewards/update', { ...input }),
+    sendMessage: (input) => post('messages/send', { ...input }),
   };
 }
 

@@ -4,7 +4,8 @@ import { StatusBar } from 'expo-status-bar';
 import { Platform } from 'react-native';
 
 import { I18nProvider } from '../i18n/I18nProvider';
-import { SessionProvider } from '../lib/session';
+import { usePushTaps } from '../lib/push';
+import { SessionProvider, useSession } from '../lib/session';
 import { fontAssets } from '../theme/fontAssets';
 import { colors } from '../theme/tokens';
 
@@ -18,9 +19,17 @@ export default function RootLayout() {
   return (
     <I18nProvider>
       <SessionProvider>
+        <PushTaps />
         <StatusBar style="dark" />
         <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: colors.background } }} />
       </SessionProvider>
     </I18nProvider>
   );
+}
+
+/** A tap on a push notification opens its tab, once the member's card is there (native only; a no-op on the web). */
+function PushTaps() {
+  const { member } = useSession();
+  usePushTaps(member.status === 'ready');
+  return null;
 }

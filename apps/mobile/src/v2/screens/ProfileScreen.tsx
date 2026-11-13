@@ -8,11 +8,12 @@ import { formatDayMonth, formatPoints } from '../../lib/format';
 import type { MemberBundle } from '../../lib/data';
 import { nextTierView } from '../../lib/memberView';
 import { useSession } from '../../lib/session';
+import { pushIsOff, usePushPermission } from '../../lib/usePushPermission';
 import { getSupabase } from '../../lib/supabase';
 import { tierName } from '../../lib/tiers';
 import { AppScreen, TitleRow } from '../chrome';
 import { c, radius, raised, space, t } from '../theme';
-import { ErrorText, Group, Progress, SettingsRow, TierSticker } from '../ui';
+import { ErrorText, Group, Notice, Progress, SettingsRow, TierSticker } from '../ui';
 
 type Consents = { consent_email: boolean; consent_sms: boolean; consent_push: boolean };
 type ConsentKey = keyof Consents;
@@ -28,6 +29,7 @@ export function ProfileScreen({ bundle }: { bundle: MemberBundle }) {
   const [consents, setConsents] = useState<Consents | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [exporting, setExporting] = useState(false);
+  const push = usePushPermission();
 
   // Contact choices: the member's own row (row-level security lets them change these three).
   useEffect(() => {
@@ -137,7 +139,11 @@ export function ProfileScreen({ bundle }: { bundle: MemberBundle }) {
         {Platform.OS !== 'web' ? (
           <SettingsRow icon="bell" label={tr('v2.profile.consentPush')} toggle={!!consents?.consent_push} disabled={!consents} onPress={() => toggle('consent_push')} />
         ) : null}
+        {pushIsOff(push.permission) ? (
+          <SettingsRow icon="bell" label={tr('notifications.turnOn')} onPress={() => void push.enable()} />
+        ) : null}
       </Group>
+      {pushIsOff(push.permission) ? <Notice body={tr('notifications.off')} /> : null}
       {error ? <ErrorText message={error} /> : null}
 
       <Group title={tr('v2.profile.help')}>

@@ -9,6 +9,7 @@ import { useI18n } from '../../i18n/I18nProvider';
 import { locales, type Locale, type Translate } from '../../i18n/messages';
 import { fetchHistory, type HistoryItem, type MemberBundle } from '../../lib/data';
 import { formatDateTime, formatDayMonth, formatEuroFromCents, formatSignedPoints } from '../../lib/format';
+import { pushIsOff, usePushPermission } from '../../lib/usePushPermission';
 import { useSession } from '../../lib/session';
 import { inLocale } from '../../lib/storeNames';
 import { useRemote } from '../../lib/useRemote';
@@ -99,9 +100,16 @@ function MemberProfile({ bundle }: { bundle: MemberBundle }) {
   const { member, rewards } = bundle;
   const loadHistory = useCallback((client: SupabaseClient) => fetchHistory(client, member.id, rewards), [member.id, rewards]);
   const { state: history, reload } = useRemote(loadHistory);
+  const push = usePushPermission();
 
   return (
     <>
+      {pushIsOff(push.permission) ? (
+        <Card style={styles.section}>
+          <Muted>{t('notifications.off')}</Muted>
+          <LinkButton label={t('notifications.turnOn')} onPress={() => void push.enable()} />
+        </Card>
+      ) : null}
       <Card style={styles.section}>
         <Text style={type.label}>{t('profile.name')}</Text>
         <Body>{member.first_name}</Body>
