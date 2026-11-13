@@ -43,7 +43,7 @@ Builds: EAS project `koala-club` on GROW's Expo account (dimos@growagency.online
 
 iOS: first store build 0.1.0 (4) uploaded to TestFlight on 12 Nov 2026 (EAS submission `47083539`); App Store Connect app "Koala Club", Apple ID `6834007568` (`eas.json` `submit.koala.ios.ascAppId`), so later submissions run from the workflow (`kind: submit`). Store builds hide the Wallet buttons and the "no app needed" copy (`apps/mobile/src/lib/platformFeatures.ts`); the next build for review needs that change (build 4 predates it). Store version: `version` in `apps/mobile/brands/<brand>/native.json` (Koala 1.0.0 from 12 Nov 2026; build numbers stay EAS's).
 
-13 Nov 2026 (afternoon): iOS 1.0.0 (10) (push + Apple Wallet button) is in TestFlight (internal group "Team (Expo)") and selected on the 1.0.0 version page (not sent for review). Android 1.0.0 (5) (push; EAS build `6eb54c43`) is live on Play **internal testing** for the email list "Koala Club" (dimos@growagency.online); testers join at https://play.google.com/apps/internaltest/4701049207165032312. Play App Signing was already on.
+13 Nov 2026 (afternoon): iOS 1.0.0 (11) (push, Apple Wallet button, opening screen) is in TestFlight (internal group "Team (Expo)") and selected on the 1.0.0 version page (not sent for review). Android 1.0.0 (5) (push; EAS build `6eb54c43`) is live on Play **internal testing** (1.0.0 (6) with the opening screen is built on EAS, not uploaded yet) for the email list "Koala Club" (dimos@growagency.online); testers join at https://play.google.com/apps/internaltest/4701049207165032312. Play App Signing was already on.
 
 ### Store declarations (filled 13 Nov 2026)
 
