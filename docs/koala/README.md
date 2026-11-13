@@ -95,6 +95,6 @@ From 13 Nov 2026 the Koala app uses the screens of the Figma concept (`MHtMmw4vU
 
 - Fonts: Playpen Sans (stickers) and M PLUS Rounded 1c Black, subset to Latin + Greek (OFL, `apps/mobile/assets/fonts`).
 - Reward illustrations: `rewards.icon` (migration `20261113000000_reward_icon.sql`, seed from `data/koala/rewards.json`); pie, muffin and cake drawn in the Figma style for Koala's menu.
-- The welcome photo is the Figma placeholder (AI-generated, generic): replace with Koala's own shot (`apps/mobile/brands/koala/welcome-photo.jpg`).
+- The welcome photo is the one in the Figma concept (AI-generated: iced coffee and cinnamon roll), resized to `apps/mobile/brands/koala/welcome-photo.jpg`. Dimos chose to keep it (13 Nov 2026) rather than wait for a shot from Koala.
 - Sign-in by mobile (the segmented control in Figma) waits for an SMS provider; the screens show email only.
 
