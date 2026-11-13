@@ -43,6 +43,18 @@ Builds: EAS project `koala-club` on GROW's Expo account (dimos@growagency.online
 
 iOS: first store build 0.1.0 (4) uploaded to TestFlight on 12 Nov 2026 (EAS submission `47083539`); App Store Connect app "Koala Club", Apple ID `6834007568` (`eas.json` `submit.koala.ios.ascAppId`), so later submissions run from the workflow (`kind: submit`). Store builds hide the Wallet buttons and the "no app needed" copy (`apps/mobile/src/lib/platformFeatures.ts`); the next build for review needs that change (build 4 predates it). Store version: `version` in `apps/mobile/brands/<brand>/native.json` (Koala 1.0.0 from 12 Nov 2026; build numbers stay EAS's).
 
+13 Nov 2026: iOS 1.0.0 (8) (v2 screens) is in TestFlight (internal group "Team (Expo)") and selected on the 1.0.0 version page (not sent for review); Android 1.0.0 (4) AAB is EAS build `e58a8f6f` (for Play internal testing).
+
+### Store declarations (filled 13 Nov 2026)
+
+What the app collects, checked in the code: email, first name, account/member ID, purchase history (points ledger with amount, store and date). Nothing else: no phone or birthday fields in the app (columns exist, not asked), no push tokens yet, no location, camera, analytics or crash SDKs, no advertising ID, no ads. Processors (Supabase, Cloudflare, Resend) are not "sharing" under either store's rules. If any of this changes (push notifications, phone or birthday in the app, an analytics SDK), update both declarations in the same change.
+
+- **App Store, App Privacy** (published): Name (App Functionality); Email Address (App Functionality, Developer's Advertising or Marketing: offers by email with consent); User ID (App Functionality); Purchase History (App Functionality, Analytics: back-office store reports). All linked to the user, none used for tracking. Privacy policy https://club.koalacoffee.gr/privacy.
+- **App Store, age rating**: every question "none/no" → calculated 4+, overridden to **16+** because the terms set a minimum age of 15 and Apple requires the rating to match a EULA minimum (Apple has no 15+; 16+ shows as 17+ on iOS before 26, 15+ in Korea, A16 in Brazil). Age suitability URL https://club.koalacoffee.gr/terms. If Dimos prefers 13+, change it under App Information → Age Ratings.
+- **App Store, content rights**: contains third-party content (Koala's brand, menu, photos) with the necessary rights; rests on Koala's signed authorization letter (still to come).
+- **Play, App content** (all 10 complete): Ads no; Advertising ID no; Government no; Financial features none; Health none; Target audience 16–17 and 18+; Content rating (IARC, "All other app types", contact hello@koalacoffee.gr): only "online content: yes" (catalog and stores load from the server), everything else no → PEGI 3 / ESRB Everyone / IARC 3+; Data safety: collected (not shared, encrypted in transit, all required, not ephemeral) Name (App functionality, Account management), Email (App functionality, Account management, Advertising or marketing), User IDs (App functionality, Account management), Purchase history (App functionality, Analytics, Fraud prevention); account creation "username and other authentication"; delete-account URL https://club.koalacoffee.gr/privacy (the "How long we keep it" section has the steps and what is erased or kept). Sign-in details and privacy policy were entered on 12 Nov.
+- Still open at account level: Play's "Declare your trader status" banner (EU Digital Services Act) for GROW's developer account.
+
 ## Before launch: needed from Koala
 
 - [ ] Approve the reward catalog and the in-store prices (we used efood prices).

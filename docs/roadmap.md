@@ -133,3 +133,5 @@ Legend: **D** = Dimos · **C** = Claude · ☐ open · ☑ done
 - ☐ D: test the Android APK on a phone (sign-in, card and QR, rewards, counter QR deep link `koalaclub://join`)
 - ☐ D + C: iOS: App Store Connect API key (Admin) in GitHub secrets, or one interactive build; then a TestFlight build
 - ☐ D: store records: Google Play Console app (GROW's account) and App Store Connect app (`online.growagency.koala`), with Koala's authorization letter
+- ☑ C: store declarations (13 Nov): App Store App Privacy, age rating (16+, terms minimum 15), content rights; Play Data safety, content rating (PEGI 3), target audience 16+, ads, advertising ID, government, financial, health (answers in `docs/koala/README.md`)
+- ☐ D: Play account trader status (EU Digital Services Act banner)
