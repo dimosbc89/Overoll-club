@@ -85,8 +85,8 @@ Legend: **D** = Dimos · **C** = Claude · ☐ open · ☑ done
 - ☑ C: store manager view: monthly redemption report (12 Nov: Αναφορές page, per reward and per cashier, value at the in-store price when handed out, CSV for Excel; own store numbers and cashiers: done in v0.5)
 - ☑ C: push notifications, server (13 Nov, API v0.9): phones register, points / reward / tier / welcome gift / expired code / expiry reminders sent through Expo, HQ messages to members who said yes (`messages/send`)
 - ☑ C: push in the apps (13 Nov: permission asked once after the card loads, token registered on every start and dropped on sign-out, a tap opens the card or the rewards, "turn on notifications" in Profile; white notification icon per brand) and the back-office page Μηνύματα (HQ: write, count, send, list)
-- ☐ C: new store builds with push (after the credentials below)
-- ☐ D: push credentials on expo.dev (iOS APNs key, Android FCM V1 key) and Firebase project; approve the push texts (copy deck §d1)
+- ☑ C: new store builds with push (13 Nov: iOS 1.0.0 (10) in TestFlight and on the 1.0.0 version page, Android 1.0.0 (5) AAB)
+- ☐ D: push credentials on expo.dev (iOS APNs key ☑ 13 Nov, Android FCM V1 key: upload the JSON) and Firebase project ☑; approve the push texts (copy deck §d1)
 - ☐ C: print files: counter QR stand per store, cup/bag sticker
 - ☐ D: end-to-end test with 5 friends; print the pilot materials for Chalandri
 
