@@ -13,6 +13,8 @@ export const koala: BrandDefinition = {
   programName: 'Koala Club',
   brandName: 'Koala',
   supportEmail: 'hello@koalacoffee.gr',
+  // Apple Wallet pass live since 13 Nov 2026 (certificate "Koala Club pass"); Google Wallet waits for publishing access.
+  walletInApp: { apple: true },
   colors: {
     background: '#f8f1de',
     surface: '#fffcf4',
