@@ -79,7 +79,7 @@ Delivery goes through Expo's push service, which holds the credentials of each p
 
 - **iOS:** the team's APNs key "GROW CRM push" (Key ID `YMKGLPS3M8`, team `JUVGRB24Q6`, Team Scoped, Sandbox & Production) was already saved in the grow-agency-lp Expo account and was linked to the Koala bundle on 13 Nov 2026 (Credentials → iOS → online.growagency.koala → Push key → Choose saved push key). The team holds the maximum of two such keys ("GROW CRM push" and "Finders"): Apple refuses a third, and revoking either one stops push in the apps that use it.
 - **Android:** Firebase project `koala-club-83e47` (GROW's Google Cloud organisation growagency.online, no Analytics, no Gemini), Android app `online.growagency.koala`. Its `google-services.json` goes in `apps/mobile/brands/koala/` (not secret: it ships inside the app); the FCM V1 service account key goes on expo.dev (Credentials → Android → FCM V1 service account key), never in the repo.
-- Both need a new store build (the push entitlement and Firebase come with the build): iOS 1.0.0 (10) and Android 1.0.0 (5), 13 Nov 2026. The FCM V1 key was generated in Firebase (Service accounts → Firebase Admin SDK) the same day; Dimos uploads its JSON to expo.dev.
+- Both need a new store build (the push entitlement and Firebase come with the build): iOS 1.0.0 (10) and Android 1.0.0 (5), 13 Nov 2026. The FCM V1 key was generated in Firebase (Service accounts → Firebase Admin SDK) and uploaded to expo.dev the same day (private key ID a9a60fa1…, service account firebase-adminsdk-fbsvc).
 
 ## Apple Wallet
 
