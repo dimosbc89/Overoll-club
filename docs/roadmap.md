@@ -134,8 +134,9 @@ Legend: **D** = Dimos · **C** = Claude · ☐ open · ☑ done
 - ☐ D + C: end-to-end test with a real sign-in: ~~Dimos signs in to the Koala back office once, Claude gives that account the platform role~~ (done 12 Nov; sign-in code arrived through Resend), then a till device and a cashier from the Staff page; join, points at the till, reward code
 - ☐ D: answers from Koala (catalog and prices, opening hours, names, domain and sender email, legal entity, wordmark, efood, till device)
 - ☑ C + D: EAS project `koala-club` on GROW AGENCY LP's Expo account, GitHub secret `EXPO_TOKEN`, build workflow (`.github/workflows/native.yml`); first Android test APK built 12 Nov
-- ☐ D: test the Android APK on a phone (sign-in, card and QR, rewards, counter QR deep link `koalaclub://join`)
-- ☐ D + C: iOS: App Store Connect API key (Admin) in GitHub secrets, or one interactive build; then a TestFlight build
-- ☐ D: store records: Google Play Console app (GROW's account) and App Store Connect app (`online.growagency.koala`), with Koala's authorization letter
+- ☐ D: test the store builds on phones: iOS 1.0.0 (10) from TestFlight, Android 1.0.0 (5) from Play internal testing (sign-in, card and QR, rewards, push after a scan, Add to Apple Wallet, counter QR deep link `koalaclub://join`)
+- ☑ D + C: iOS: App Store Connect API key on EAS; TestFlight builds from `eas/koala/ios/store` + `submit` (1.0.0 (10) on 13 Nov)
+- ☑ D: store records: Google Play Console app (GROW's account) and App Store Connect app (`online.growagency.koala`); Koala's authorization letter still to come (see Koala answers)
+- ☐ C: declare the push token in Play Data safety (Device or other IDs) and check App Store App Privacy, before the production release
 - ☑ C: store declarations (13 Nov): App Store App Privacy, age rating (16+, terms minimum 15), content rights; Play Data safety, content rating (PEGI 3), target audience 16+, ads, advertising ID, government, financial, health (answers in `docs/koala/README.md`)
 - ☐ D: Play account trader status (EU Digital Services Act banner)
