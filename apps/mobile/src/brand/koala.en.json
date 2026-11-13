@@ -35,5 +35,6 @@
   "v2.welcome.title": "Your coffee just got sweeter.",
   "v2.welcome.body": "{programName} is Koala's new loyalty programme. Collect points with every purchase and turn them into coffee, bakes and treats.",
   "v2.how.2": "You get {points} points for every €1, at both Koalas.",
-  "v2.join.storeBody": "Join in a minute, collect points and treat yourself to coffee and bakes."
+  "v2.join.storeBody": "Join in a minute, collect points and treat yourself to coffee and bakes.",
+  "v2.splash.tagline": "#freshcupsandbakes since 1993"
 }

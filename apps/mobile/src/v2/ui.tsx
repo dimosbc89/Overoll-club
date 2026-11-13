@@ -69,6 +69,11 @@ function Shape({ shape, height, color }: { shape: LogoShape; height: number; col
   );
 }
 
+/** The brand's logo mark alone (Figma Logo · Mark), `height` high, in one colour. Decorative. */
+export function LogoMark({ height, color }: { height: number; color: string }) {
+  return <Shape shape={brand.logo.mark} height={height} color={color} />;
+}
+
 /**
  * Logo lockup (Figma Logo · Lockup): the mark, 40 high, and the brand name set in the
  * display font (a stand-in until the brand's own wordmark), or the mark alone.

@@ -952,6 +952,8 @@ Texts of the v2 screens (`apps/mobile/src/v2`), first used by Koala Club from 13
 | `v2.profile.help` | Βοήθεια και όροι | Help and terms |
 | `v2.profile.download` | Κατέβασε τα δεδομένα μου | Download my data |
 | `v2.history.total` | Σύνολο {points} πόντοι. | Total {points} points. |
+| `v2.splash.sticker` | Club | Club |
+| `v2.splash.tagline` | Good things come in layers | Good things come in layers |
 | `v2.welcome.sticker` | Νέο! {programName} | New! {programName} |
 | `v2.welcome.title` | Κάθε επίσκεψη προσθέτει μια στρώση. | Every visit adds a layer. |
 | `v2.welcome.body` | Το {programName} είναι το νέο πρόγραμμα επιβράβευσης του Overoll. Μαζεύεις πόντους σε κάθε αγορά και τους κάνεις καφέ, κρουασάν και καλούδια. | {programName} is Overoll's new loyalty programme. Collect points with every purchase and turn them into coffee, croissants and treats. |
@@ -981,6 +983,7 @@ Koala Club overrides:
 - `v2.welcome.body`: «Το {programName} είναι το νέο πρόγραμμα επιβράβευσης του Koala. Μαζεύεις πόντους σε κάθε αγορά και τους κάνεις καφέ, bakes και καλούδια.» / “{programName} is Koala's new loyalty programme. Collect points with every purchase and turn them into coffee, bakes and treats.”
 - `v2.how.2`: «Παίρνεις {points} πόντους για κάθε 1 €, και στα δύο Koala.» / “You get {points} points for every €1, at both Koalas.”
 - `v2.join.storeBody`: «Γίνε μέλος σε ένα λεπτό, μάζευε πόντους και κερνιέσαι καφέ και bakes.» / “Join in a minute, collect points and treat yourself to coffee and bakes.”
+- `v2.splash.tagline`: «#freshcupsandbakes από το 1993» / “#freshcupsandbakes since 1993” (opening screen, as in the Figma 01 Splash)
 
 ## Questions for Dimos
 

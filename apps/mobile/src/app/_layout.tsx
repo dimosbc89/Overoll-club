@@ -8,6 +8,7 @@ import { usePushTaps } from '../lib/push';
 import { SessionProvider, useSession } from '../lib/session';
 import { fontAssets } from '../theme/fontAssets';
 import { colors } from '../theme/tokens';
+import { Splash } from '../v2/Splash';
 
 export default function RootLayout() {
   const [fontsLoaded, fontError] = useFonts(fontAssets);
@@ -22,6 +23,7 @@ export default function RootLayout() {
         <PushTaps />
         <StatusBar style="dark" />
         <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: colors.background } }} />
+        <Splash />
       </SessionProvider>
     </I18nProvider>
   );

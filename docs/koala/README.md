@@ -95,6 +95,7 @@ From 13 Nov 2026 the Koala app uses the screens of the Figma concept (`MHtMmw4vU
 
 - Fonts: Playpen Sans (stickers) and M PLUS Rounded 1c Black, subset to Latin + Greek (OFL, `apps/mobile/assets/fonts`).
 - Reward illustrations: `rewards.icon` (migration `20261113000000_reward_icon.sql`, seed from `data/koala/rewards.json`); pie, muffin and cake drawn in the Figma style for Koala's menu.
+- Opening screen (Figma 01 Splash, asked for by Dimos on 13 Nov 2026): brand green, the cream mark, «koala coffee», the Club sticker, the illustrations and «#freshcupsandbakes από το 1993» (`apps/mobile/src/v2/Splash.tsx`, geometry in `splashLayout.ts`). The native splash shows only the mark on the same green; the opening screen takes over with the mark in the same place, moves it into the design while the rest appears (no animation with Reduce Motion), and fades out after at least 1.6 s, once the session is known (at most 3.5 s). Native apps only.
 - The welcome photo is the one in the Figma concept (AI-generated: iced coffee and cinnamon roll), resized to `apps/mobile/brands/koala/welcome-photo.jpg`. Dimos chose to keep it (13 Nov 2026) rather than wait for a shot from Koala.
 - Sign-in by mobile (the segmented control in Figma) waits for an SMS provider; the screens show email only.
 
