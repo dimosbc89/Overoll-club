@@ -83,7 +83,7 @@ Delivery goes through Expo's push service, which holds the credentials of each p
 
 ## Apple Wallet
 
-Pass Type ID `pass.online.growagency.koala` ("Koala Club loyalty card") registered 13 Nov 2026 in GROW's Apple Developer account. Its certificate is made on Dimos's Mac (Keychain → Certificate Assistant request → Apple Developer → Certificates → Pass Type ID Certificate → export as .p12) and goes into the GitHub secrets `APPLE_PASS_P12_KOALA` (base64) and `APPLE_PASS_P12_PASSWORD_KOALA`; CI hands it to the Edge Function. Once `wallet/apple/link` downloads a pass, switch on `walletInApp: { apple: true }` in `apps/mobile/src/brand/koala.ts` so the iOS app shows the Apple Wallet button (store review refuses "coming soon" buttons, so not before).
+Pass Type ID `pass.online.growagency.koala` ("Koala Club loyalty card") registered 13 Nov 2026 in GROW's Apple Developer account; its certificate "Koala Club pass" (expires 13 Dec 2027: renew before then, or passes stop updating) made the same day and in the GitHub secrets. Its certificate is made on Dimos's Mac (Keychain → Certificate Assistant request → Apple Developer → Certificates → Pass Type ID Certificate → export as .p12) and goes into the GitHub secrets `APPLE_PASS_P12_KOALA` (base64) and `APPLE_PASS_P12_PASSWORD_KOALA`; CI hands it to the Edge Function. Once `wallet/apple/link` downloads a pass, switch on `walletInApp: { apple: true }` in `apps/mobile/src/brand/koala.ts` so the iOS app shows the Apple Wallet button (store review refuses "coming soon" buttons, so not before).
 
 ## App store review account
 
