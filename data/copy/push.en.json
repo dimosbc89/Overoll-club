@@ -1,0 +1,12 @@
+{
+  "push.pointsAdded": "+{points} points at {store}. Total: {balance}. Thank you!",
+  "push.rewardUnlocked": "You've got enough points for a reward: {reward}. Come and get it!",
+  "push.welcomeReady": "Great start! Your welcome gift is waiting in your Rewards, on us: {reward}.",
+  "push.tierUp.gold": "You're {tier} now! {morePct}% more points on every purchase and rewards for {fewerPct}% fewer points.",
+  "push.tierUp.club": "Welcome to {tier}! {morePct}% more points on every purchase and rewards for {fewerPct}% fewer points.",
+  "push.expiry30": "Your {points} points expire in {days} days. One purchase keeps them for another {months} months.",
+  "push.expiry7": "Only {days} days left for your {points} points! Pop in for a coffee and keep them.",
+  "push.redemptionExpired": "Your reward code expired, but don't worry: your {points} points are back on your card.",
+  "push.giftCodeExpired": "Your code expired, but don't worry: the {reward} is back in your Rewards.",
+  "push.giftCodeLapsed": "The code for the {reward} expired, and the gift has now expired too."
+}

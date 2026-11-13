@@ -41,7 +41,10 @@ import type postgresType from 'postgres';
 import { createHandler } from '@grow-loyalty/api';
 import {
   type AppleSetup,
+  type ExpoPushMessage,
+  type ExpoPushTicket,
   type GoogleSetup,
+  type PushServices,
   type WalletDesign,
   type WalletServices,
   createApplePassSigner,
@@ -122,6 +125,37 @@ function walletServices(forge: typeof forgeType | undefined, supabaseUrl: string
     }
   }
   return services;
+}
+
+/**
+ * Push notifications (v0.9) through the Expo push service: Expo holds the
+ * Apple (APNs key) and Google (FCM) credentials of each app on expo.dev, so
+ * nothing secret is needed here. EXPO_ACCESS_TOKEN only if "enhanced push
+ * security" is switched on for the Expo project.
+ */
+function expoPush(accessToken: string | undefined, designs: Record<string, WalletDesign>): PushServices {
+  return {
+    // The program name (message title) and tier names come from the brand files, like the Wallet pass.
+    brands: Object.fromEntries(
+      Object.entries(designs).map(([slug, d]) => [slug, { programName: d.programName, tiers: d.tiers }]),
+    ),
+    async sendExpo(messages: readonly ExpoPushMessage[]): Promise<ExpoPushTicket[]> {
+      const response = await fetch('https://exp.host/--/api/v2/push/send', {
+        method: 'POST',
+        headers: {
+          accept: 'application/json',
+          'content-type': 'application/json',
+          ...(accessToken ? { authorization: `Bearer ${accessToken}` } : {}),
+        },
+        body: JSON.stringify(messages),
+        signal: AbortSignal.timeout(15_000),
+      });
+      if (!response.ok) throw new Error(`Expo push ${response.status}: ${(await response.text()).slice(0, 200)}`);
+      const json = (await response.json()) as { data?: ExpoPushTicket[] };
+      if (!Array.isArray(json.data)) throw new Error('Expo push: no tickets in the answer');
+      return json.data;
+    },
+  };
 }
 
 /** The app store review account, when both env values are set (else undefined: the route refuses). */
@@ -249,6 +283,7 @@ export function start({ postgres, createClient, forge }: Libraries): void {
     },
     wallet: walletServices(forge, required('SUPABASE_URL')),
     review: reviewSetup(admin),
+    push: expoPush(Deno.env.get('EXPO_ACCESS_TOKEN'), walletDesignsByBrand()),
     allowedOrigins: (Deno.env.get('ALLOWED_ORIGINS') ?? '*')
       .split(',')
       .map((o) => o.trim())

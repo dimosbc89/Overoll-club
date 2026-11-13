@@ -3,6 +3,7 @@ import { audit } from './internal/audit.js';
 import { returnGift } from './internal/gifts.js';
 import * as input from './internal/input.js';
 import { lockMember } from './internal/members.js';
+import { enqueuePush } from './internal/push.js';
 import type { Db } from './result.js';
 
 export interface ExpireRedemptionsInput {
@@ -53,8 +54,8 @@ export async function expireRedemptions(sql: Db, options: ExpireRedemptionsInput
       seen.add(candidate.id);
       const expired = await sql.begin(async (tx) => {
         await lockMember(tx, candidate.member_id);
-        const [r] = await tx<{ brand_id: string; status: string; expires_at: Date; points_spent: number; gift_id: string | null }[]>`
-          select brand_id, status, expires_at, points_spent, gift_id from public.redemptions
+        const [r] = await tx<{ brand_id: string; reward_id: string; status: string; expires_at: Date; points_spent: number; gift_id: string | null }[]>`
+          select brand_id, reward_id, status, expires_at, points_spent, gift_id from public.redemptions
           where id = ${candidate.id} for update
         `;
         if (!r || r.status !== 'pending' || !isRedemptionExpired(r.expires_at, now)) return false;
@@ -70,6 +71,16 @@ export async function expireRedemptions(sql: Db, options: ExpireRedemptionsInput
             )
           `;
         }
+        // Push (v0.9): "your code expired, the points (or the gift) are back".
+        await enqueuePush(tx, {
+          brandId: r.brand_id,
+          memberId: candidate.member_id,
+          kind: 'code_expired',
+          ref: candidate.id,
+          payload: { redemptionId: candidate.id, rewardId: r.reward_id, points: r.points_spent, giftStatus },
+          now,
+          sendAfter: now,
+        });
         await audit(tx, {
           brandId: r.brand_id,
           actorUserId: null,

@@ -63,3 +63,9 @@ select cron.schedule('club-review-tiers', '45 1 * * *', $cmd$select private.call
 -- Wallet passes (v0.7): tell Apple and Google about changed passes, every minute.
 -- Only members who added a pass are looked at; without Wallet set up it does nothing.
 select cron.schedule('club-wallet-updates', '* * * * *', $cmd$select private.call_api_job('wallet-updates')$cmd$);
+
+-- Push notifications (v0.9): send what the outbox holds, every minute.
+select cron.schedule('club-push-send', '* * * * *', $cmd$select private.call_api_job('push-send')$cmd$);
+
+-- Points-expiry reminders (30 and 7 days before), daily at 08:30 UTC (10:30 Athens time in winter).
+select cron.schedule('club-push-reminders', '30 8 * * *', $cmd$select private.call_api_job('push-reminders')$cmd$);

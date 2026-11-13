@@ -39,6 +39,12 @@ import {
   walletGoogleLink,
   walletUpdates,
   prepareReviewMember,
+  type PushServices,
+  pushReminders,
+  registerPushDevice,
+  sendPushMessage,
+  sendPushes,
+  unregisterPushDevice,
 } from '@grow-loyalty/server';
 
 export interface HandlerDeps {
@@ -75,6 +81,11 @@ export interface HandlerDeps {
    * `auth/review-sign-in` refuses every attempt.
    */
   review?: { email: string; code: string; brandSlug?: string; tokenHash(email: string): Promise<string> };
+  /**
+   * Push notifications (v0.9): sends through the Expo push service. Without
+   * it the outbox keeps its messages and `jobs/push-send` sends nothing.
+   */
+  push?: PushServices;
 }
 
 type Body = Record<string, unknown>;
@@ -195,6 +206,27 @@ export const routes: Readonly<Record<string, Route>> = {
   },
   // App store review account (v0.8).
   'auth/review-sign-in': { auth: 'public', run: (sql, _uid, b, deps) => reviewSignIn(sql, b, deps) },
+  // Push notifications (v0.9): the member's phones, HQ messages, and the jobs that send them.
+  'push/register': {
+    auth: 'user',
+    run: (sql, uid, b) => registerPushDevice(sql, { ...(b as any), callerUserId: asUser(uid) }),
+  },
+  'push/unregister': {
+    auth: 'user',
+    run: (sql, uid, b) => unregisterPushDevice(sql, { ...(b as any), callerUserId: asUser(uid) }),
+  },
+  'messages/send': {
+    auth: 'user',
+    run: (sql, uid, b) => sendPushMessage(sql, { ...(b as any), callerUserId: asUser(uid) }),
+  },
+  'jobs/push-send': {
+    auth: 'service',
+    run: (sql, _uid, b, deps) => sendPushes(sql, deps.push, batchOption(b)),
+  },
+  'jobs/push-reminders': {
+    auth: 'service',
+    run: (sql, _uid, b) => pushReminders(sql, batchOption(b)),
+  },
 };
 
 const NO_WALLET: WalletServices = { designs: {} };

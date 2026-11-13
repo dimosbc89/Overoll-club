@@ -380,14 +380,17 @@ Title = `{programName}`; the text below is the body (≤ 100 characters). Counts
 | --- | --- | --- | --- | --- |
 | `push.pointsAdded` | Points added | +{points} πόντοι στο {store}. Σύνολο: {balance}. Ευχαριστούμε! | +{points} points at {store}. Total: {balance}. Thank you! | 65 / 61 |
 | `push.rewardUnlocked` | Balance reaches a reward | Έχεις αρκετούς πόντους για δώρο: {reward}. Πέρνα να το πάρεις! | You've got enough points for a reward: {reward}. Come and get it! | 81 / 88 |
-| `push.welcomeReady` | Welcome croissant unlocked (first purchase) | Καλή αρχή! Ένα κρουασάν βουτύρου σε περιμένει κερασμένο στα Δώρα σου. | Great start! A butter croissant is waiting in your Rewards, on us. | 69 / 66 |
-| `push.tierUp.gold` | Tier up to Gold | Ανέβηκες στο Gold! Τώρα παίρνεις 25% περισσότερους πόντους και δώρα με 20% λιγότερους. | You're Gold now! 25% more points on every purchase and rewards for 20% fewer points. | 86 / 84 |
-| `push.tierUp.club` | Tier up to Club | Ανέβηκες στο Club! Τώρα παίρνεις 50% περισσότερους πόντους και δώρα με 30% λιγότερους. | Welcome to Club! 50% more points on every purchase and rewards for 30% fewer points. | 86 / 84 |
-| `push.expiry30` | Points expire in 30 days | Οι {points} πόντοι σου λήγουν σε 30 μέρες. Μία αγορά τους κρατάει για άλλους 12 μήνες. | Your {points} points expire in 30 days. One purchase keeps them for another 12 months. | 80 / 80 |
-| `push.expiry7` | Points expire in 7 days | Μόνο 7 μέρες ακόμα για τους {points} πόντους σου! Πέρνα για έναν καφέ και κράτα τους. | Only 7 days left for your {points} points! Pop in for a coffee and keep them. | 79 / 71 |
+| `push.welcomeReady` | Welcome gift unlocked (first purchase) | Καλή αρχή! Το δώρο καλωσορίσματος σε περιμένει κερασμένο στα Δώρα σου: {reward}. | Great start! Your welcome gift is waiting in your Rewards, on us: {reward}. | 99 / 98 |
+| `push.tierUp.gold` | Up to the middle tier (Gold; Koala: Koala) | Ανέβηκες στο {tier}! Τώρα παίρνεις {morePct}% περισσότερους πόντους και δώρα με {fewerPct}% λιγότερους. | You're {tier} now! {morePct}% more points on every purchase and rewards for {fewerPct}% fewer points. | 92 / 90 |
+| `push.tierUp.club` | Up to the top tier (Club; Koala: Eucalyptus) | Ανέβηκες στο {tier}! Τώρα παίρνεις {morePct}% περισσότερους πόντους και δώρα με {fewerPct}% λιγότερους. | Welcome to {tier}! {morePct}% more points on every purchase and rewards for {fewerPct}% fewer points. | 92 / 90 |
+| `push.expiry30` | Points expire soon (first reminder, 30 days) | Οι {points} πόντοι σου λήγουν σε {days} μέρες. Μία αγορά τους κρατάει για άλλους {months} μήνες. | Your {points} points expire in {days} days. One purchase keeps them for another {months} months. | 80 / 80 |
+| `push.expiry7` | Points expire soon (last reminder, 7 days) | Μόνο {days} μέρες ακόμα για τους {points} πόντους σου! Πέρνα για έναν καφέ και κράτα τους. | Only {days} days left for your {points} points! Pop in for a coffee and keep them. | 80 / 72 |
 | `push.redemptionExpired` | Code expired, points returned | Ο κωδικός δώρου έληξε, αλλά μην ανησυχείς: οι {points} πόντοι γύρισαν στην κάρτα σου. | Your reward code expired, but don't worry: your {points} points are back on your card. | 79 / 80 |
+| `push.giftCodeExpired` | Gift code expired, gift returned | Ο κωδικός δώρου έληξε, αλλά μην ανησυχείς: το {reward} είναι ξανά στα Δώρα σου. | Your code expired, but don't worry: the {reward} is back in your Rewards. | 98 / 96 |
+| `push.giftCodeLapsed` | Gift code expired, and the gift itself has expired | Ο κωδικός για το {reward} έληξε, και το δώρο έχει πια λήξει. | The code for the {reward} expired, and the gift has now expired too. | 79 / 91 |
 
-Tier-up lines spell out today's numbers; change them with the config.
+Sent from 13 Nov 2026 (push v0.9; texts in `data/copy/push.*.json`). Changed for brand-neutral use, to approve: `push.welcomeReady` names the brand's gift instead of the butter croissant; tier lines take the brand's tier name `{tier}` and today's numbers from the config (`{morePct}`, `{fewerPct}`); expiry lines take `{days}` and `{months}` from the config (the first reminder uses `push.expiry30`, the last `push.expiry7`); `push.giftCodeExpired` and `push.giftCodeLapsed` are new (a gift code, which returns no points). HQ's own messages (offers, news) are written in the back office: title and text by HQ, sent only to members who said yes to offers by notification.
+
 
 ### d2. Wallet pass
 

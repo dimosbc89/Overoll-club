@@ -134,6 +134,29 @@ Before answering, the server prepares the member (`packages/server/src/review-me
 
 **Setup per brand:** `review.email` in `supabase/projects/<brand>.json` and the GitHub secret `REVIEW_SIGN_IN_CODE_<BRAND>` (10 digits); CI hands both to the Edge Function. Without either the route always answers `wrong_code`. The email and code go only into App Store Connect (App Review information) and Play Console (App access).
 
+## New in v0.9 (push notifications)
+
+Migration `20261113100000_push_notifications`. The member app registers its phone; server operations queue what to say; a job sends it through the Expo push service (Expo holds each app's APNs key and FCM credentials on expo.dev, so the server needs no Apple or Google secret).
+
+| Route | Who | What |
+| --- | --- | --- |
+| `push/register` | member | `{ token, platform }`: the phone's Expo push token (`ExponentPushToken[…]`, core `isPushToken`) and `ios` / `android`. `{ ok, registered: true }`. One phone, one member: registering a token another member had moves it. `member_not_found` without a membership. Safe to repeat (the app calls it on every start) |
+| `push/unregister` | member | `{ token }` on sign-out: `{ ok, removed }` (0 when the token isn't this member's) |
+| `messages/send` | HQ of the brand, platform admin | `{ brandId, titleEl, bodyEl, titleEn?, bodyEn?, dryRun?, idempotencyKey }` (title ≤ 65, text ≤ 240 characters, core `pushMessageLimits`; English both or neither). Goes to members with `consent_push` and a registered phone. `dryRun: true` only counts them: `{ ok, recipients, campaignId: null }`; otherwise `{ ok, recipients, campaignId }` and an audit row `message.send` |
+| `jobs/push-send` | service (every minute) | Sends what `push_outbox` holds (claims up to 200 rows for 5 minutes each): renders each in the member's language, one Expo message per phone. Devices Expo reports as `DeviceNotRegistered` are deleted; when Expo can't be reached a row is retried, up to 5 tries. Finished rows are deleted after 30 days. `{ ok, sent, noDevice, skipped, failed, messages, devicesRemoved }` |
+| `jobs/push-reminders` | service (daily 08:30 UTC) | Queues "your points expire in N days" (core `expiryReminderDue`: 30 and 7 days) for members with points and a phone; once per member, expiry date and day count. `{ ok, queued }` |
+
+**What is sent** (texts: `data/copy/push.*.json`, copy deck §d1; title = the program name from the brand files; `data: { kind, screen }` tells the app which tab to open, `card` or `rewards`):
+
+- Points at the till (`award`): queued with `send_after` = now + `notifications.earnDelaySeconds` (60); skipped if the earn was undone meanwhile. One line, the first that applies (core `earnNotice`): welcome gift unlocked, new tier, a reward now affordable that wasn't, otherwise the points.
+- A code that expired unused (`jobs/expire-redemptions`): points back, gift back, or gift lapsed.
+- Points expiring (`jobs/push-reminders`): dropped at send time if a purchase moved the date.
+- HQ messages (`messages/send`): dropped at send time if the member withdrew `consent_push`.
+
+Service messages need no marketing consent (program spec: Notifications); the phone's permission is the switch, so only registered phones get them.
+
+**Database:** `push_devices` (token, platform, member; server only), `push_outbox` (kind, ref, payload, send_after, claimed_until, attempts, sent_at, outcome; unique per brand, kind and ref; server only), `push_campaigns` (HQ messages; HQ of the brand reads them, writes go through the API). Account deletion removes the member's devices and anything still waiting.
+
 ## What the apps read directly (Supabase client, row-level security)
 
 Member app (signed-in member): `members` (own row, not once deleted), `member_balances` (own), `member_secrets` (own: `qr_secret`, `pass_version` → core `createRotatingToken` for the QR, offline), `rewards` (active; `category`, and `icon` from 13 Nov 2026 for the v2 illustrations), `stores` (active; `name_en` / `address_en` from v0.4, `phone`), `member_gifts` (own), `redemptions` (own; a `pending` one not past `expires_at` is the active code), `ledger_entries` (own, history). Costs per tier: core `rewardCostForTier`; progress: core `nextRewardProgress`, `tierProgress`.

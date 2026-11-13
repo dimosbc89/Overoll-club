@@ -124,6 +124,9 @@ async function wipeMember(tx: Tx, member: { id: string; brand_id: string }, call
     where id = ${member.id}
   `;
   await tx`delete from public.member_secrets where member_id = ${member.id}`;
+  // Push (v0.9): the phones stop getting messages, and nothing still waiting is sent.
+  await tx`delete from public.push_devices where member_id = ${member.id}`;
+  await tx`delete from public.push_outbox where member_id = ${member.id} and sent_at is null`;
   // First names in stored results of the till (redemptions/use) and of join.
   await tx`
     update private.idempotency_keys set result = jsonb_set(result, '{memberFirstName}', '""')

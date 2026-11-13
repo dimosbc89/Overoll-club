@@ -436,6 +436,29 @@ describe('catalog routes (v0.6)', () => {
     const run = await handle(post('/api/jobs/wallet-updates', {}, SERVICE));
     expect(await run.json()).toMatchObject({ ok: true, members: 0 });
   });
+  it('push (v0.9): members register phones, HQ sends messages, jobs need the service token', async () => {
+    const member = await newMember(db.server, db.admin);
+    const token = 'ExponentPushToken[api-test-0123456789]';
+    expect((await handle(post('/api/push/register', { token, platform: 'ios' }))).status).toBe(401);
+    const bad = await handle(post('/api/push/register', { token: 'nope', platform: 'ios' }, tokenFor(member.userId)));
+    expect(bad.status).toBe(400);
+    const ok = await handle(post('/api/push/register', { token, platform: 'ios' }, tokenFor(member.userId)));
+    expect(await ok.json()).toEqual({ ok: true, registered: true });
+    const gone = await handle(post('/api/push/unregister', { token }, tokenFor(member.userId)));
+    expect(await gone.json()).toEqual({ ok: true, removed: 1 });
+
+    const message = { brandId: ids.brand, titleEl: 'Τίτλος', bodyEl: 'Κείμενο', dryRun: true };
+    expect((await handle(post('/api/messages/send', message, tokenFor(ids.deviceA)))).status).toBe(403);
+    expect(await (await handle(post('/api/messages/send', message, tokenFor(ids.hq)))).json()).toMatchObject({
+      ok: true,
+      campaignId: null,
+    });
+
+    expect((await handle(post('/api/jobs/push-send', {}, tokenFor(ids.hq)))).status).toBe(403);
+    // No Expo set up in this handler: nothing is claimed or sent.
+    expect(await (await handle(post('/api/jobs/push-send', {}, SERVICE))).json()).toMatchObject({ ok: true, sent: 0 });
+    expect(await (await handle(post('/api/jobs/push-reminders', {}, JOBS))).json()).toMatchObject({ ok: true });
+  });
   it('auth/review-sign-in: only the review email with its 10-digit code gets a token; the member is prepared', async () => {
     // Without a review account: always wrong_code.
     const none = await handle(post('/api/auth/review-sign-in', { email: 'review@example.com', code: '1234567890' }));

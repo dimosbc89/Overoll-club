@@ -26,6 +26,7 @@ import { idempotent, ledgerKey } from './internal/idempotency.js';
 import * as input from './internal/input.js';
 import { InputError } from './internal/input.js';
 import { lockMember, memberBalance, memberFromToken } from './internal/members.js';
+import { enqueuePush } from './internal/push.js';
 import { type Db, type Result, fail } from './result.js';
 
 export interface AwardPointsInput {
@@ -281,6 +282,25 @@ export async function awardPoints(sql: Db, raw: AwardPointsInput): Promise<Award
           where id = ${member.id}
         `;
         const balance = await memberBalance(tx, member.id);
+        // Push (v0.9): held a minute so an immediate undo sends nothing; the
+        // sender picks the message (points, reward within reach, new tier, welcome gift).
+        await enqueuePush(tx, {
+          brandId: brand.id,
+          memberId: member.id,
+          kind: 'earn',
+          ref: entry.id,
+          payload: {
+            entryId: entry.id,
+            storeId: i.storeId,
+            points,
+            balanceAfter: balance,
+            tierBefore: member.tier,
+            tierAfter: tier,
+            welcomeGiftUnlocked,
+          },
+          now: i.now,
+          sendAfter: new Date(i.now.getTime() + config.notifications.earnDelaySeconds * 1000),
+        });
         await audit(tx, {
           brandId: brand.id,
           actorUserId: i.callerUserId,

@@ -50,6 +50,14 @@ export interface ProgramConfig {
   };
   /** Youngest age allowed to join (GDPR digital consent age in Greece). */
   minimumAge: number;
+  /** Push notifications (service messages; offers need the member's consent). */
+  notifications: {
+    /**
+     * "Points added" waits this many seconds before it is sent, so a cashier's
+     * immediate undo (a typo) sends nothing.
+     */
+    earnDelaySeconds: number;
+  };
   limits: {
     /** Largest receipt total accepted for one earn transaction, in cents. */
     maxAmountCents: number;
@@ -98,6 +106,9 @@ export const defaultConfig: ProgramConfig = {
     validDays: 30,
   },
   minimumAge: 15,
+  notifications: {
+    earnDelaySeconds: 60,
+  },
   limits: {
     maxAmountCents: 8000,
     maxEarnsPerDay: 5,

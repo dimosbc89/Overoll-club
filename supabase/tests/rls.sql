@@ -502,6 +502,47 @@ set role anon;
 select tst.refused($$select * from public.wallet_apple_devices$$, 'anonymous cannot read Wallet device registrations');
 reset role;
 
+-- Push notifications (v0.9): devices and the outbox are server-only; HQ reads its brand's messages.
+insert into public.push_devices (brand_id, member_id, token, platform)
+  values ('10000000-0000-0000-0000-000000000001', '40000000-0000-0000-0000-000000000001', 'ExponentPushToken[rls-test-token-1]', 'ios');
+select tst.refused($$insert into public.push_devices (brand_id, member_id, token, platform)
+  values ('10000000-0000-0000-0000-000000000001', '40000000-0000-0000-0000-000000000003', 'ExponentPushToken[rls-test-token-2]', 'ios')$$,
+  'a push device cannot point at a member of another brand', '23503');
+select tst.refused($$insert into public.push_devices (brand_id, member_id, token, platform)
+  values ('10000000-0000-0000-0000-000000000001', '40000000-0000-0000-0000-000000000001', 'not-a-token', 'ios')$$,
+  'only Expo push tokens are stored', '23514');
+insert into public.push_campaigns (id, brand_id, title_el, body_el)
+  values ('70000000-0000-0000-0000-000000000001', '10000000-0000-0000-0000-000000000001', 'Τίτλος', 'Κείμενο');
+select tst.refused($$insert into public.push_campaigns (brand_id, title_el, body_el, title_en)
+  values ('10000000-0000-0000-0000-000000000001', 'Τίτλος', 'Κείμενο', 'Title only')$$,
+  'English text comes as a title and a text together', '23514');
+insert into public.push_outbox (brand_id, member_id, kind, ref, campaign_id)
+  values ('10000000-0000-0000-0000-000000000001', '40000000-0000-0000-0000-000000000001', 'message',
+          'rls-1', '70000000-0000-0000-0000-000000000001');
+select tst.refused($$insert into public.push_outbox (brand_id, member_id, kind, ref)
+  values ('10000000-0000-0000-0000-000000000001', '40000000-0000-0000-0000-000000000001', 'message', 'rls-2')$$,
+  'an HQ message in the outbox names its campaign', '23514');
+select set_config('request.jwt.claim.sub', '00000000-0000-0000-0000-0000000000a1', false);
+set role authenticated;
+select tst.refused($$select * from public.push_devices$$, 'a member cannot read push devices');
+select tst.refused($$select * from public.push_outbox$$, 'a member cannot read the push outbox');
+select tst.refused($$insert into public.push_devices (brand_id, member_id, token, platform)
+  values ('10000000-0000-0000-0000-000000000001', '40000000-0000-0000-0000-000000000001', 'ExponentPushToken[rls-test-token-3]', 'ios')$$,
+  'a member registers a phone only through the API');
+select tst.eq((select count(*) from public.push_campaigns), 0, 'a member sees no HQ messages');
+reset role;
+select set_config('request.jwt.claim.sub', '00000000-0000-0000-0000-0000000000b1', false);
+set role authenticated;
+select tst.eq((select count(*) from public.push_campaigns), 1, 'HQ reads its brand''s messages');
+select tst.refused($$insert into public.push_campaigns (brand_id, title_el, body_el)
+  values ('10000000-0000-0000-0000-000000000001', 'x', 'y')$$, 'HQ sends messages only through the API');
+select tst.refused($$select * from public.push_outbox$$, 'HQ cannot read the push outbox');
+reset role;
+select set_config('request.jwt.claim.sub', '', false);
+set role anon;
+select tst.refused($$select * from public.push_campaigns$$, 'anonymous cannot read HQ messages');
+reset role;
+
 select tst.eq((select count(*) from pg_class c join pg_namespace n on n.oid = c.relnamespace
                where n.nspname in ('public', 'private') and c.relkind = 'r' and not c.relrowsecurity), 0,
               'every table in public and private has row-level security on');

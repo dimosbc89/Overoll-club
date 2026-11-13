@@ -84,7 +84,7 @@ export function validateConfig(candidate: unknown): string[] {
     [
       'pointsPerEuro', 'tiers', 'tierWindowMonths', 'rewardPriceFactor', 'rewardRoundTo',
       'tierCostRoundTo', 'expiryMonths', 'expiryReminderDays', 'redemptionValidMinutes', 'welcome', 'minimumAge',
-      'limits', 'qr',
+      'notifications', 'limits', 'qr',
     ],
     '',
   );
@@ -101,6 +101,11 @@ export function validateConfig(candidate: unknown): string[] {
     c.int(cfg.welcome.validDays, 'welcome.validDays', 1, 365);
     // Optional: absent means the brand has no welcome gift.
     if (cfg.welcome.rewardId !== undefined) c.uuid(cfg.welcome.rewardId, 'welcome.rewardId');
+  }
+
+  if (c.object(cfg.notifications, 'notifications')) {
+    c.keys(cfg.notifications, ['earnDelaySeconds'], 'notifications.');
+    c.int(cfg.notifications.earnDelaySeconds, 'notifications.earnDelaySeconds', 0, 3600);
   }
 
   if (!Array.isArray(cfg.expiryReminderDays)) {
