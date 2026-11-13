@@ -139,6 +139,9 @@ export interface BrandV2 {
   art: { byCategory: Record<string, string>; fallback: string; tile: Record<string, AccentColor>; gift: string };
 }
 
+/** Text of the legal details: the same in every language, or one per language. */
+export type LegalText = string | { el: string; en: string };
+
 export interface BrandDefinition {
   /** Matches supabase/projects/<slug>.json and `brands.slug`. */
   slug: string;
@@ -173,8 +176,9 @@ export interface BrandDefinition {
    * Who runs the programme, for the privacy policy and terms (src/legal):
    * the trade name, and the legal entity and address once the brand confirms
    * them (null until then: the pages show the trade name and a draft notice).
+   * Company and address are one string, or one per language.
    */
-  legal: { tradeName: string; company: string | null; address: string | null };
+  legal: { tradeName: string; company: LegalText | null; address: LegalText | null };
   /** The v2 screens (src/v2); without it the classic ones. */
   v2?: BrandV2;
   /** Copy that differs from the shared el/en files (same keys). */

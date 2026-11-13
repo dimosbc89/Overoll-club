@@ -1,14 +1,14 @@
 {
   "brand": "koala",
-  "fetched_on": "2026-11-11",
+  "fetched_on": "2026-11-13",
   "sources": {
     "instagram": "@koalacoffeegr profile",
     "press": "athensvoice.gr (Koala Coffee: Αργυρούπολη Μ. Γερουλάνου 77, 2117508000 · Άγιος Δημήτριος Αγίου Δημητρίου 159, 2109765594)",
-    "efood": "both stores' efood pages"
+    "efood": "both stores' efood pages",
+    "google": "Google Maps listings of both stores (hours and coordinates, 13 Nov 2026), as Dimos asked"
   },
   "notes": [
-    "Opening hours are not published anywhere we found: each store gives them before launch. Until then the app shows no hours.",
-    "Coordinates are left empty until confirmed; the app's directions use the address instead."
+    "Opening hours and coordinates from Google Maps (13 Nov 2026): every day 06:00-21:00 in Άγιος Δημήτριος, 06:00-22:00 in Αργυρούπολη. Each store can change them in the back office."
   ],
   "stores": [
     {
@@ -19,10 +19,18 @@
       "address_en": "Agiou Dimitriou Ave 159, 173 43 Agios Dimitrios",
       "city": "Άγιος Δημήτριος",
       "country": "GR",
-      "latitude": null,
-      "longitude": null,
+      "latitude": 37.9363155,
+      "longitude": 23.7299728,
       "phone": "+302109765594",
-      "hours": {}
+      "hours": {
+        "mon": "06:00-21:00",
+        "tue": "06:00-21:00",
+        "wed": "06:00-21:00",
+        "thu": "06:00-21:00",
+        "fri": "06:00-21:00",
+        "sat": "06:00-21:00",
+        "sun": "06:00-21:00"
+      }
     },
     {
       "code": "argyroupoli",
@@ -32,10 +40,18 @@
       "address_en": "Marinou Geroulanou 77, 164 52 Argyroupoli",
       "city": "Αργυρούπολη",
       "country": "GR",
-      "latitude": null,
-      "longitude": null,
+      "latitude": 37.9065684,
+      "longitude": 23.7501893,
       "phone": "+302117508000",
-      "hours": {}
+      "hours": {
+        "mon": "06:00-22:00",
+        "tue": "06:00-22:00",
+        "wed": "06:00-22:00",
+        "thu": "06:00-22:00",
+        "fri": "06:00-22:00",
+        "sat": "06:00-22:00",
+        "sun": "06:00-22:00"
+      }
     }
   ]
 }

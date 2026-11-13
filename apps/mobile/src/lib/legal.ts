@@ -1,6 +1,6 @@
 import { type ProgramConfig, tierRule } from '@grow-loyalty/core';
 
-import type { BrandDefinition } from '../brand';
+import type { BrandDefinition, LegalText } from '../brand';
 import type { Locale, Translate } from '../i18n/messages';
 import { intlLocale } from '../i18n/messages';
 import { formatEuroFromCents, formatPoints } from './format';
@@ -13,7 +13,9 @@ import { formatEuroFromCents, formatPoints } from './format';
  */
 
 /** Date of the current texts (shown as "Last updated"). Change it with the texts. */
-export const LEGAL_UPDATED = '2026-11-12';
+export const LEGAL_UPDATED = '2026-11-13';
+
+const inLocale = (text: LegalText, locale: Locale): string => (typeof text === 'string' ? text : text[locale]);
 
 export function legalValues(input: {
   brand: BrandDefinition;
@@ -36,8 +38,8 @@ export function legalValues(input: {
     programName: brand.programName,
     brandName: brand.brandName,
     tradeName: brand.legal.tradeName,
-    controller: brand.legal.company ?? brand.legal.tradeName,
-    controllerAddress: brand.legal.address ? `, ${brand.legal.address}` : '',
+    controller: brand.legal.company ? inLocale(brand.legal.company, locale) : brand.legal.tradeName,
+    controllerAddress: brand.legal.address ? `, ${inLocale(brand.legal.address, locale)}` : '',
     supportEmail,
     siteHost,
     siteUrl: `https://${siteHost}`,

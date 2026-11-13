@@ -132,11 +132,11 @@ Legend: **D** = Dimos · **C** = Claude · ☐ open · ☑ done
 - ☑ C: CI deploys the API, Auth settings and scheduled jobs to `koala-club`; checked (11 Nov)
 - ☑ C: Cloudflare Pages `koala-club` (https://koala-club.pages.dev) and `koala-club-admin` (https://koala-club-admin.pages.dev), built from `main`
 - ☐ D + C: end-to-end test with a real sign-in: ~~Dimos signs in to the Koala back office once, Claude gives that account the platform role~~ (done 12 Nov; sign-in code arrived through Resend), then a till device and a cashier from the Staff page; join, points at the till, reward code
-- ☐ D: answers from Koala (catalog and prices, opening hours, names, domain and sender email, legal entity, wordmark, efood, till device)
+- ☐ D: answers from Koala: still names, welcome gift, wordmark, authorization letter (catalog and prices, hours, domain, legal entity, efood (no points), till devices (tablets and phones) done 13 Nov)
 - ☑ C + D: EAS project `koala-club` on GROW AGENCY LP's Expo account, GitHub secret `EXPO_TOKEN`, build workflow (`.github/workflows/native.yml`); first Android test APK built 12 Nov
 - ☐ D: test the store builds on phones: iOS 1.0.0 (10) from TestFlight, Android 1.0.0 (5) from Play internal testing (sign-in, card and QR, rewards, push after a scan, Add to Apple Wallet, counter QR deep link `koalaclub://join`)
 - ☑ D + C: iOS: App Store Connect API key on EAS; TestFlight builds from `eas/koala/ios/store` + `submit` (1.0.0 (10) on 13 Nov)
 - ☑ D: store records: Google Play Console app (GROW's account) and App Store Connect app (`online.growagency.koala`); Koala's authorization letter still to come (see Koala answers)
-- ☐ C: declare the push token in Play Data safety (Device or other IDs) and check App Store App Privacy, before the production release
+- ☑ C: push token declared in Play Data safety (Device or other IDs: collected, optional, app functionality + marketing messages, not shared; 13 Nov, saved, goes for review with the production release)
 - ☑ C: store declarations (13 Nov): App Store App Privacy, age rating (16+, terms minimum 15), content rights; Play Data safety, content rating (PEGI 3), target audience 16+, ads, advertising ID, government, financial, health (answers in `docs/koala/README.md`)
 - ☐ D: Play account trader status (EU Digital Services Act banner)

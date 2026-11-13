@@ -16,8 +16,8 @@ on conflict (slug) do update set
 -- name / address are Greek; name_en / address_en English (apps fall back to Greek).
 insert into public.stores (brand_id, code, name, name_en, address, address_en, city, country, latitude, longitude, phone, opening_hours)
 values
-  ((select id from public.brands where slug = 'koala'), 'agios-dimitrios', 'Koala Άγιος Δημήτριος', 'Koala Agios Dimitrios', 'Λεωφ. Αγίου Δημητρίου 159, 173 43 Άγιος Δημήτριος', 'Agiou Dimitriou Ave 159, 173 43 Agios Dimitrios', 'Άγιος Δημήτριος', 'GR', null, null, '+302109765594', '{}'::jsonb),
-  ((select id from public.brands where slug = 'koala'), 'argyroupoli', 'Koala Αργυρούπολη', 'Koala Argyroupoli', 'Μαρίνου Γερουλάνου 77, 164 52 Αργυρούπολη', 'Marinou Geroulanou 77, 164 52 Argyroupoli', 'Αργυρούπολη', 'GR', null, null, '+302117508000', '{}'::jsonb)
+  ((select id from public.brands where slug = 'koala'), 'agios-dimitrios', 'Koala Άγιος Δημήτριος', 'Koala Agios Dimitrios', 'Λεωφ. Αγίου Δημητρίου 159, 173 43 Άγιος Δημήτριος', 'Agiou Dimitriou Ave 159, 173 43 Agios Dimitrios', 'Άγιος Δημήτριος', 'GR', 37.9363155, 23.7299728, '+302109765594', '{"mon":"06:00-21:00","tue":"06:00-21:00","wed":"06:00-21:00","thu":"06:00-21:00","fri":"06:00-21:00","sat":"06:00-21:00","sun":"06:00-21:00"}'::jsonb),
+  ((select id from public.brands where slug = 'koala'), 'argyroupoli', 'Koala Αργυρούπολη', 'Koala Argyroupoli', 'Μαρίνου Γερουλάνου 77, 164 52 Αργυρούπολη', 'Marinou Geroulanou 77, 164 52 Argyroupoli', 'Αργυρούπολη', 'GR', 37.9065684, 23.7501893, '+302117508000', '{"mon":"06:00-22:00","tue":"06:00-22:00","wed":"06:00-22:00","thu":"06:00-22:00","fri":"06:00-22:00","sat":"06:00-22:00","sun":"06:00-22:00"}'::jsonb)
 on conflict (brand_id, code) do update set
   name = excluded.name, name_en = excluded.name_en, address = excluded.address, address_en = excluded.address_en,
   city = excluded.city, country = excluded.country,

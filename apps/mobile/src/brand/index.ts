@@ -2,7 +2,7 @@ import { koala } from './koala';
 import { overoll } from './overoll';
 import type { BrandDefinition } from './types';
 
-export type { BrandColors, BrandDefinition, FontWeight, LogoShape } from './types';
+export type { BrandColors, BrandDefinition, FontWeight, LegalText, LogoShape } from './types';
 
 export const brands: Record<string, BrandDefinition> = { overoll, koala };
 

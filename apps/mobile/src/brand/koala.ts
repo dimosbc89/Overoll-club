@@ -47,8 +47,12 @@ export const koala: BrandDefinition = {
   },
   logo: { mark, wordmark, wordmarkText: 'koala coffee', widthScale: 1.75 },
   giftIcon: 'cup',
-  // Legal entity to confirm with Koala (vrisko lists "KOALA - ΔΗΜΟΓΕΡΟΝΤΑ ΕΕ" for Αργυρούπολη; docs/koala/README.md).
-  legal: { tradeName: 'Koala Coffee', company: null, address: null },
+  // Legal entity given by Dimos for Koala, 13 Nov 2026 (docs/koala/README.md).
+  legal: {
+    tradeName: 'Koala Coffee',
+    company: { el: 'ΔΗΜΟΓΕΡΟΝΤΑΣ ΝΙΚΟΛΑΣ (ΑΦΜ 143354407)', en: 'DIMOGERONTAS NIKOLAS (VAT EL143354407)' },
+    address: { el: 'Αγίου Δημητρίου 159, 173 43 Άγιος Δημήτριος', en: 'Agiou Dimitriou 159, 173 43 Agios Dimitrios, Greece' },
+  },
   // Figma "Koala Club — loyalty app concept" (design system page, 12 Nov 2026).
   v2: {
     colors: {

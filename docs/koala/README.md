@@ -47,7 +47,7 @@ iOS: first store build 0.1.0 (4) uploaded to TestFlight on 12 Nov 2026 (EAS subm
 
 ### Store declarations (filled 13 Nov 2026)
 
-What the app collects, checked in the code: email, first name, account/member ID, purchase history (points ledger with amount, store and date). Nothing else: no phone or birthday fields in the app (columns exist, not asked), no push tokens yet, no location, camera, analytics or crash SDKs, no advertising ID, no ads. Processors (Supabase, Cloudflare, Resend) are not "sharing" under either store's rules. If any of this changes (push notifications, phone or birthday in the app, an analytics SDK), update both declarations in the same change.
+What the app collects, checked in the code: email, first name, account/member ID, purchase history (points ledger with amount, store and date). Nothing else: no phone or birthday fields in the app (columns exist, not asked), since 13 Nov the push token if the member allows notifications (Play Data safety: Device or other IDs, collected, optional, app functionality + marketing messages, not shared; App Store App Privacy unchanged: the APNs/Expo token is an app-installation token, not a device-level ID or the advertising ID), no location, camera, analytics or crash SDKs, no advertising ID, no ads. Processors (Supabase, Cloudflare, Resend, Expo and Google/Apple push services) are not "sharing" under either store's rules. If any of this changes (push notifications, phone or birthday in the app, an analytics SDK), update both declarations in the same change.
 
 - **App Store, App Privacy** (published): Name (App Functionality); Email Address (App Functionality, Developer's Advertising or Marketing: offers by email with consent); User ID (App Functionality); Purchase History (App Functionality, Analytics: back-office store reports). All linked to the user, none used for tracking. Privacy policy https://club.koalacoffee.gr/privacy.
 - **App Store, age rating**: every question "none/no" → calculated 4+, overridden to **16+** because the terms set a minimum age of 15 and Apple requires the rating to match a EULA minimum (Apple has no 15+; 16+ shows as 17+ on iOS before 26, 15+ in Korea, A16 in Brazil). Age suitability URL https://club.koalacoffee.gr/terms. If Dimos prefers 13+, change it under App Information → Age Ratings.
@@ -57,14 +57,14 @@ What the app collects, checked in the code: email, first name, account/member ID
 
 ## Before launch: needed from Koala
 
-- [ ] Approve the reward catalog and the in-store prices (we used efood prices).
+- [x] Reward catalog and in-store prices (efood prices) approved by Dimos, 13 Nov 2026.
 - [ ] Confirm the welcome gift (cinnamon roll is on efood only for Αργυρούπολη).
-- [ ] Opening hours of both stores (not published anywhere). Once known, HQ types them in the back office (Καταστήματα → Αλλαγή); reward prices likewise under Δώρα.
+- [x] Opening hours, from Google Maps as Dimos asked (13 Nov 2026): every day 06:00–21:00 in Άγιος Δημήτριος, 06:00–22:00 in Αργυρούπολη (`data/koala/stores.json`, with Google's coordinates). Typed into the back office (Καταστήματα → Αλλαγή); stores change them there.
 - [ ] Programme and tier names (Koala Club, Joey, Koala, Eucalyptus).
 - [x] Domain: `koalacoffee.gr` (12 Nov 2026, Cloudflare in GROW's account): `club.` and `admin.`, sign-in emails from `app@koalacoffee.gr` (`docs/koala/dns-records.md`). Resend verified 12 Nov; sign-in emails go through Resend SMTP (key in the GitHub secret `RESEND_API_KEY_KOALA`).
-- [ ] Legal entity for the terms and privacy policy (pages live on https://club.koalacoffee.gr/terms and /privacy since 12 Nov as drafts; set `legal.company` and `legal.address` in `apps/mobile/src/brand/koala.ts`, then a lawyer reads them) (vrisko lists "KOALA - ΔΗΜΟΓΕΡΟΝΤΑ ΕΕ" for Αργυρούπολη; confirm for both stores).
+- [x] Legal entity (Dimos, 13 Nov 2026): ΔΗΜΟΓΕΡΟΝΤΑΣ ΝΙΚΟΛΑΣ, Αγίου Δημητρίου 159, 173 43 Άγιος Δημήτριος, ΑΦΜ / VAT EL143354407. In `apps/mobile/src/brand/koala.ts`; the terms and privacy policy name it and no longer show the draft notice. Still worth a lawyer's read. (vrisko lists "KOALA - ΔΗΜΟΓΕΡΟΝΤΑ ΕΕ" for Αργυρούπολη: the programme is run by the entity above for both stores.)
 - [ ] Official wordmark (we have the koala mark only).
-- [ ] Whether efood orders earn points; tablet or phone at each till.
+- [x] efood orders do **not** earn points; the tills use tablets and phones (Dimos, 13 Nov 2026).
 - [ ] Signed authorization letter for publishing the app from GROW AGENCY's store accounts.
 
 ## Wallet passes

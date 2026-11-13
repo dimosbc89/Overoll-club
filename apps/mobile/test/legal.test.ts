@@ -66,9 +66,26 @@ describe('privacy policy and terms', () => {
     expect(en).toContain('Gold: at 1,500 points within 12 months');
   });
 
+  it('names Koala\'s legal entity, in each language', () => {
+    expect(fillLegal(privacy.el, values('koala', 'el'))).toContain(
+      'Υπεύθυνος επεξεργασίας είναι ΔΗΜΟΓΕΡΟΝΤΑΣ ΝΙΚΟΛΑΣ (ΑΦΜ 143354407), Αγίου Δημητρίου 159, 173 43 Άγιος Δημήτριος.',
+    );
+    expect(fillLegal(terms.en, values('koala', 'en'))).toContain(
+      'run by DIMOGERONTAS NIKOLAS (VAT EL143354407), Agiou Dimitriou 159, 173 43 Agios Dimitrios, Greece.',
+    );
+  });
+
   it('names the trade name while the company is not confirmed, the company once it is', () => {
     const koala = brands.koala!;
-    expect(fillLegal(privacy.el, values('koala', 'el'))).toContain('Υπεύθυνος επεξεργασίας είναι Koala Coffee.');
+    const draft = legalValues({
+      brand: { ...koala, legal: { ...koala.legal, company: null, address: null } },
+      config: defaultConfig,
+      locale: 'el',
+      t: createTranslate('el'),
+      siteHost: 'club.koalacoffee.gr',
+      supportEmail: koala.supportEmail,
+    });
+    expect(fillLegal(privacy.el, draft)).toContain('Υπεύθυνος επεξεργασίας είναι Koala Coffee.');
     const confirmed = legalValues({
       brand: { ...koala, legal: { ...koala.legal, company: 'ΕΤΑΙΡΕΙΑ ΕΕ', address: 'Οδός 1, Αθήνα' } },
       config: defaultConfig,
